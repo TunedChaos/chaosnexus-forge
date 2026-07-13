@@ -12451,11 +12451,13 @@
       "name": "vscode-jsonrpc",
       "versions": [
         "8.2.0",
-        "8.2.1"
+        "8.2.1",
+        "9.0.1"
       ],
       "paths": [
         "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc",
-        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/vscode-jsonrpc@8.2.1/node_modules/vscode-jsonrpc"
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/vscode-jsonrpc@8.2.1/node_modules/vscode-jsonrpc",
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/vscode-jsonrpc@9.0.1/node_modules/vscode-jsonrpc"
       ],
       "license": "MIT",
       "author": "Microsoft Corporation",

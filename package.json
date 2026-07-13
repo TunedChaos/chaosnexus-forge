@@ -25,6 +25,7 @@
     "marked": "^18.0.5",
     "monaco-languageclient": "^10.7.0",
     "tauri": "0.15.0",
+    "vscode-jsonrpc": "^9.0.1",
     "vscode-ws-jsonrpc": "^3.5.0"
   },
   "devDependencies": {

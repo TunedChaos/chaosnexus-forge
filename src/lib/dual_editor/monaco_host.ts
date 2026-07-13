@@ -8,7 +8,6 @@ import { formatBold, formatItalic, formatLink } from "$lib/dual_editor/markdown_
 import { loadMonaco } from "$lib/dual_editor/monaco_loader";
 import { languageForFilename, registerMonacoLanguages } from "$lib/dual_editor/monaco_languages";
 import { createTauriLanguageClient } from "$lib/dual_editor/lsp_bridge";
-import { initServices } from "monaco-languageclient/vscode/services";
 
 let lspServicesInitialized = false;
 
@@ -194,25 +193,9 @@ export function createMonacoHost(getOptions: () => MonacoHostOptions) {
       // Rhai completion/hover/diagnostics via LSP bridge
       if (language === "rhai") {
         if (!lspServicesInitialized) {
-          initServices({
-            userServices: {},
-            debugLogging: false,
-            workspaceConfig: {
-              workspaceProvider: {
-                trust: () => "trusted",
-                workspace: {
-                  workspaceUri: monaco.Uri.parse("file:///"),
-                },
-                environments: monaco.Uri.parse("file:///"),
-              },
-            },
-          })
-            .then(() => {
-              lspServicesInitialized = true;
-              const languageClient = createTauriLanguageClient();
-              languageClient.start();
-            })
-            .catch(console.error);
+          lspServicesInitialized = true;
+          const languageClient = createTauriLanguageClient();
+          languageClient.start();
         } else {
           // If already initialized, we might just need a new client or the existing one handles multiple files
           // The Tauri LSP bridge is global, so one client is enough.

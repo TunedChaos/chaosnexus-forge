@@ -1,9 +1,8 @@
 import {
-    AbstractMessageReader,
-    AbstractMessageWriter,
     Message,
     DataCallback
 } from 'vscode-ws-jsonrpc';
+import { AbstractMessageReader, AbstractMessageWriter } from 'vscode-jsonrpc';
 import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/core';
 import { MonacoLanguageClient } from 'monaco-languageclient';
