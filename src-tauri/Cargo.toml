@@ -1,0 +1,45 @@
+# chaosnexus-forge/src-tauri/Cargo.toml
+[package]
+name = "chaosnexus-forge"
+version = "0.1.0"
+description = "A Tauri App"
+authors = ["you"]
+edition = "2021"
+license = "AGPL-3.0-or-later"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "chaosforge_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.6.3", features = [] }
+
+[dependencies]
+async-trait = "0.1.89"
+dotenvy = "0.15.7"
+regex = "1.12.4"
+reqwest = { version = "0.12", features = ["stream"] }
+futures-util = "0.3.31"
+rfd = "0.17.2"
+rust-mcp-sdk = "0.10.0"
+rust-mcp-transport = "0.9.1"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.150"
+tauri = { version = "2.11.3", features = [] }
+tauri-plugin-mcp-bridge = "0.11.2"
+tauri-plugin-opener = "2.5.4"
+tokio = { version = "1.52.3", features = ["rt-multi-thread", "macros", "io-util", "process", "time", "sync"] }
+toml = "1.1.2"
+chaosnexus-anvil = { path = "../../chaosnexus-anvil" }
+chrono = "0.4.45"
+notify = "8.2.0"
+directories = "6.0.0"
+sysinfo = "0.32"
+tower-lsp = "0.20.0"
+rhai-rowan = { path = "crates/rhai-rowan" }
+rhai-hir = { path = "crates/rhai-hir" }

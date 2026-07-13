@@ -1,0 +1,3 @@
+# ChaosForge Documentation Audit Status
+# Started: 2026-07-09T09:52:00-04:00
+# Total files to document: ~96 (excluding .test.ts, .d.ts, and non-code files)

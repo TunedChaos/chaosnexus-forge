@@ -1,0 +1,664 @@
+/* chaosnexus-forge/src/app.css */
+@import "tailwindcss";
+
+@theme {
+  /*
+   * Font split (VS Code-like): the editor/code font (`--ui-font-family`, e.g.
+   * Fira Code) drives the mono stack and Monaco, while the UI chrome falls back
+   * to a native system-sans stack so labels/menus read like the host OS rather
+   * than inheriting the monospace editor face.
+   */
+  --font-mono:
+    var(--ui-font-family), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-border-accent: hsl(var(--border-accent));
+}
+
+@layer base {
+  :root {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 40% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 40% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --radius: 0.5rem;
+
+    /*
+     * Vhai pin type palette. Fixed, theme-independent hues (UE-inspired) so
+     * a given data type always reads the same color regardless of editor theme.
+     * `bool` is deliberately cyan (not red) to stay clear of the red accent used
+     * for wires/selection. Monochromacy themes collapse these to the accent
+     * below; the adjacent pin label is the non-color channel (WCAG 1.4.1).
+     */
+    --pin-bool: #06b6d4;
+    --pin-int: #22c55e;
+    --pin-float: #84cc16;
+    --pin-string: #ec4899;
+    --pin-object: #3b82f6;
+    --pin-array: #8b5cf6;
+    --pin-control: #f59e0b;
+    --pin-exec: #f4f4f5;
+    --pin-generic: #9ca3af;
+
+    /*
+     * Vhai node-category palette. One hue per logic category so a node's
+     * type reads at a glance on the canvas (title bar) and in the palette
+     * (section swatch). Hues are spread for mutual contrast in the flow graph.
+     * Monochromacy themes collapse these to the accent below; the per-category
+     * icon is the non-color channel (WCAG 1.4.1).
+     */
+    --cat-event: #3b82f6;
+    --cat-function: var(--color-accent);
+    --cat-native: #6366f1;
+    --cat-control: #f59e0b;
+    --cat-flow: #8b5cf6;
+    --cat-variable: #14b8a6;
+    --cat-operator: #e11d48;
+    --cat-literal: #22c55e;
+    --cat-data: #0ea5e9;
+    --cat-error: #dc2626;
+    --cat-escape: #71717a;
+    --cat-machine-learning: #ec4899;
+    --cat-science: #06b6d4;
+    --cat-mcp: #c026d3;
+    --cat-anchor: #64748b;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    /* UI chrome scales from the single --ui-font-size knob and uses the system
+       sans stack; opt into the editor face explicitly via `font-mono`. */
+    font-size: var(--ui-font-size, 13px);
+    font-family: var(--font-sans);
+  }
+}
+
+/* ========================================== */
+/*           12-THEME SYSTEM CONFIGS          */
+/* ========================================== */
+
+/* 1. STANDARD DARK (DEFAULT) */
+html,
+html[data-theme="dark"] {
+  --bg-main: #09090b;
+  --bg-header: #18181b;
+  --bg-sidebar: #09090b;
+  --bg-footer: #000000;
+  --border-color: #27272a;
+  --border-width: 1px;
+  --text-main: #f4f4f5;
+  --text-muted: #71717a;
+  --text-active: #ffffff;
+  --color-accent: #A21F44;
+  --node-bg: #18181b;
+  --node-border: #27272a;
+  --node-text: #f4f4f5;
+}
+
+/* 2. STANDARD LIGHT */
+html[data-theme="light"] {
+  --bg-main: #fafafa;
+  --bg-header: #f4f4f5;
+  --bg-sidebar: #fafafa;
+  --bg-footer: #ffffff;
+  --border-color: #e4e4e7;
+  --border-width: 1px;
+  --text-main: #09090b;
+  --text-muted: #71717a;
+  --text-active: #000000;
+  --color-accent: #A21F44;
+  --node-bg: #ffffff;
+  --node-border: #e4e4e7;
+  --node-text: #09090b;
+}
+
+/* 3. HIGH CONTRAST DARK */
+html[data-theme="hc-dark"] {
+  --bg-main: #000000;
+  --bg-header: #000000;
+  --bg-sidebar: #000000;
+  --bg-footer: #000000;
+  --border-color: #ffffff;
+  --border-width: 2px;
+  --text-main: #ffffff;
+  --text-muted: #c8c8c8;
+  --text-active: #ffff00;
+  --color-accent: #ffff00;
+  --node-bg: #000000;
+  --node-border: #ffffff;
+  --node-text: #ffffff;
+}
+
+/* 4. HIGH CONTRAST LIGHT */
+html[data-theme="hc-light"] {
+  --bg-main: #ffffff;
+  --bg-header: #ffffff;
+  --bg-sidebar: #ffffff;
+  --bg-footer: #ffffff;
+  --border-color: #000000;
+  --border-width: 2px;
+  --text-main: #000000;
+  --text-muted: #444444;
+  --text-active: #0000ff;
+  --color-accent: #0000ff;
+  --node-bg: #ffffff;
+  --node-border: #000000;
+  --node-text: #000000;
+}
+
+/* 5. PROTANOPIA DARK (RED-BLIND ACCESSIBLE) */
+html[data-theme="protanopia-dark"] {
+  --bg-main: #09090b;
+  --bg-header: #18181b;
+  --bg-sidebar: #09090b;
+  --bg-footer: #000000;
+  --border-color: #27272a;
+  --border-width: 1px;
+  --text-main: #f4f4f5;
+  --text-muted: #71717a;
+  --text-active: #ffffff;
+  --color-accent: #00bfff; /* Sky Blue accent replaces red */
+  --node-bg: #18181b;
+  --node-border: #00bfff;
+  --node-text: #f4f4f5;
+}
+
+/* 6. PROTANOPIA LIGHT */
+html[data-theme="protanopia-light"] {
+  --bg-main: #fafafa;
+  --bg-header: #f4f4f5;
+  --bg-sidebar: #fafafa;
+  --bg-footer: #ffffff;
+  --border-color: #e4e4e7;
+  --border-width: 1px;
+  --text-main: #09090b;
+  --text-muted: #71717a;
+  --text-active: #000000;
+  --color-accent: #005fcc; /* Accessible Blue accent */
+  --node-bg: #ffffff;
+  --node-border: #005fcc;
+  --node-text: #09090b;
+}
+
+/* 7. DEUTERANOPIA DARK (GREEN-BLIND ACCESSIBLE) */
+html[data-theme="deuteranopia-dark"] {
+  --bg-main: #09090b;
+  --bg-header: #18181b;
+  --bg-sidebar: #09090b;
+  --bg-footer: #000000;
+  --border-color: #27272a;
+  --border-width: 1px;
+  --text-main: #f4f4f5;
+  --text-muted: #71717a;
+  --text-active: #ffffff;
+  --color-accent: #f59e0b; /* Vibrant Amber replaces red */
+  --node-bg: #18181b;
+  --node-border: #f59e0b;
+  --node-text: #f4f4f5;
+}
+
+/* 8. DEUTERANOPIA LIGHT */
+html[data-theme="deuteranopia-light"] {
+  --bg-main: #fafafa;
+  --bg-header: #f4f4f5;
+  --bg-sidebar: #fafafa;
+  --bg-footer: #ffffff;
+  --border-color: #e4e4e7;
+  --border-width: 1px;
+  --text-main: #09090b;
+  --text-muted: #71717a;
+  --text-active: #000000;
+  --color-accent: #d97706; /* Accessible Amber-600 */
+  --node-bg: #ffffff;
+  --node-border: #d97706;
+  --node-text: #09090b;
+}
+
+/* 9. TRITANOPIA DARK (BLUE-BLIND ACCESSIBLE) */
+html[data-theme="tritanopia-dark"] {
+  --bg-main: #0d070f;
+  --bg-header: #1a101f;
+  --bg-sidebar: #0d070f;
+  --bg-footer: #000000;
+  --border-color: #2e1a38;
+  --border-width: 1px;
+  --text-main: #f7f4f9;
+  --text-muted: #a89cb9;
+  --text-active: #ffffff;
+  --color-accent: #06b6d4; /* Cyan/Teal accent */
+  --node-bg: #1a101f;
+  --node-border: #06b6d4;
+  --node-text: #f7f4f9;
+}
+
+/* 10. TRITANOPIA LIGHT */
+html[data-theme="tritanopia-light"] {
+  --bg-main: #fdfbfd;
+  --bg-header: #f6f0f7;
+  --bg-sidebar: #fdfbfd;
+  --bg-footer: #ffffff;
+  --border-color: #eddfe9;
+  --border-width: 1px;
+  --text-main: #2b1a30;
+  --text-muted: #8b7c96;
+  --text-active: #000000;
+  --color-accent: #0891b2; /* Cyan/Teal accent */
+  --node-bg: #ffffff;
+  --node-border: #0891b2;
+  --node-text: #2b1a30;
+}
+
+/* 11. MONOCHROMACY DARK (TOTAL COLOR-BLIND ACCESSIBLE) */
+html[data-theme="monochromacy-dark"] {
+  --bg-main: #000000;
+  --bg-header: #18181b;
+  --bg-sidebar: #000000;
+  --bg-footer: #000000;
+  --border-color: #ffffff;
+  --border-width: 2px;
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+  --text-active: #ffffff;
+  --color-accent: #ffffff; /* Pure white wiring */
+  --node-bg: #18181b;
+  --node-border: #ffffff;
+  --node-text: #ffffff;
+}
+
+/* 12. MONOCHROMACY LIGHT */
+html[data-theme="monochromacy-light"] {
+  --bg-main: #ffffff;
+  --bg-header: #f4f4f5;
+  --bg-sidebar: #ffffff;
+  --bg-footer: #ffffff;
+  --border-color: #18181b;
+  --border-width: 2px;
+  --text-main: #000000;
+  --text-muted: #52525b;
+  --text-active: #000000;
+  --color-accent: #000000; /* Pure black wiring */
+  --node-bg: #f4f4f5;
+  --node-border: #000000;
+  --node-text: #000000;
+}
+
+/* Monochromacy themes collapse the typed pin palette to the single accent so
+   the grayscale promise holds; pin labels remain the type signal. */
+html[data-theme="monochromacy-dark"],
+html[data-theme="monochromacy-light"] {
+  --pin-bool: var(--color-accent);
+  --pin-int: var(--color-accent);
+  --pin-float: var(--color-accent);
+  --pin-string: var(--color-accent);
+  --pin-object: var(--color-accent);
+  --pin-array: var(--color-accent);
+  --pin-control: var(--color-accent);
+  --pin-exec: var(--color-accent);
+  --pin-generic: var(--color-accent);
+
+  /* Node-category hues collapse to the accent too; the category icon remains
+     the type signal so node kinds stay distinguishable in grayscale. */
+  --cat-event: var(--color-accent);
+  --cat-function: var(--color-accent);
+  --cat-native: var(--color-accent);
+  --cat-control: var(--color-accent);
+  --cat-flow: var(--color-accent);
+  --cat-variable: var(--color-accent);
+  --cat-operator: var(--color-accent);
+  --cat-literal: var(--color-accent);
+  --cat-data: var(--color-accent);
+  --cat-error: var(--color-accent);
+  --cat-escape: var(--color-accent);
+  --cat-machine-learning: var(--color-accent);
+  --cat-science: var(--color-accent);
+  --cat-mcp: var(--color-accent);
+  --cat-anchor: var(--color-accent);
+}
+
+/* ========================================== */
+/*       GLOBAL ACCESSIBLE THEME UTILITIES    */
+/* ========================================== */
+
+/* Visual-scripting node text tracks the Monaco editor font size (exposed as
+   --editor-font-size in +layout.svelte) so nodes read at the same scale as the
+   code, plus a small legibility bump so labels stay readable on-canvas, clamped
+   so an extreme editor zoom cannot blow the nodes out. */
+.flow-node-title {
+  font-size: clamp(14px, calc(var(--editor-font-size, 14px) + 1px), 19px);
+}
+.flow-node-text {
+  font-size: clamp(14px, calc(var(--editor-font-size, 14px) + 2px), 20px);
+}
+.flow-node-label {
+  font-size: clamp(13px, calc(var(--editor-font-size, 14px) + 1px), 18px);
+}
+.flow-node-mini {
+  font-size: clamp(12px, var(--editor-font-size, 14px), 16px);
+}
+
+.theme-bg-main {
+  background-color: var(--bg-main) !important;
+}
+.theme-bg-header {
+  background-color: var(--bg-header) !important;
+}
+.theme-bg-sidebar {
+  background-color: var(--bg-sidebar) !important;
+}
+.theme-bg-footer {
+  background-color: var(--bg-footer) !important;
+}
+
+.theme-border {
+  border-color: var(--border-color) !important;
+  border-width: var(--border-width) !important;
+}
+.theme-border-b {
+  border-bottom-color: var(--border-color) !important;
+  border-bottom-width: var(--border-width) !important;
+}
+.theme-border-r {
+  border-right-color: var(--border-color) !important;
+  border-right-width: var(--border-width) !important;
+}
+.theme-border-t {
+  border-top-color: var(--border-color) !important;
+  border-top-width: var(--border-width) !important;
+}
+.theme-divide-x > * + * {
+  border-left-color: var(--border-color) !important;
+  border-left-width: var(--border-width) !important;
+}
+
+.theme-text-main {
+  color: var(--text-main) !important;
+}
+.theme-text-muted {
+  color: var(--text-muted) !important;
+}
+.theme-text-active {
+  color: var(--text-active) !important;
+}
+
+/* Dynamic Wire / Node Accent Overrides */
+.theme-text-accent {
+  color: var(--color-accent) !important;
+}
+.theme-border-accent {
+  border-color: var(--color-accent) !important;
+}
+.theme-bg-accent {
+  background-color: var(--color-accent) !important;
+}
+.theme-bg-accent-soft {
+  background-color: color-mix(in srgb, var(--color-accent) 15%, transparent) !important;
+}
+.theme-border-accent-soft {
+  border-color: color-mix(in srgb, var(--color-accent) 50%, transparent) !important;
+}
+
+/* Interactive Menu Utilities */
+.theme-menu-btn {
+  color: var(--text-main) !important;
+  background-color: transparent;
+}
+.theme-menu-btn:hover,
+.theme-menu-btn:focus {
+  background-color: var(--color-accent) !important;
+  color: #ffffff !important;
+  outline: none;
+}
+.theme-menu-btn-active {
+  background-color: var(--color-accent) !important;
+  color: #ffffff !important;
+}
+
+/* Global Svelte Flow Element Override Themes */
+.xy-node,
+.xy-flow__node-default,
+.xy-flow__node-rhaiNode {
+  background-color: var(--node-bg) !important;
+  border-color: var(--node-border) !important;
+  color: var(--node-text) !important;
+  border-width: var(--border-width) !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.xy-node.selected,
+.xy-node:hover {
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--color-accent) 40%, transparent) !important;
+}
+
+/* Canvas edge hover (cf-edge components set --cf-edge-color / --cf-edge-w inline). */
+.svelte-flow__edge.cf-edge .svelte-flow__edge-path {
+  stroke: var(--cf-edge-color, var(--color-accent));
+  stroke-width: var(--cf-edge-w, 3px);
+  fill: none;
+  transition:
+    stroke-width 0.12s ease,
+    filter 0.12s ease;
+}
+
+.svelte-flow__edge.cf-edge:hover .svelte-flow__edge-path,
+.svelte-flow__edge.cf-edge.selected .svelte-flow__edge-path {
+  stroke-width: calc(var(--cf-edge-w, 3px) + 2px);
+  filter: drop-shadow(0 0 4px var(--cf-edge-color, var(--color-accent)));
+}
+
+.xy-edge-path,
+.xy-flow__edge-path {
+  stroke: var(--color-accent) !important;
+  stroke-width: var(--border-width) !important;
+  transition: stroke 0.2s ease !important;
+}
+
+/* Hide flow background patterns in high contrast modes */
+html[data-theme^="hc-"] .xy-background {
+  opacity: 0.05 !important;
+}
+
+/* ========================================== */
+/*             SCROLLBAR FIXES                */
+/* ========================================== */
+
+/* Native Webkit Scrollbars (App-wide) */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background-color: var(--bg-main) !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--border-color) !important;
+  border-radius: 6px;
+  border: 3px solid var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-accent) !important;
+}
+
+/* Monaco Editor Scrollbar Overrides (Forces opaque theme colors) */
+.monaco-scrollable-element > .scrollbar > .slider {
+  background-color: var(--border-color) !important;
+  border-radius: 6px !important;
+  opacity: 1 !important; /* Force fully opaque */
+}
+
+.monaco-scrollable-element > .scrollbar > .slider:hover {
+  background-color: var(--color-accent) !important;
+}
+
+/* Monaco popup chrome font alignment with ChaosNexus Forge mono UI */
+.monaco-menu,
+.quick-input-widget,
+.monaco-hover,
+.suggest-widget {
+  font-family: var(--font-mono) !important;
+}
+
+/* Markdown live preview pane.
+   Uses compact UI chrome sizing (--ui-font-size), not the editor font size. */
+.markdown-preview {
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: var(--ui-font-size, 13px);
+  line-height: 1.7;
+}
+
+.markdown-preview h1,
+.markdown-preview h2,
+.markdown-preview h3,
+.markdown-preview h4 {
+  color: var(--text-main);
+  font-weight: 700;
+  margin: 1.25em 0 0.5em;
+  line-height: 1.3;
+}
+
+.markdown-preview h1 {
+  font-size: 1.6em;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.25em;
+}
+
+.markdown-preview h2 {
+  font-size: 1.35em;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.2em;
+}
+
+.markdown-preview h3 {
+  font-size: 1.15em;
+}
+
+.markdown-preview h4 {
+  font-size: 1.05em;
+}
+
+.markdown-preview p {
+  margin: 0.75em 0;
+}
+
+.markdown-preview a {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.markdown-preview a:hover {
+  opacity: 0.85;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+  margin: 0.75em 0;
+  padding-left: 1.5em;
+}
+
+.markdown-preview li {
+  margin: 0.25em 0;
+}
+
+.markdown-preview blockquote {
+  margin: 0.75em 0;
+  padding: 0.5em 1em;
+  border-left: 3px solid var(--color-accent);
+  background: var(--bg-header);
+  color: var(--text-muted);
+}
+
+.markdown-preview code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--bg-header);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+}
+
+.markdown-preview pre {
+  margin: 0.75em 0;
+  padding: 0.75em 1em;
+  background: var(--bg-header);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.markdown-preview pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.markdown-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75em 0;
+}
+
+.markdown-preview th,
+.markdown-preview td {
+  border: 1px solid var(--border-color);
+  padding: 0.4em 0.75em;
+  text-align: left;
+}
+
+.markdown-preview th {
+  background: var(--bg-header);
+  font-weight: 700;
+}
+
+.markdown-preview hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 1.25em 0;
+}
+
+.markdown-preview img {
+  max-width: 100%;
+  border-radius: 4px;
+}
+
+.markdown-preview input[type="checkbox"] {
+  margin-right: 0.4em;
+  accent-color: var(--color-accent);
+}
