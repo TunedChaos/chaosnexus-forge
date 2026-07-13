@@ -16,7 +16,7 @@ def generate_attributions():
         {"file": "chaosnexus-anvil-licenses.json", "title": "ChaosNexus Anvil (Rust)", "type": "backend", "slug": "chaosnexus-anvil"},
         {"file": "chaosnexus-forge-backend-licenses.json", "title": "ChaosNexus Forge Backend (Rust)", "type": "backend", "slug": "chaosnexus-forge-backend"},
         {"file": "chaosnexus-forge-frontend-licenses.json", "title": "ChaosNexus Forge Frontend & Vhai (UI/Node)", "type": "frontend", "slug": "chaosnexus-forge-frontend"},
-        {"file": "chaosnexus-codex-licenses.json", "title": "NexusDocs (VitePress/Website)", "type": "frontend", "slug": "chaosnexus-website"},
+        {"file": "chaosnexus-codex-licenses.json", "title": "ChaosNexus Website (VitePress)", "type": "frontend", "slug": "chaosnexus-website"},
     ]
     
     index_content = [
