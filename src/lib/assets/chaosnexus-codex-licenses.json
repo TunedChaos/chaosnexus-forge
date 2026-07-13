@@ -437,6 +437,594 @@
       "licenseText": "Copyright (c) 2022 Bramus Van Damme - https://www.bram.us/\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is furnished\nto do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE."
     },
     {
+      "name": "@codingame/monaco-vscode-api",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-api@25.1.2/node_modules/@codingame/monaco-vscode-api"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-base-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-base-service-override@25.1.2/node_modules/@codingame/monaco-vscode-base-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - base service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-bulk-edit-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-bulk-edit-service-override@25.1.2/node_modules/@codingame/monaco-vscode-bulk-edit-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - bulk-edit service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-configuration-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-configuration-service-override@25.1.2/node_modules/@codingame/monaco-vscode-configuration-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - configuration service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-editor-api",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-editor-api@25.1.2/node_modules/@codingame/monaco-vscode-editor-api"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - monaco-editor compatible api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-editor-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-editor-service-override@25.1.2/node_modules/@codingame/monaco-vscode-editor-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - editor service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-environment-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-environment-service-override@25.1.2/node_modules/@codingame/monaco-vscode-environment-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - environment service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-extension-api",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-extension-api@25.1.2/node_modules/@codingame/monaco-vscode-extension-api"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - VSCode extension compatible api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-extensions-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-extensions-service-override@25.1.2/node_modules/@codingame/monaco-vscode-extensions-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - extensions service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-files-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-files-service-override@25.1.2/node_modules/@codingame/monaco-vscode-files-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - files service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-host-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-host-service-override@25.1.2/node_modules/@codingame/monaco-vscode-host-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - host service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-keybindings-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-keybindings-service-override@25.1.2/node_modules/@codingame/monaco-vscode-keybindings-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - keybindings service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-language-pack-cs",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-language-pack-cs@25.1.2/node_modules/@codingame/monaco-vscode-language-pack-cs"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Language pack designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-language-pack-de",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-language-pack-de@25.1.2/node_modules/@codingame/monaco-vscode-language-pack-de"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Language pack designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-language-pack-es",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-language-pack-es@25.1.2/node_modules/@codingame/monaco-vscode-language-pack-es"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Language pack designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-language-pack-fr",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-language-pack-fr@25.1.2/node_modules/@codingame/monaco-vscode-language-pack-fr"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Language pack designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-language-pack-it",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-language-pack-it@25.1.2/node_modules/@codingame/monaco-vscode-language-pack-it"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Language pack designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-language-pack-ja",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-language-pack-ja@25.1.2/node_modules/@codingame/monaco-vscode-language-pack-ja"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Language pack designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-language-pack-ko",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-language-pack-ko@25.1.2/node_modules/@codingame/monaco-vscode-language-pack-ko"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Language pack designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-language-pack-pl",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-language-pack-pl@25.1.2/node_modules/@codingame/monaco-vscode-language-pack-pl"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Language pack designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-language-pack-pt-br",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-language-pack-pt-br@25.1.2/node_modules/@codingame/monaco-vscode-language-pack-pt-br"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Language pack designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-language-pack-qps-ploc",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-language-pack-qps-ploc@25.1.2/node_modules/@codingame/monaco-vscode-language-pack-qps-ploc"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Language pack designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-language-pack-ru",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-language-pack-ru@25.1.2/node_modules/@codingame/monaco-vscode-language-pack-ru"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Language pack designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-language-pack-tr",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-language-pack-tr@25.1.2/node_modules/@codingame/monaco-vscode-language-pack-tr"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Language pack designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-language-pack-zh-hans",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-language-pack-zh-hans@25.1.2/node_modules/@codingame/monaco-vscode-language-pack-zh-hans"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Language pack designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-language-pack-zh-hant",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-language-pack-zh-hant@25.1.2/node_modules/@codingame/monaco-vscode-language-pack-zh-hant"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Language pack designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-languages-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-languages-service-override@25.1.2/node_modules/@codingame/monaco-vscode-languages-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - languages service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-layout-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-layout-service-override@25.1.2/node_modules/@codingame/monaco-vscode-layout-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - layout service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-localization-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-localization-service-override@25.1.2/node_modules/@codingame/monaco-vscode-localization-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - localization service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-log-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-log-service-override@25.1.2/node_modules/@codingame/monaco-vscode-log-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - log service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-model-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-model-service-override@25.1.2/node_modules/@codingame/monaco-vscode-model-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - model service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-monarch-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-monarch-service-override@25.1.2/node_modules/@codingame/monaco-vscode-monarch-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - monarch service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-quickaccess-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-quickaccess-service-override@25.1.2/node_modules/@codingame/monaco-vscode-quickaccess-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - quickaccess service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-textmate-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-textmate-service-override@25.1.2/node_modules/@codingame/monaco-vscode-textmate-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - textmate service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-theme-defaults-default-extension",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-theme-defaults-default-extension@25.1.2/node_modules/@codingame/monaco-vscode-theme-defaults-default-extension"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "Default VSCode extension designed to be used with @codingame/monaco-vscode-api",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-theme-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-theme-service-override@25.1.2/node_modules/@codingame/monaco-vscode-theme-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - theme service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-view-banner-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-view-banner-service-override@25.1.2/node_modules/@codingame/monaco-vscode-view-banner-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - view-banner service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-view-common-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-view-common-service-override@25.1.2/node_modules/@codingame/monaco-vscode-view-common-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - view-common service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-view-status-bar-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-view-status-bar-service-override@25.1.2/node_modules/@codingame/monaco-vscode-view-status-bar-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - view-status-bar service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-view-title-bar-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-view-title-bar-service-override@25.1.2/node_modules/@codingame/monaco-vscode-view-title-bar-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - view-title-bar service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-views-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-views-service-override@25.1.2/node_modules/@codingame/monaco-vscode-views-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - views service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "@codingame/monaco-vscode-workbench-service-override",
+      "versions": [
+        "25.1.2"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@codingame+monaco-vscode-workbench-service-override@25.1.2/node_modules/@codingame/monaco-vscode-workbench-service-override"
+      ],
+      "license": "MIT",
+      "author": "CodinGame",
+      "homepage": "https://github.com/CodinGame/monaco-vscode-api#readme",
+      "description": "VSCode public API plugged on the monaco editor - workbench service-override",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
       "name": "@cspotcode/source-map-support",
       "versions": [
         "0.8.1"
@@ -2068,6 +2656,20 @@
       "licenseText": "MIT License\n\nCopyright (c) 2021-Present VoidZero Inc. and Vitest contributors\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."
     },
     {
+      "name": "@vscode/iconv-lite-umd",
+      "versions": [
+        "0.7.1"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/@vscode+iconv-lite-umd@0.7.1/node_modules/@vscode/iconv-lite-umd"
+      ],
+      "license": "MIT",
+      "author": "Microsoft",
+      "homepage": "https://github.com/Microsoft/vscode-iconv-lite-umd#readme",
+      "description": "Iconv-lite as UMD module",
+      "licenseText": "MIT License\n\n    Copyright (c) Microsoft Corporation.\n\n    Permission is hereby granted, free of charge, to any person obtaining a copy\n    of this software and associated documentation files (the \"Software\"), to deal\n    in the Software without restriction, including without limitation the rights\n    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n    copies of the Software, and to permit persons to whom the Software is\n    furnished to do so, subject to the following conditions:\n\n    The above copyright notice and this permission notice shall be included in all\n    copies or substantial portions of the Software.\n\n    THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n    SOFTWARE"
+    },
+    {
       "name": "@vue-flow/background",
       "versions": [
         "1.3.2"
@@ -2944,10 +3546,12 @@
       "name": "brace-expansion",
       "versions": [
         "1.1.15",
+        "2.1.2",
         "5.0.7"
       ],
       "paths": [
         "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/brace-expansion@1.1.15/node_modules/brace-expansion",
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/brace-expansion@2.1.2/node_modules/brace-expansion",
         "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/brace-expansion@5.0.7/node_modules/brace-expansion"
       ],
       "license": "MIT",
@@ -8187,6 +8791,20 @@
       "licenseText": "The MIT License (MIT)\n\nCopyright (c) 2016 - present Microsoft Corporation\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."
     },
     {
+      "name": "monaco-languageclient",
+      "versions": [
+        "10.7.0"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/monaco-languageclient@10.7.0/node_modules/monaco-languageclient"
+      ],
+      "license": "MIT",
+      "author": "TypeFox GmbH",
+      "homepage": "https://github.com/TypeFox/monaco-languageclient/blob/main/packages/client/README.md",
+      "description": "Monaco Language client implementation",
+      "licenseText": "MIT License\n\nCopyright 2018 - present TypeFox GmbH\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
       "name": "mri",
       "versions": [
         "1.2.0"
@@ -11830,6 +12448,78 @@
       "licenseText": "# Vitest core license\nVitest is released under the MIT license:\n\nMIT License\n\nCopyright (c) 2021-Present VoidZero Inc. and Vitest contributors\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n\n# Licenses of bundled dependencies\nThe published Vitest artifact additionally contains code with the following licenses:\nBSD-3-Clause, ISC, MIT\n\n# Bundled dependencies:\n## @antfu/install-pkg\nLicense: MIT\nBy: Anthony Fu\nRepository: git+https://github.com/antfu/install-pkg.git\n\n> MIT License\n>\n> Copyright (c) 2021 Anthony Fu <https://github.com/antfu>\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in all\n> copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n## @bomb.sh/tab\nLicense: MIT\nBy: Bombshell Authors\nRepository: git+https://github.com/bombshell-dev/tab.git\n\n---------------------------------------\n\n## @jridgewell/resolve-uri\nLicense: MIT\nBy: Justin Ridgewell\nRepository: https://github.com/jridgewell/resolve-uri\n\n> Copyright 2019 Justin Ridgewell <jridgewell@google.com>\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in\n> all copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n## @jridgewell/sourcemap-codec\nLicense: MIT\nBy: Justin Ridgewell\nRepository: git+https://github.com/jridgewell/sourcemaps.git\n\n> Copyright 2024 Justin Ridgewell <justin@ridgewell.name>\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in\n> all copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n## @jridgewell/trace-mapping\nLicense: MIT\nBy: Justin Ridgewell\nRepository: git+https://github.com/jridgewell/sourcemaps.git\n\n> Copyright 2024 Justin Ridgewell <justin@ridgewell.name>\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in\n> all copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n## @sinonjs/commons\nLicense: BSD-3-Clause\nRepository: git+https://github.com/sinonjs/commons.git\n\n> BSD 3-Clause License\n>\n> Copyright (c) 2018, Sinon.JS\n> All rights reserved.\n>\n> Redistribution and use in source and binary forms, with or without\n> modification, are permitted provided that the following conditions are met:\n>\n> * Redistributions of source code must retain the above copyright notice, this\n>   list of conditions and the following disclaimer.\n>\n> * Redistributions in binary form must reproduce the above copyright notice,\n>   this list of conditions and the following disclaimer in the documentation\n>   and/or other materials provided with the distribution.\n>\n> * Neither the name of the copyright holder nor the names of its\n>   contributors may be used to endorse or promote products derived from\n>   this software without specific prior written permission.\n>\n> THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\n> AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\n> IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE\n> DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE\n> FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n> DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\n> SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER\n> CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\n> OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n> OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n---------------------------------------\n\n## @sinonjs/fake-timers\nLicense: BSD-3-Clause\nBy: Christian Johansen\nRepository: git+https://github.com/sinonjs/fake-timers.git\n\n> Copyright (c) 2010-2014, Christian Johansen, christian@cjohansen.no. All rights reserved.\n>\n> Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:\n>\n> 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.\n>\n> 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.\n>\n> 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.\n>\n> THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n---------------------------------------\n\n## acorn\nLicense: MIT\nBy: Marijn Haverbeke, Ingvar Stepanyan, Adrian Heine\nRepository: https://github.com/acornjs/acorn.git\n\n> MIT License\n>\n> Copyright (C) 2012-2022 by various contributors (see AUTHORS)\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in\n> all copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n> THE SOFTWARE.\n\n---------------------------------------\n\n## acorn-walk\nLicense: MIT\nBy: Marijn Haverbeke, Ingvar Stepanyan, Adrian Heine\nRepository: https://github.com/acornjs/acorn.git\n\n> MIT License\n>\n> Copyright (C) 2012-2020 by various contributors (see AUTHORS)\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in\n> all copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n> THE SOFTWARE.\n\n---------------------------------------\n\n## birpc\nLicense: MIT\nBy: Anthony Fu\nRepository: git+https://github.com/antfu-collective/birpc.git\n\n> MIT License\n>\n> Copyright (c) 2021 Anthony Fu <https://github.com/antfu>\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in all\n> copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n## cac\nLicense: MIT\nBy: egoist\nRepository: egoist/cac\n\n> The MIT License (MIT)\n>\n> Copyright (c) EGOIST <0x142857@gmail.com> (https://github.com/egoist)\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in\n> all copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n> THE SOFTWARE.\n\n---------------------------------------\n\n## empathic\nLicense: MIT\nBy: Luke Edwards\nRepository: lukeed/empathic\n\n> MIT License\n>\n> Copyright (c) Luke Edwards <luke.edwards05@gmail.com> (lukeed.com)\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n\n---------------------------------------\n\n## flatted\nLicense: ISC\nBy: Andrea Giammarchi\nRepository: git+https://github.com/WebReflection/flatted.git\n\n> ISC License\n>\n> Copyright (c) 2018-2020, Andrea Giammarchi, @WebReflection\n>\n> Permission to use, copy, modify, and/or distribute this software for any\n> purpose with or without fee is hereby granted, provided that the above\n> copyright notice and this permission notice appear in all copies.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH\n> REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY\n> AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,\n> INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM\n> LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE\n> OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR\n> PERFORMANCE OF THIS SOFTWARE.\n\n---------------------------------------\n\n## js-tokens\nLicense: MIT\nBy: Simon Lydell\nRepository: lydell/js-tokens\n\n> The MIT License (MIT)\n>\n> Copyright (c) 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023 Simon Lydell\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in\n> all copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n> THE SOFTWARE.\n\n---------------------------------------\n\n## kleur\nLicense: MIT\nBy: Luke Edwards\nRepository: lukeed/kleur\n\n> The MIT License (MIT)\n>\n> Copyright (c) Luke Edwards <luke.edwards05@gmail.com> (lukeed.com)\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in\n> all copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n> THE SOFTWARE.\n\n---------------------------------------\n\n## local-pkg\nLicense: MIT\nBy: Anthony Fu\nRepository: git+https://github.com/antfu-collective/local-pkg.git\n\n> MIT License\n>\n> Copyright (c) 2021 Anthony Fu <https://github.com/antfu>\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in all\n> copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n## mime\nLicense: MIT\nBy: Robert Kieffer\nRepository: https://github.com/broofa/mime\n\n> MIT License\n>\n> Copyright (c) 2023 Robert Kieffer\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in all\n> copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n## mlly\nLicense: MIT\nRepository: unjs/mlly\n\n> MIT License\n>\n> Copyright (c) Pooya Parsa <pooya@pi0.io>\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in all\n> copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n## package-manager-detector\nLicense: MIT\nBy: Anthony Fu\nRepository: git+https://github.com/antfu-collective/package-manager-detector.git\n\n> MIT License\n>\n> Copyright (c) 2020-PRESENT Anthony Fu <https://github.com/antfu>\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in all\n> copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n## prompts\nLicense: MIT\nBy: Terkel Gjervig\nRepository: terkelg/prompts\n\n> MIT License\n>\n> Copyright (c) 2018 Terkel Gjervig Nielsen\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in all\n> copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n## quansync\nLicense: MIT\nBy: Anthony Fu, 三咲智子 Kevin Deng\nRepository: git+https://github.com/quansync-dev/quansync.git\n\n> MIT License\n>\n> Copyright (c) 2025-PRESENT Anthony Fu <https://github.com/antfu> and Kevin Deng <https://github.com/sxzz>\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in all\n> copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n## sisteransi\nLicense: MIT\nBy: Terkel Gjervig\nRepository: https://github.com/terkelg/sisteransi\n\n> MIT License\n>\n> Copyright (c) 2018 Terkel Gjervig Nielsen\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in all\n> copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n## strip-literal\nLicense: MIT\nBy: Anthony Fu\nRepository: git+https://github.com/antfu/strip-literal.git\n\n> MIT License\n>\n> Copyright (c) 2022 Anthony Fu <https://github.com/antfu>\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in all\n> copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n## tinyhighlight\nLicense: MIT\nRepository: git+https://github.com/tinylibs/tinyhighlight.git\n\n> # Tinyhighlight core license\n>\n> MIT License\n>\n> Copyright (c) 2023 Tinylibs\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in all\n> copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n>\n> # Additionaly Tinyhighlight modifies code with the following licenses:\n>\n> MIT\n>\n> ## @babel/highlight\n>\n> MIT License\n>\n> Copyright (c) 2014-present Sebastian McKenzie and other contributors\n>\n> Permission is hereby granted, free of charge, to any person obtaining\n> a copy of this software and associated documentation files (the\n> \"Software\"), to deal in the Software without restriction, including\n> without limitation the rights to use, copy, modify, merge, publish,\n> distribute, sublicense, and/or sell copies of the Software, and to\n> permit persons to whom the Software is furnished to do so, subject to\n> the following conditions:\n>\n> The above copyright notice and this permission notice shall be\n> included in all copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,\n> EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\n> MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND\n> NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE\n> LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION\n> OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION\n> WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n>\n> ## @babel/helper-validator-identifier\n>\n> MIT License\n>\n> Copyright (c) 2014-present Sebastian McKenzie and other contributors\n>\n> Permission is hereby granted, free of charge, to any person obtaining\n> a copy of this software and associated documentation files (the\n> \"Software\"), to deal in the Software without restriction, including\n> without limitation the rights to use, copy, modify, merge, publish,\n> distribute, sublicense, and/or sell copies of the Software, and to\n> permit persons to whom the Software is furnished to do so, subject to\n> the following conditions:\n>\n> The above copyright notice and this permission notice shall be\n> included in all copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,\n> EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\n> MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND\n> NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE\n> LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION\n> OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION\n> WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n\n---------------------------------------\n\n## type-detect\nLicense: MIT\nBy: Jake Luer, Keith Cirkel, David Losert, Aleksey Shvayka, Lucas Fernandes da Costa, Grant Snodgrass, Jeremy Tice, Edward Betts, dvlsg, Amila Welihinda, Jake Champion, Miroslav Bajtoš\nRepository: git+ssh://git@github.com/chaijs/type-detect.git\n\n> Copyright (c) 2013 Jake Luer <jake@alogicalparadox.com> (http://alogicalparadox.com)\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in\n> all copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n> THE SOFTWARE.\n\n---------------------------------------\n\n## ufo\nLicense: MIT\nRepository: unjs/ufo\n\n> MIT License\n>\n> Copyright (c) Pooya Parsa <pooya@pi0.io>\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy\n> of this software and associated documentation files (the \"Software\"), to deal\n> in the Software without restriction, including without limitation the rights\n> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n> copies of the Software, and to permit persons to whom the Software is\n> furnished to do so, subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in all\n> copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n## ws\nLicense: MIT\nBy: Einar Otto Stangvik\nRepository: git+https://github.com/websockets/ws.git\n\n> Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com>\n> Copyright (c) 2013 Arnout Kazemier and contributors\n> Copyright (c) 2016 Luigi Pinca and contributors\n>\n> Permission is hereby granted, free of charge, to any person obtaining a copy of\n> this software and associated documentation files (the \"Software\"), to deal in\n> the Software without restriction, including without limitation the rights to\n> use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of\n> the Software, and to permit persons to whom the Software is furnished to do so,\n> subject to the following conditions:\n>\n> The above copyright notice and this permission notice shall be included in all\n> copies or substantial portions of the Software.\n>\n> THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS\n> FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR\n> COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER\n> IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\n> CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
     },
     {
+      "name": "vscode-jsonrpc",
+      "versions": [
+        "8.2.0",
+        "8.2.1"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/vscode-jsonrpc@8.2.0/node_modules/vscode-jsonrpc",
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/vscode-jsonrpc@8.2.1/node_modules/vscode-jsonrpc"
+      ],
+      "license": "MIT",
+      "author": "Microsoft Corporation",
+      "homepage": "https://github.com/Microsoft/vscode-languageserver-node#readme",
+      "description": "A json rpc implementation over streams",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "vscode-languageclient",
+      "versions": [
+        "9.0.1"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/vscode-languageclient@9.0.1/node_modules/vscode-languageclient"
+      ],
+      "license": "MIT",
+      "author": "Microsoft Corporation",
+      "homepage": "https://github.com/Microsoft/vscode-languageserver-node#readme",
+      "description": "VSCode Language client implementation",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "vscode-languageserver-protocol",
+      "versions": [
+        "3.17.5"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/vscode-languageserver-protocol@3.17.5/node_modules/vscode-languageserver-protocol"
+      ],
+      "license": "MIT",
+      "author": "Microsoft Corporation",
+      "homepage": "https://github.com/Microsoft/vscode-languageserver-node#readme",
+      "description": "VSCode Language Server Protocol implementation",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "vscode-languageserver-types",
+      "versions": [
+        "3.17.5"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/vscode-languageserver-types@3.17.5/node_modules/vscode-languageserver-types"
+      ],
+      "license": "MIT",
+      "author": "Microsoft Corporation",
+      "homepage": "https://github.com/Microsoft/vscode-languageserver-node#readme",
+      "description": "Types used by the Language server for node",
+      "licenseText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
+      "name": "vscode-ws-jsonrpc",
+      "versions": [
+        "3.5.0"
+      ],
+      "paths": [
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/vscode-ws-jsonrpc@3.5.0/node_modules/vscode-ws-jsonrpc"
+      ],
+      "license": "MIT",
+      "author": "TypeFox GmbH",
+      "homepage": "https://github.com/TypeFox/monaco-languageclient/blob/main/packages/vscode-ws-jsonrpc/README.md",
+      "description": "VSCode JSON RPC over WebSocket",
+      "licenseText": "MIT License\n\nCopyright 2018 - present TypeFox GmbH\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+    },
+    {
       "name": "vue",
       "versions": [
         "3.5.39"
@@ -13567,10 +14257,12 @@
     {
       "name": "minimatch",
       "versions": [
-        "3.1.5"
+        "3.1.5",
+        "5.1.9"
       ],
       "paths": [
-        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/minimatch@3.1.5/node_modules/minimatch"
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/minimatch@3.1.5/node_modules/minimatch",
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/minimatch@5.1.9/node_modules/minimatch"
       ],
       "license": "ISC",
       "author": "Isaac Z. Schlueter",
@@ -14587,10 +15279,12 @@
       "name": "dompurify",
       "versions": [
         "3.2.7",
+        "3.3.1",
         "3.4.11"
       ],
       "paths": [
         "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/dompurify@3.2.7/node_modules/dompurify",
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/dompurify@3.3.1/node_modules/dompurify",
         "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/dompurify@3.4.11/node_modules/dompurify"
       ],
       "license": "(MPL-2.0 OR Apache-2.0)",
@@ -14649,10 +15343,12 @@
     {
       "name": "jschardet",
       "versions": [
-        "2.3.0"
+        "2.3.0",
+        "3.1.4"
       ],
       "paths": [
-        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/jschardet@2.3.0/node_modules/jschardet"
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/jschardet@2.3.0/node_modules/jschardet",
+        "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/node_modules/.pnpm/jschardet@3.1.4/node_modules/jschardet"
       ],
       "license": "LGPL-2.1+",
       "author": "António Afonso",

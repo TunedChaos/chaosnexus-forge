@@ -24,7 +24,7 @@ echo "Generating ChaosNexus Forge (Backend) licenses..."
 cargo about generate -c about.toml --manifest-path chaosnexus-forge/src-tauri/Cargo.toml "$DIR/about.hbs" > "$ASSETS_DIR/chaosnexus-forge-backend-licenses.json" || echo "[]" > "$ASSETS_DIR/chaosnexus-forge-backend-licenses.json"
 
 echo "Generating ChaosNexus Forge (Frontend) licenses..."
-node "$DIR/generate-frontend-licenses.mjs" "$WORKSPACE_ROOT/forge" "$ASSETS_DIR/chaosnexus-forge-frontend-licenses.json" || echo "{}" > "$ASSETS_DIR/chaosnexus-forge-frontend-licenses.json"
+node "$DIR/generate-frontend-licenses.mjs" "$WORKSPACE_ROOT/chaosnexus-forge" "$ASSETS_DIR/chaosnexus-forge-frontend-licenses.json" || echo "{}" > "$ASSETS_DIR/chaosnexus-forge-frontend-licenses.json"
 
 echo "Generating ChaosNexus Codex (Frontend) licenses..."
 node "$DIR/generate-frontend-licenses.mjs" "$WORKSPACE_ROOT" "$ASSETS_DIR/chaosnexus-codex-licenses.json" || echo "{}" > "$ASSETS_DIR/chaosnexus-codex-licenses.json"
