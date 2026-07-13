@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::io::{Error, ErrorKind, Result as IoResult};
+use std::io::Result as IoResult;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::task::{Context, Poll};
@@ -188,10 +188,10 @@ impl LanguageServer for RhaiLanguageServer {
                         value.push_str(&format!("\n\n**Docs:** [View documentation]({})", url));
                     }
                     return Ok(Some(Hover {
-                        contents: HoverContents::Scalar(MarkupContent {
-                            kind: MarkupKind::Markdown,
+                        contents: HoverContents::Scalar(MarkedString::LanguageString(LanguageString {
+                            language: "rhai".to_string(),
                             value,
-                        }),
+                        })),
                         range: None,
                     }));
                 }
