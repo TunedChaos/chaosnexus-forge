@@ -70,6 +70,24 @@ export async function loadCanvasForTab(
     };
   }
 
+  // If no canvas exists, dynamically generate one using the AST parser
+  try {
+    const res = await invoke<{ ast_canvas: string; rhai_source: string }>(
+      "chaoswrench_parse_rhai_ast",
+      { source: rhaiContent }
+    );
+    if (res.ast_canvas) {
+      const generatedCanvas = JSON.parse(res.ast_canvas) as CanvasMetadata;
+      return {
+        metadata: generatedCanvas,
+        strippedRhai: rhaiContent,
+        migratedFromEmbedded: true, // Forces an immediate save of the newly generated canvas
+      };
+    }
+  } catch (err) {
+    console.error("Failed to auto-generate visual canvas:", err);
+  }
+
   return { metadata: null, strippedRhai: rhaiContent, migratedFromEmbedded: false };
 }
 

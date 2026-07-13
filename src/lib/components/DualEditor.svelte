@@ -409,7 +409,9 @@
     const editingEnabled = pendingPlugins.isEditingEnabled;
     const filename = workbench.activeTab?.filename;
 
-    if (isPending && editingEnabled && key && filename && content !== undefined) {
+    const isLive = (isPending && editingEnabled) || (workbench.activeTab?.viewMode === "split");
+
+    if (isLive && key && filename && content !== undefined) {
       untrack(() => {
         clearTimeout(pendingAstTimer);
         pendingAstTimer = setTimeout(async () => {
@@ -421,7 +423,8 @@
             );
             if (res.ast_canvas) {
               const newCanvas = JSON.parse(res.ast_canvas);
-              workbench.updateCanvasContent("__PENDING__", filename, newCanvas);
+              const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
+              workbench.updateCanvasContent(pluginName, filename, newCanvas);
             }
           } catch (e) {
             console.error("Failed to live-reload visual script AST:", e);
