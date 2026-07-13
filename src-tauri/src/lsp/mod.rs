@@ -360,7 +360,7 @@ pub fn spawn_lsp_server(app_handle: AppHandle) -> mpsc::Sender<Vec<u8>> {
     let reader = LspIpcReader::new(rx);
     let writer = LspIpcWriter::new(app_handle.clone());
 
-    tokio::spawn(async move {
+    tauri::async_runtime::spawn(async move {
         let (service, socket) = LspService::new(|client| RhaiLanguageServer { 
             client,
             documents: Arc::new(RwLock::new(HashMap::new())),
