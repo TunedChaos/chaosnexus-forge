@@ -1,18 +1,20 @@
 import {
-    Message,
-    DataCallback
-} from 'vscode-ws-jsonrpc';
-import { AbstractMessageReader, AbstractMessageWriter } from 'vscode-jsonrpc';
-import { listen, UnlistenFn } from '@tauri-apps/api/event';
+    AbstractMessageReader,
+    AbstractMessageWriter,
+    type Message,
+    type DataCallback,
+    type Disposable
+} from 'vscode-jsonrpc';
+import { listen } from '@tauri-apps/api/event';
+import type { UnlistenFn } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/core';
 import { MonacoLanguageClient } from 'monaco-languageclient';
-import { createConnection } from 'vscode-ws-jsonrpc/server';
 
 export class TauriMessageReader extends AbstractMessageReader {
     private unlisten: UnlistenFn | null = null;
     private buffer: string = "";
 
-    public listen(callback: DataCallback): void {
+    public listen(callback: DataCallback): Disposable {
         listen<string>('lsp_server_to_client', (event) => {
             this.buffer += event.payload;
             while (true) {
@@ -52,6 +54,12 @@ export class TauriMessageReader extends AbstractMessageReader {
         }).then(unlistenFn => {
             this.unlisten = unlistenFn;
         });
+
+        return {
+            dispose: () => {
+                this.dispose();
+            }
+        };
     }
 
     public dispose(): void {
@@ -80,9 +88,6 @@ export function createTauriLanguageClient(): MonacoLanguageClient {
     const reader = new TauriMessageReader();
     const writer = new TauriMessageWriter();
     
-    // createConnection from vscode-ws-jsonrpc
-    const connection = createConnection(reader, writer, () => {});
-    
     return new MonacoLanguageClient({
         name: 'Rhai Language Client',
         clientOptions: {
@@ -92,8 +97,6 @@ export function createTauriLanguageClient(): MonacoLanguageClient {
                 closed: () => ({ action: 1 }) // Do not restart
             }
         },
-        connectionProvider: {
-            get: () => Promise.resolve(connection)
-        }
+        messageTransports: { reader, writer }
     });
 }
