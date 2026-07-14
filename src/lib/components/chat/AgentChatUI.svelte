@@ -8,12 +8,14 @@
     { role: "agent", text: "Hello! I'm here to help you review and approve changes." }
   ]);
   let input = $state("");
+  let isTyping = $state(false);
 
   async function sendMessage() {
-    if (!input.trim()) return;
+    if (!input.trim() || isTyping) return;
     const userMessage = input;
     messages = [...messages, { role: "user", text: userMessage }];
     input = "";
+    isTyping = true;
     
     try {
       let response = "";
@@ -39,7 +41,9 @@
       messages = [...messages, { role: "agent", text: response }];
     } catch (e) {
       console.error("Chat backend error:", e);
-      messages = [...messages, { role: "agent", text: `Error: ${e}` }];
+      messages = [...messages, { role: "error", text: `Error: ${e}` }];
+    } finally {
+      isTyping = false;
     }
   }
 
@@ -73,26 +77,36 @@
     {#each messages as msg}
       <div class="flex flex-col {msg.role === 'user' ? 'items-end' : 'items-start'}">
         <div 
-          class="max-w-[85%] px-3 py-2 rounded-lg {msg.role === 'user' ? 'theme-bg-accent text-white rounded-br-none' : 'theme-bg-sidebar theme-border rounded-bl-none'}"
+          class="max-w-[85%] px-3 py-2 rounded-lg {msg.role === 'user' ? 'theme-bg-accent text-white rounded-br-none' : msg.role === 'error' ? 'bg-red-900/50 text-red-200 border border-red-800 rounded-bl-none' : 'theme-bg-sidebar theme-border rounded-bl-none'}"
         >
           {msg.text}
         </div>
       </div>
     {/each}
+    {#if isTyping}
+      <div class="flex flex-col items-start">
+        <div class="max-w-[85%] px-3 py-2 rounded-lg theme-bg-sidebar theme-border rounded-bl-none text-xs italic opacity-70 flex gap-1 items-center">
+          <span class="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style="animation-delay: 0ms"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style="animation-delay: 150ms"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style="animation-delay: 300ms"></span>
+        </div>
+      </div>
+    {/if}
   </div>
 
   <div class="flex-none p-2 theme-border-t theme-bg-sidebar">
     <div class="relative flex items-end border theme-border rounded overflow-hidden theme-bg-main">
       <textarea
-        class="w-full max-h-32 min-h-[36px] bg-transparent p-2 resize-none outline-none"
+        class="w-full max-h-32 min-h-[36px] bg-transparent p-2 resize-none outline-none disabled:opacity-50"
         placeholder="Ask the agent to review or approve changes..."
         bind:value={input}
         onkeydown={handleKeydown}
+        disabled={isTyping}
         rows="1"
       ></textarea>
       <button 
         class="absolute right-2 bottom-2 theme-text-muted hover:theme-text-accent transition-colors disabled:opacity-50 disabled:hover:theme-text-muted"
-        disabled={!input.trim()}
+        disabled={!input.trim() || isTyping}
         onclick={sendMessage}
         aria-label="Send Message"
       >

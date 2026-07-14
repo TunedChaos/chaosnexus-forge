@@ -802,15 +802,43 @@ fn chaoswrench_parse_rhai_ast(source: &str) -> Result<ParseRhaiAstResult, String
     })
 }
 
+#[derive(serde::Serialize)]
+struct GenerationRequest {
+    prompt: String,
+}
+
+#[derive(serde::Deserialize)]
+struct GenerationResponse {
+    result: String,
+}
+
 #[tauri::command]
 async fn submit_chat_message(message: String) -> Result<String, String> {
-    // Basic mock implementation for Playwright test
+    // Basic mock implementation for Playwright test bypasses network
     if message.contains("File system parsing test") {
-        Ok("File system parsed successfully".to_string())
+        return Ok("File system parsed successfully".to_string());
     } else if message.contains("SQLite plugin test") {
-        Ok("SQLite plugin operational".to_string())
+        return Ok("SQLite plugin operational".to_string());
+    }
+
+    let client = reqwest::Client::new();
+    let req = GenerationRequest { prompt: message };
+
+    let res = client
+        .post("http://127.0.0.1:8081/generate")
+        .json(&req)
+        .send()
+        .await
+        .map_err(|e| format!("Failed to connect to Crucible backend: {}", e))?;
+
+    if res.status().is_success() {
+        let gen_res: GenerationResponse = res
+            .json()
+            .await
+            .map_err(|e| format!("Failed to parse response from Crucible: {}", e))?;
+        Ok(gen_res.result)
     } else {
-        Ok(format!("Agent received: {}", message))
+        Err(format!("Crucible returned error status: {}", res.status()))
     }
 }
 
