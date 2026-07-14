@@ -12,6 +12,7 @@ pub mod plugin_toml;
 pub mod settings;
 pub mod visualizer;
 pub mod lsp;
+pub mod crucible_bridge;
 use engine_supervisor::EngineSupervisor;
 use nodes::{NodeDef, get_default_registry};
 use tauri::Manager;
@@ -930,7 +931,8 @@ pub fn run() {
             pending_plugins::watch_pending_plugins,
             chaoswrench_parse_rhai_ast,
             force_exit_forge,
-            lsp::lsp_client_to_server
+            lsp::lsp_client_to_server,
+            crucible_bridge::crucible_generate
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
