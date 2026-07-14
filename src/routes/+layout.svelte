@@ -19,6 +19,8 @@
   import McpRegistryPanel from "$lib/components/McpRegistryPanel.svelte";
   import { mcp } from "$lib/mcp.svelte";
   import { scheduleMonacoWarmup } from "$lib/dual_editor/monaco_loader";
+  import AgentChatUI from "$lib/components/chat/AgentChatUI.svelte";
+  import FloatingDraggable from "$lib/components/FloatingDraggable.svelte";
 
   /**
    * Component props for the root layout.
@@ -217,3 +219,7 @@
 <SettingsModal />
 <ChaoswrenchSetupModal />
 <PluginBrowserModal />
+
+<FloatingDraggable initialX={100} initialY={100} width={350} height={500}>
+  <AgentChatUI />
+</FloatingDraggable>

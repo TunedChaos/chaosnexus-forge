@@ -88,6 +88,16 @@ export async function invoke(cmd: string, args: Record<string, unknown> = {}): P
   switch (cmd) {
     case "greet":
       return `Hello, ${args.name}! You've been greeted from a test mock!`;
+    case "submit_chat_message": {
+      const message = String(args.message || "");
+      if (message.includes("File system parsing test")) {
+        return "File system parsed successfully";
+      } else if (message.includes("SQLite plugin test")) {
+        return "SQLite plugin operational";
+      } else {
+        return `Agent received: ${message}`;
+      }
+    }
     case "load_engine_schema":
     case "sync_engine_schema":
       return JSON.stringify({
