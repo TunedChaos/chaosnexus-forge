@@ -102,6 +102,19 @@ class EngineClient {
   /** Workspace path of the most recent start attempt, replayed on retry. */
   #pendingStartPath = "";
 
+  /** The currently attached Anvil instance port, if any. */
+  #activePort: number | null = null;
+  /** The currently attached Anvil instance token, if any. */
+  #activeToken: string | null = null;
+
+  get activePort(): number | null {
+    return this.#activePort;
+  }
+
+  get activeToken(): string | null {
+    return this.#activeToken;
+  }
+
   /** Node label to highlight on the visual canvas (derived from selection). */
   highlightedNodeLabel = $derived.by(() => {
     if (!this.selectedTraceSpanId) return null;
@@ -248,6 +261,8 @@ class EngineClient {
    */
   async stop(): Promise<void> {
     try {
+      this.#activePort = null;
+      this.#activeToken = null;
       await invoke("engine_stop");
     } catch (err) {
       this.#pushLog({ level: "error", plugin: "engine", message: String(err) });
@@ -289,6 +304,8 @@ class EngineClient {
     // Clear logs for the new connection
     this.logs = [];
     this.status = "starting";
+    this.#activePort = port;
+    this.#activeToken = token;
 
     try {
       await invoke("engine_attach", { port, token });

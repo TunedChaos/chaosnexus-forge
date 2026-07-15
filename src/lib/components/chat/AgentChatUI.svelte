@@ -1,6 +1,7 @@
 <!-- chaosnexus-forge/src/lib/components/chat/AgentChatUI.svelte -->
 <script lang="ts">
   import { workbench } from "$lib/state.svelte";
+  import { engine } from "$lib/engine.svelte";
 
   let { onClose } = $props<{ onClose?: () => void }>();
 
@@ -27,7 +28,11 @@
       if (isTauri) {
         // @ts-ignore
         const tauriCore = await import("@tauri-apps/api/core");
-        response = await tauriCore.invoke("submit_chat_message", { message: userMessage });
+        response = await tauriCore.invoke("submit_chat_message", { 
+          message: userMessage,
+          anvilPort: engine.activePort,
+          anvilToken: engine.activeToken
+        });
       } else {
         // Fallback for Playwright testing without Tauri shell
         if (userMessage.includes("File system parsing test")) {

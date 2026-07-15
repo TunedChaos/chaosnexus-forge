@@ -805,6 +805,8 @@ fn chaoswrench_parse_rhai_ast(source: &str) -> Result<ParseRhaiAstResult, String
 #[derive(serde::Serialize)]
 struct GenerationRequest {
     prompt: String,
+    anvil_port: Option<u16>,
+    anvil_token: Option<String>,
 }
 
 #[derive(serde::Deserialize)]
@@ -813,7 +815,11 @@ struct GenerationResponse {
 }
 
 #[tauri::command]
-async fn submit_chat_message(message: String) -> Result<String, String> {
+async fn submit_chat_message(
+    message: String,
+    anvil_port: Option<u16>,
+    anvil_token: Option<String>,
+) -> Result<String, String> {
     // Basic mock implementation for Playwright test bypasses network
     if message.contains("File system parsing test") {
         return Ok("File system parsed successfully".to_string());
@@ -822,7 +828,11 @@ async fn submit_chat_message(message: String) -> Result<String, String> {
     }
 
     let client = reqwest::Client::new();
-    let req = GenerationRequest { prompt: message };
+    let req = GenerationRequest { 
+        prompt: message,
+        anvil_port,
+        anvil_token,
+    };
 
     let res = client
         .post("http://127.0.0.1:8081/generate")
