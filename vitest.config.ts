@@ -12,19 +12,40 @@ import Icons from 'unplugin-icons/vite';
 import { resolve } from 'path';
 
 export default defineConfig({
-	plugins: [sveltekit(), Icons({ compiler: 'svelte' })],
+	plugins: [
+		{
+			name: 'ignore-css-imports',
+			enforce: 'pre',
+			transform(_code, id) {
+				if (id.includes('.css')) {
+					return { code: 'export default {};', map: null };
+				}
+			}
+		},
+		sveltekit(),
+		Icons({ compiler: 'svelte' })
+	],
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}'],
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['./tests/vitest-setup.ts'],
+		server: {
+			deps: {
+				inline: [/@codingame\/monaco-vscode-api/]
+			}
+		}
+	},
+	ssr: {
+		noExternal: [/@codingame\/monaco-vscode-api/]
 	},
 	resolve: {
 		conditions: ['browser'],
-		alias: {
-			'@tauri-apps/api/core': resolve(__dirname, './src/lib/mocks/tauri.ts'),
-			'@tauri-apps/api/event': resolve(__dirname, './src/lib/mocks/tauri.ts'),
-			'@tauri-apps/api/window': resolve(__dirname, './src/lib/mocks/tauri.ts')
-		}
+		alias: [
+			{ find: /^.*\.css$/, replacement: resolve(__dirname, './tests/styleMock.js') },
+			{ find: '@tauri-apps/api/core', replacement: resolve(__dirname, './src/lib/mocks/tauri.ts') },
+			{ find: '@tauri-apps/api/event', replacement: resolve(__dirname, './src/lib/mocks/tauri.ts') },
+			{ find: '@tauri-apps/api/window', replacement: resolve(__dirname, './src/lib/mocks/tauri.ts') }
+		]
 	}
 });

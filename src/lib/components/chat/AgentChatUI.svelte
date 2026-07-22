@@ -28,11 +28,55 @@
       if (isTauri) {
         // @ts-ignore
         const tauriCore = await import("@tauri-apps/api/core");
-        response = await tauriCore.invoke("submit_chat_message", { 
-          message: userMessage,
-          anvilPort: engine.activePort,
-          anvilToken: engine.activeToken
+        // @ts-ignore
+        const tauriEvent = await import("@tauri-apps/api/event");
+
+        const requestId = "req_" + Date.now();
+        let agentMsgIndex = messages.length;
+        messages = [...messages, { role: "agent", text: "" }];
+
+        let unlistenToken: (() => void) | null = null;
+        let unlistenDone: (() => void) | null = null;
+        let unlistenError: (() => void) | null = null;
+
+        unlistenToken = await tauriEvent.listen("llm_token", (event: any) => {
+          if (event.payload?.request_id === requestId) {
+            messages[agentMsgIndex].text += event.payload.token;
+          }
         });
+
+        unlistenDone = await tauriEvent.listen("llm_done", (event: any) => {
+          if (event.payload?.request_id === requestId) {
+            if (unlistenToken) unlistenToken();
+            if (unlistenDone) unlistenDone();
+            if (unlistenError) unlistenError();
+            isTyping = false;
+          }
+        });
+
+        unlistenError = await tauriEvent.listen("llm_error", (event: any) => {
+          if (event.payload?.request_id === requestId) {
+            if (unlistenToken) unlistenToken();
+            if (unlistenDone) unlistenDone();
+            if (unlistenError) unlistenError();
+            messages[agentMsgIndex].text = `Error: ${event.payload.error}`;
+            isTyping = false;
+          }
+        });
+
+        // Format system prompt and history for the model
+        const conversationHistory = messages
+          .slice(0, agentMsgIndex)
+          .map((m) => ({ role: m.role === "agent" ? "assistant" : "user", content: m.text }));
+
+        await tauriCore.invoke("llm_stream_chat", {
+          requestId,
+          endpointUrl: "http://localhost:8080/v1/chat/completions",
+          model: "granite-4.1-8b",
+          messages: conversationHistory,
+          temperature: 0.7
+        });
+        return;
       } else {
         // Fallback for Playwright testing without Tauri shell
         if (userMessage.includes("File system parsing test")) {
@@ -42,8 +86,8 @@
         } else {
           response = `Agent received: ${userMessage}`;
         }
+        messages = [...messages, { role: "agent", text: response }];
       }
-      messages = [...messages, { role: "agent", text: response }];
     } catch (e) {
       console.error("Chat backend error:", e);
       messages = [...messages, { role: "error", text: `Error: ${e}` }];
