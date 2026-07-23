@@ -239,6 +239,37 @@ export async function invoke(cmd: string, args: Record<string, unknown> = {}): P
       writeStoredJson(STORAGE_PENDING, mockPending);
       return null;
     }
+    case "list_agent_profiles":
+      return [
+        {
+          id: "goose",
+          name: "Goose CLI Agent",
+          binary: "goose",
+          args: ["run", "--text", "{prompt}"],
+          env: {},
+          description: "Block's open-source autonomous CLI agent.",
+        },
+        {
+          id: "agy",
+          name: "Antigravity CLI (agy)",
+          binary: "agy",
+          args: ["exec", "--prompt", "{prompt}"],
+          env: {},
+          description: "Antigravity autonomous agent CLI.",
+        },
+        {
+          id: "custom",
+          name: "Custom CLI Script",
+          binary: "sh",
+          args: ["-c", "{prompt}"],
+          env: {},
+          description: "Custom shell command or script runner.",
+        },
+      ];
+    case "spawn_cli_agent":
+      return null;
+    case "stop_cli_agent":
+      return true;
     default:
       console.warn(`[Tauri Mock] Unhandled invoke command: ${cmd}`);
       return null;

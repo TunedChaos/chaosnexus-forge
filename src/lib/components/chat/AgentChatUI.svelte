@@ -1,15 +1,69 @@
 <!-- chaosnexus-forge/src/lib/components/chat/AgentChatUI.svelte -->
 <script lang="ts">
+  import { onMount } from "svelte";
   import { workbench } from "$lib/state.svelte";
   import { engine } from "$lib/engine.svelte";
 
+  interface AgentProfile {
+    id: string;
+    name: string;
+    binary: string;
+    args: string[];
+    env: Record<string, string>;
+    description: string;
+  }
+
+  interface ChatMsg {
+    role: "user" | "agent" | "error";
+    text: string;
+    diagnostics?: string[];
+    showDiagnostics?: boolean;
+  }
+
   let { onClose } = $props<{ onClose?: () => void }>();
 
-  let messages = $state([
-    { role: "agent", text: "Hello! I'm here to help you review and approve changes." }
+  let messages = $state<ChatMsg[]>([
+    { role: "agent", text: "Hello! Select an LLM model or CLI agent below to assist you." }
   ]);
   let input = $state("");
   let isTyping = $state(false);
+  let activeRequestId = $state<string | null>(null);
+
+  // Available agent providers: Local LLM + CLI presets
+  let agentProfiles = $state<AgentProfile[]>([]);
+  let selectedProvider = $state<string>("local");
+
+  onMount(async () => {
+    // @ts-ignore
+    const isTauri = typeof window !== 'undefined' && !!window.__TAURI_INTERNALS__;
+    if (isTauri) {
+      try {
+        // @ts-ignore
+        const tauriCore = await import("@tauri-apps/api/core");
+        const profiles: AgentProfile[] = await tauriCore.invoke("list_agent_profiles");
+        agentProfiles = profiles;
+      } catch (e) {
+        console.warn("Failed to fetch agent profiles from backend:", e);
+      }
+    }
+  });
+
+  async function stopCurrentAgent() {
+    if (!activeRequestId) return;
+    // @ts-ignore
+    const isTauri = typeof window !== 'undefined' && !!window.__TAURI_INTERNALS__;
+    if (isTauri) {
+      try {
+        // @ts-ignore
+        const tauriCore = await import("@tauri-apps/api/core");
+        await tauriCore.invoke("stop_cli_agent", { requestId: activeRequestId });
+      } catch (e) {
+        console.error("Failed to stop CLI agent:", e);
+      }
+    }
+    isTyping = false;
+    activeRequestId = null;
+  }
 
   async function sendMessage() {
     if (!input.trim() || isTyping) return;
@@ -18,10 +72,10 @@
     input = "";
     isTyping = true;
     
+    const requestId = "req_" + Date.now();
+    activeRequestId = requestId;
+
     try {
-      let response = "";
-      
-      // Check if we are actually running inside Tauri
       // @ts-ignore
       const isTauri = typeof window !== 'undefined' && !!window.__TAURI_INTERNALS__;
 
@@ -31,60 +85,118 @@
         // @ts-ignore
         const tauriEvent = await import("@tauri-apps/api/event");
 
-        const requestId = "req_" + Date.now();
         let agentMsgIndex = messages.length;
-        messages = [...messages, { role: "agent", text: "" }];
+        messages = [...messages, { role: "agent", text: "", diagnostics: [], showDiagnostics: false }];
 
-        let unlistenToken: (() => void) | null = null;
-        let unlistenDone: (() => void) | null = null;
-        let unlistenError: (() => void) | null = null;
+        if (selectedProvider === "local") {
+          // Native local OpenAI-compatible LLM stream
+          let unlistenToken = await tauriEvent.listen("llm_token", (event: any) => {
+            if (event.payload?.request_id === requestId) {
+              const current = messages[agentMsgIndex];
+              messages[agentMsgIndex] = { ...current, text: current.text + event.payload.token };
+            }
+          });
 
-        unlistenToken = await tauriEvent.listen("llm_token", (event: any) => {
-          if (event.payload?.request_id === requestId) {
-            messages[agentMsgIndex].text += event.payload.token;
-          }
-        });
+          let unlistenDone = await tauriEvent.listen("llm_done", (event: any) => {
+            if (event.payload?.request_id === requestId) {
+              unlistenToken();
+              unlistenDone();
+              unlistenError();
+              isTyping = false;
+              activeRequestId = null;
+            }
+          });
 
-        unlistenDone = await tauriEvent.listen("llm_done", (event: any) => {
-          if (event.payload?.request_id === requestId) {
-            if (unlistenToken) unlistenToken();
-            if (unlistenDone) unlistenDone();
-            if (unlistenError) unlistenError();
-            isTyping = false;
-          }
-        });
+          let unlistenError = await tauriEvent.listen("llm_error", (event: any) => {
+            if (event.payload?.request_id === requestId) {
+              unlistenToken();
+              unlistenDone();
+              unlistenError();
+              const current = messages[agentMsgIndex];
+              messages[agentMsgIndex] = { ...current, text: `Error: ${event.payload.error}` };
+              isTyping = false;
+              activeRequestId = null;
+            }
+          });
 
-        unlistenError = await tauriEvent.listen("llm_error", (event: any) => {
-          if (event.payload?.request_id === requestId) {
-            if (unlistenToken) unlistenToken();
-            if (unlistenDone) unlistenDone();
-            if (unlistenError) unlistenError();
-            messages[agentMsgIndex].text = `Error: ${event.payload.error}`;
-            isTyping = false;
-          }
-        });
+          const conversationHistory = messages
+            .slice(0, agentMsgIndex)
+            .map((m) => ({ role: m.role === "agent" ? "assistant" : "user", content: m.text }));
 
-        // Format system prompt and history for the model
-        const conversationHistory = messages
-          .slice(0, agentMsgIndex)
-          .map((m) => ({ role: m.role === "agent" ? "assistant" : "user", content: m.text }));
+          await tauriCore.invoke("llm_stream_chat", {
+            requestId,
+            endpointUrl: "http://localhost:8080/v1/chat/completions",
+            model: "granite-4.1-8b",
+            messages: conversationHistory,
+            temperature: 0.7
+          });
+        } else {
+          // External CLI Agent (Goose, AGY, Custom CLI)
+          const targetProfile = agentProfiles.find((p) => p.id === selectedProvider) || {
+            id: selectedProvider,
+            name: selectedProvider,
+            binary: selectedProvider,
+            args: ["{prompt}"],
+            env: {},
+            description: "CLI Agent",
+          };
 
-        await tauriCore.invoke("llm_stream_chat", {
-          requestId,
-          endpointUrl: "http://localhost:8080/v1/chat/completions",
-          model: "granite-4.1-8b",
-          messages: conversationHistory,
-          temperature: 0.7
-        });
+          let unlistenStdout = await tauriEvent.listen("agent_stream_output", (event: any) => {
+            if (event.payload?.request_id === requestId) {
+              const current = messages[agentMsgIndex];
+              messages[agentMsgIndex] = { ...current, text: current.text + event.payload.text };
+            }
+          });
+
+          let unlistenStderr = await tauriEvent.listen("agent_stream_diagnostics", (event: any) => {
+            if (event.payload?.request_id === requestId) {
+              const current = messages[agentMsgIndex];
+              const diag = current.diagnostics || [];
+              messages[agentMsgIndex] = { ...current, diagnostics: [...diag, event.payload.line] };
+            }
+          });
+
+          let unlistenDone = await tauriEvent.listen("agent_stream_done", (event: any) => {
+            if (event.payload?.request_id === requestId) {
+              unlistenStdout();
+              unlistenStderr();
+              unlistenDone();
+              unlistenError();
+              isTyping = false;
+              activeRequestId = null;
+            }
+          });
+
+          let unlistenError = await tauriEvent.listen("agent_stream_error", (event: any) => {
+            if (event.payload?.request_id === requestId) {
+              unlistenStdout();
+              unlistenStderr();
+              unlistenDone();
+              unlistenError();
+              const current = messages[agentMsgIndex];
+              messages[agentMsgIndex] = { ...current, text: `Error: ${event.payload.error}` };
+              isTyping = false;
+              activeRequestId = null;
+            }
+          });
+
+          await tauriCore.invoke("spawn_cli_agent", {
+            requestId,
+            profile: targetProfile,
+            prompt: userMessage,
+            cwd: null
+          });
+        }
         return;
       } else {
-        // Fallback for Playwright testing without Tauri shell
+        // Fallback for browser testing
+        let response = "";
         if (userMessage.includes("File system parsing test")) {
           response = "File system parsed successfully";
         } else if (userMessage.includes("SQLite plugin test")) {
           response = "SQLite plugin operational";
         } else {
-          response = `Agent received: ${userMessage}`;
+          response = `Agent received (${selectedProvider}): ${userMessage}`;
         }
         messages = [...messages, { role: "agent", text: response }];
       }
@@ -93,6 +205,7 @@
       messages = [...messages, { role: "error", text: `Error: ${e}` }];
     } finally {
       isTyping = false;
+      activeRequestId = null;
     }
   }
 
@@ -102,33 +215,87 @@
       sendMessage();
     }
   }
+
+  function toggleDiagnostics(index: number) {
+    const target = messages[index];
+    if (target) {
+      messages[index] = { ...target, showDiagnostics: !target.showDiagnostics };
+    }
+  }
 </script>
 
 <div class="flex flex-col h-full theme-bg-main theme-text-main font-mono text-xs">
+  <!-- Header -->
   <div class="flex-none flex items-center justify-between px-3 py-2 theme-bg-header theme-border-b">
     <div class="flex items-center gap-2">
       <div class="w-2 h-2 rounded-full bg-green-500"></div>
       <span class="font-bold uppercase tracking-wider text-xs">Agent Chat</span>
-    </div>
-    {#if onClose}
-      <button 
-        type="button" 
-        class="theme-text-muted hover:theme-text-main transition-colors cursor-pointer"
-        aria-label="Close Chat"
-        onclick={onClose}
+      
+      <!-- Provider Dropdown Selector -->
+      <select 
+        bind:value={selectedProvider} 
+        class="ml-2 theme-bg-sidebar theme-border rounded px-1.5 py-0.5 text-[11px] outline-none cursor-pointer"
+        disabled={isTyping}
       >
-        ✕
-      </button>
-    {/if}
+        <option value="local">Local LLM (Granite 4.1-8B)</option>
+        {#each agentProfiles as profile}
+          <option value={profile.id}>{profile.name}</option>
+        {/each}
+      </select>
+    </div>
+
+    <div class="flex items-center gap-2">
+      {#if isTyping}
+        <button
+          type="button"
+          class="px-2 py-0.5 bg-red-800 hover:bg-red-700 text-white rounded text-[10px] uppercase font-bold transition-colors cursor-pointer"
+          onclick={stopCurrentAgent}
+        >
+          Stop
+        </button>
+      {/if}
+      {#if onClose}
+        <button 
+          type="button" 
+          class="theme-text-muted hover:theme-text-main transition-colors cursor-pointer"
+          aria-label="Close Chat"
+          onclick={onClose}
+        >
+          ✕
+        </button>
+      {/if}
+    </div>
   </div>
 
-  <div class="flex-1 min-h-0 overflow-y-auto p-3 space-y-4">
-    {#each messages as msg}
+  <!-- Chat Log -->
+  <div class="flex-1 p-3 overflow-y-auto space-y-3">
+    {#each messages as msg, i}
       <div class="flex flex-col {msg.role === 'user' ? 'items-end' : 'items-start'}">
         <div 
           class="max-w-[85%] px-3 py-2 rounded-lg {msg.role === 'user' ? 'theme-bg-accent text-white rounded-br-none' : msg.role === 'error' ? 'bg-red-900/50 text-red-200 border border-red-800 rounded-bl-none' : 'theme-bg-sidebar theme-border rounded-bl-none'}"
         >
-          {msg.text}
+          <div class="whitespace-pre-wrap">{msg.text}</div>
+
+          <!-- Diagnostics Accordion for Stderr / Debug Traces -->
+          {#if msg.diagnostics && msg.diagnostics.length > 0}
+            <div class="mt-2 pt-2 border-t border-white/10 text-[10px]">
+              <button 
+                type="button"
+                class="theme-text-muted hover:theme-text-main flex items-center gap-1 cursor-pointer font-bold"
+                onclick={() => toggleDiagnostics(i)}
+              >
+                <span>{msg.showDiagnostics ? '▼' : '►'}</span>
+                <span>Diagnostics ({msg.diagnostics.length} lines)</span>
+              </button>
+              {#if msg.showDiagnostics}
+                <div class="mt-1 p-1.5 bg-black/40 rounded max-h-32 overflow-y-auto text-[10px] theme-text-muted space-y-0.5">
+                  {#each msg.diagnostics as diagLine}
+                    <div>{diagLine}</div>
+                  {/each}
+                </div>
+              {/if}
+            </div>
+          {/if}
         </div>
       </div>
     {/each}
@@ -138,11 +305,13 @@
           <span class="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style="animation-delay: 0ms"></span>
           <span class="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style="animation-delay: 150ms"></span>
           <span class="w-1.5 h-1.5 rounded-full bg-current animate-bounce" style="animation-delay: 300ms"></span>
+          <span class="ml-2 text-[10px]">Running {selectedProvider}...</span>
         </div>
       </div>
     {/if}
   </div>
 
+  <!-- Input Form -->
   <div class="flex-none p-2 theme-border-t theme-bg-sidebar">
     <div class="relative flex items-end border theme-border rounded overflow-hidden theme-bg-main">
       <textarea

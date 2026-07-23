@@ -14,6 +14,7 @@ pub mod visualizer;
 pub mod lsp;
 pub mod crucible_bridge;
 pub mod llm_bridge;
+pub mod cli_agent_bridge;
 use engine_supervisor::EngineSupervisor;
 use nodes::{NodeDef, get_default_registry};
 use tauri::Manager;
@@ -868,6 +869,9 @@ pub fn run() {
             // Spawn LSP Server
             let lsp_tx = lsp::spawn_lsp_server(app_handle.clone());
             app.manage(lsp::LspSender(lsp_tx));
+
+            // Register CLI Agent Process Registry
+            app.manage(cli_agent_bridge::CliAgentProcessRegistry::new());
             
             // Spawn background task to watch for chaosnexus-anvil instance changes
             tauri::async_runtime::spawn(async move {
@@ -973,7 +977,10 @@ pub fn run() {
             lsp::lsp_client_to_server,
             crucible_bridge::crucible_generate,
             llm_bridge::llm_chat_completion,
-            llm_bridge::llm_stream_chat
+            llm_bridge::llm_stream_chat,
+            cli_agent_bridge::list_agent_profiles,
+            cli_agent_bridge::spawn_cli_agent,
+            cli_agent_bridge::stop_cli_agent
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
