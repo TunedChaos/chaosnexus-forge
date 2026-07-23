@@ -8,7 +8,7 @@
 import { parseRhaiToFlow, serializeFlowToRhai } from "./src/lib/parser.js";
 import fs from "fs";
 
-const code = fs.readFileSync("../scripts/plugins/terminal/terminal_tool.rhai", "utf-8");
+const code = fs.readFileSync("../chaosnexus-scripts/plugins/terminal/terminal_tool.rhai", "utf-8");
 const parsed = parseRhaiToFlow(code, []);
 const newCode = serializeFlowToRhai(code, parsed.nodes, parsed.edges);
 console.log(newCode === code);

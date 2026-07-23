@@ -708,40 +708,40 @@ export interface IllustrativeTarget {
  * Registry of all illustrative targets used to generate bundled canvas sidecars.
  */
 export const ILLUSTRATIVE_TARGETS: IllustrativeTarget[] = [
-  { sidecarPath: "scripts/plugins/safe/.chaosnexus-forge/safe_tool.rhai.canvas.json", build: buildSafeIllustration },
-  { sidecarPath: "scripts/plugins/st/.chaosnexus-forge/st_tool.rhai.canvas.json", build: buildStIllustration },
+  { sidecarPath: "chaosnexus-scripts/plugins/safe/.chaosnexus-forge/safe_tool.rhai.canvas.json", build: buildSafeIllustration },
+  { sidecarPath: "chaosnexus-scripts/plugins/st/.chaosnexus-forge/st_tool.rhai.canvas.json", build: buildStIllustration },
   {
-    sidecarPath: "scripts/plugins/disabled/crash_test/.chaosnexus-forge/crash_test_tool.rhai.canvas.json",
+    sidecarPath: "chaosnexus-scripts/plugins/disabled/crash_test/.chaosnexus-forge/crash_test_tool.rhai.canvas.json",
     build: buildCrashTestIllustration,
   },
   {
-    sidecarPath: "scripts/plugins/translation_test/.chaosnexus-forge/translation_test_tool.rhai.canvas.json",
+    sidecarPath: "chaosnexus-scripts/plugins/translation_test/.chaosnexus-forge/translation_test_tool.rhai.canvas.json",
     build: buildTranslationTestIllustration,
   },
-  { sidecarPath: "scripts/plugins/time/.chaosnexus-forge/time_tool.rhai.canvas.json", build: buildTimeIllustration },
+  { sidecarPath: "chaosnexus-scripts/plugins/time/.chaosnexus-forge/time_tool.rhai.canvas.json", build: buildTimeIllustration },
   {
-    sidecarPath: "scripts/plugins/dependencies/.chaosnexus-forge/dependencies_tool.rhai.canvas.json",
+    sidecarPath: "chaosnexus-scripts/plugins/dependencies/.chaosnexus-forge/dependencies_tool.rhai.canvas.json",
     build: buildDependenciesIllustration,
   },
-  { sidecarPath: "scripts/plugins/db_test/.chaosnexus-forge/db_test_tool.rhai.canvas.json", build: buildDbTestIllustration },
+  { sidecarPath: "chaosnexus-scripts/plugins/db_test/.chaosnexus-forge/db_test_tool.rhai.canvas.json", build: buildDbTestIllustration },
   {
-    sidecarPath: "scripts/plugins/http_ws_example/.chaosnexus-forge/http_ws_example_tool.rhai.canvas.json",
+    sidecarPath: "chaosnexus-scripts/plugins/http_ws_example/.chaosnexus-forge/http_ws_example_tool.rhai.canvas.json",
     build: buildHttpWsExampleIllustration,
   },
   {
-    sidecarPath: "scripts/plugins/mcp_bridge_demo/.chaosnexus-forge/mcp_bridge_demo_tool.rhai.canvas.json",
+    sidecarPath: "chaosnexus-scripts/plugins/mcp_bridge_demo/.chaosnexus-forge/mcp_bridge_demo_tool.rhai.canvas.json",
     build: buildMcpBridgeDemoIllustration,
   },
   {
-    sidecarPath: "scripts/plugins/terminal/.chaosnexus-forge/terminal_tool.rhai.canvas.json",
+    sidecarPath: "chaosnexus-scripts/plugins/terminal/.chaosnexus-forge/terminal_tool.rhai.canvas.json",
     build: buildTerminalIllustration,
   },
   {
-    sidecarPath: "scripts/plugins/core_plugin_manager/.chaosnexus-forge/core_plugin_manager_tool.rhai.canvas.json",
+    sidecarPath: "chaosnexus-scripts/plugins/core_plugin_manager/.chaosnexus-forge/core_plugin_manager_tool.rhai.canvas.json",
     build: buildCorePluginManagerIllustration,
   },
   {
-    sidecarPath: "scripts/plugins/pkg_manager/.chaosnexus-forge/pkg_manager_tool.rhai.canvas.json",
+    sidecarPath: "chaosnexus-scripts/plugins/pkg_manager/.chaosnexus-forge/pkg_manager_tool.rhai.canvas.json",
     build: buildPkgManagerIllustration,
   },
 ];

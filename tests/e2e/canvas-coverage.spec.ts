@@ -31,12 +31,12 @@ async function seedPluginCanvas(
 ): Promise<void> {
   const canvas = JSON.parse(
     readFileSync(
-      join(REPO_ROOT, "scripts/plugins", pluginName, ".chaosnexus-forge", `${filename}.canvas.json`),
+      join(REPO_ROOT, "chaosnexus-scripts/plugins", pluginName, ".chaosnexus-forge", `${filename}.canvas.json`),
       "utf8"
     )
   );
   const rhaiContent = readFileSync(
-    join(REPO_ROOT, "scripts/plugins", pluginName, filename),
+    join(REPO_ROOT, "chaosnexus-scripts/plugins", pluginName, filename),
     "utf8"
   );
 

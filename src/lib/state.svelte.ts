@@ -247,7 +247,7 @@ export class WorkbenchState {
   }
 
   async probeDefaultWorkspaces() {
-    const defaults = ["../scripts/plugins", "./scripts/plugins", "../chaosnexus-anvil/plugins"];
+    const defaults = ["../chaosnexus-scripts/plugins", "./chaosnexus-scripts/plugins", "../chaosnexus-anvil/plugins"];
     for (const path of defaults) {
       try {
         const list = await invoke("scan_plugins", { projectPath: path });
