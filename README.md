@@ -4,7 +4,7 @@
 
 Tauri v2 + SvelteKit desktop IDE for ChaosNexus: visual Vhai graphs, Rhai editing, live Anvil supervision, and human-in-the-loop plugin approval.
 
-> **Status:** early public soft launch (pre-1.0).
+> **Status:** early public alpha launch (pre-1.0).
 
 - **Docs:** [chaosnexus.ai](https://chaosnexus.ai)
 - **Contribute:** [codeberg.org/TunedChaos/chaosnexus-forge](https://codeberg.org/TunedChaos/chaosnexus-forge) (primary)
