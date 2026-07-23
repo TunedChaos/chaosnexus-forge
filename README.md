@@ -1,7 +1,24 @@
-<img src="./assets/banner.png" alt="banner" />
+<img src="./assets/banner.png" alt="ChaosNexus Forge Banner" />
 
-# Chaosforge
+# ChaosNexus Forge
 
-This is the `chaosnexus-forge` component of the ChaosNexus platform.
+Tauri v2 + SvelteKit desktop IDE for ChaosNexus: visual Vhai graphs, Rhai editing, live Anvil supervision, and human-in-the-loop plugin approval.
 
-For comprehensive documentation, installation instructions, and API references, please visit the central [chaosnexus-website](https://github.com/TunedChaos/chaosnexus-website) documentation site (URL placeholder) or view the `chaosnexus-website` repository.
+> **Status:** early public soft launch (pre-1.0).
+
+- **Docs:** [chaosnexus.ai](https://chaosnexus.ai)
+- **Contribute:** [codeberg.org/TunedChaos/chaosnexus-forge](https://codeberg.org/TunedChaos/chaosnexus-forge) (primary)
+- **Mirror:** [github.com/TunedChaos/chaosnexus-forge](https://github.com/TunedChaos/chaosnexus-forge) (read-only; Sponsors)
+
+Please open issues and pull requests on **Codeberg**.
+
+## Quick start
+
+```bash
+pnpm install
+pnpm tauri dev
+```
+
+## License
+
+AGPL-3.0-or-later. Commercial licensing: [chaosnexus.ai/guide/licensing](https://chaosnexus.ai/guide/licensing).
