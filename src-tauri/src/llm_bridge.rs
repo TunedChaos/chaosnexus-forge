@@ -63,6 +63,47 @@ pub struct LlmStreamErrorPayload {
 const DEFAULT_ENDPOINT: &str = "http://localhost:8080/v1/chat/completions";
 const DEFAULT_MODEL: &str = "granite-4.1-8b";
 
+pub const RHAI_SYSTEM_PROMPT: &str = r#"You are ChaosNexus AI, an expert assistant for the ChaosNexus platform (Anvil engine & Forge IDE).
+CRITICAL RHAI ENGINE RULES:
+1. Write Rhai scripts, NOT Rust code.
+2. DO NOT output Rust imports (`use std::...`), `pub struct`, `fn main()`, `extern crate`, or Rust macros (`println!`, `format!`).
+3. Use Rhai native pre-registered functions: `log_info(msg)`, `log_warn(msg)`, `log_error(msg)`, `register_mcp_tool(name, desc, fn)`, `load_config()`, `fs_read(path)`, `run_command(exec, args)`, `mcp_connect(...)`, `mcp_call_tool(...)`.
+4. `CONFIG` and `PLUGIN_NAME` are pre-injected immutable globals in Rhai scope. Use `CONFIG.cvars` and `CONFIG.secrets` to access plugin configuration.
+"#;
+
+/// Ensures that a system prompt defining Rhai rules is present at the start of conversation messages.
+pub fn ensure_system_prompt(mut messages: Vec<ChatMessage>) -> Vec<ChatMessage> {
+    let has_system = messages.iter().any(|m| m.role.eq_ignore_ascii_case("system"));
+    if !has_system {
+        let mut prepended = vec![ChatMessage {
+            role: "system".to_string(),
+            content: RHAI_SYSTEM_PROMPT.to_string(),
+        }];
+        prepended.append(&mut messages);
+        prepended
+    } else {
+        messages
+    }
+}
+
+/// Post-processor that strips hallucinated Rust import statements (`use std::...`) from model output.
+pub fn sanitize_rhai_output(output: &str) -> String {
+    let mut cleaned_lines = Vec::new();
+    for line in output.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with("use std::")
+            || trimmed.starts_with("use crate::")
+            || trimmed.starts_with("extern crate ")
+            || (trimmed.starts_with("use ") && trimmed.ends_with(';'))
+        {
+            // Omit hallucinated Rust import statement
+            continue;
+        }
+        cleaned_lines.push(line);
+    }
+    cleaned_lines.join("\n")
+}
+
 /// Executes a synchronous (non-streaming) chat completion request against an OpenAI-compatible endpoint.
 #[tauri::command]
 pub async fn llm_chat_completion(
@@ -73,10 +114,11 @@ pub async fn llm_chat_completion(
 ) -> Result<String, String> {
     let url = endpoint_url.unwrap_or_else(|| DEFAULT_ENDPOINT.to_string());
     let model_name = model.unwrap_or_else(|| DEFAULT_MODEL.to_string());
+    let processed_messages = ensure_system_prompt(messages);
 
     let payload = ChatCompletionRequest {
         model: model_name,
-        messages,
+        messages: processed_messages,
         temperature,
         stream: Some(false),
     };
@@ -105,7 +147,7 @@ pub async fn llm_chat_completion(
 
     if let Some(choice) = completion.choices.first() {
         if let Some(msg) = &choice.message {
-            return Ok(msg.content.clone());
+            return Ok(sanitize_rhai_output(&msg.content));
         }
     }
 
@@ -124,10 +166,11 @@ pub async fn llm_stream_chat(
 ) -> Result<(), String> {
     let url = endpoint_url.unwrap_or_else(|| DEFAULT_ENDPOINT.to_string());
     let model_name = model.unwrap_or_else(|| DEFAULT_MODEL.to_string());
+    let processed_messages = ensure_system_prompt(messages);
 
     let payload = ChatCompletionRequest {
         model: model_name,
-        messages,
+        messages: processed_messages,
         temperature,
         stream: Some(true),
     };
@@ -217,13 +260,57 @@ pub async fn llm_stream_chat(
         }
     }
 
+    let sanitized_full = sanitize_rhai_output(&full_accumulated);
+
     let _ = window.emit(
         "llm_done",
         LlmStreamDonePayload {
             request_id,
-            full_response: full_accumulated,
+            full_response: sanitized_full,
         },
     );
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_ensure_system_prompt_injects_default_when_missing() {
+        let messages = vec![ChatMessage {
+            role: "user".to_string(),
+            content: "Write a tool function".to_string(),
+        }];
+        let processed = ensure_system_prompt(messages);
+        assert_eq!(processed.len(), 2);
+        assert_eq!(processed[0].role, "system");
+        assert!(processed[0].content.contains("CRITICAL RHAI ENGINE RULES"));
+    }
+
+    #[test]
+    fn test_ensure_system_prompt_retains_existing_system_prompt() {
+        let messages = vec![
+            ChatMessage {
+                role: "system".to_string(),
+                content: "Custom system prompt".to_string(),
+            },
+            ChatMessage {
+                role: "user".to_string(),
+                content: "Hello".to_string(),
+            },
+        ];
+        let processed = ensure_system_prompt(messages);
+        assert_eq!(processed.len(), 2);
+        assert_eq!(processed[0].content, "Custom system prompt");
+    }
+
+    #[test]
+    fn test_sanitize_rhai_output_removes_rust_imports() {
+        let raw = "use std::collections::HashMap;\nfn execute() {\n  let a = 1;\n}\nuse std::fs;";
+        let cleaned = sanitize_rhai_output(raw);
+        assert!(!cleaned.contains("use std::"));
+        assert!(cleaned.contains("fn execute() {"));
+    }
 }
