@@ -1,3 +1,5 @@
+// chaosnexus-forge/src/lib/state.svelte.ts
+
 /**
  * @file state.svelte.ts
  * @module chaosnexus-forge/state
