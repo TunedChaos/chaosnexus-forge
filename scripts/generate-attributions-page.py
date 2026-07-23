@@ -13,15 +13,16 @@ def generate_attributions():
     out_dir.mkdir(parents=True, exist_ok=True)
 
     modules = [
-        {"file": "chaosnexus-anvil-licenses.json", "title": "ChaosNexus Anvil (Rust)", "type": "backend", "slug": "chaosnexus-anvil"},
-        {"file": "chaosnexus-forge-backend-licenses.json", "title": "ChaosNexus Forge Backend (Rust)", "type": "backend", "slug": "chaosnexus-forge-backend"},
+        {"file": "chaosnexus-anvil-licenses.json", "title": "ChaosNexus Anvil (Rust Engine)", "type": "backend", "slug": "chaosnexus-anvil"},
+        {"file": "chaosnexus-forge-backend-licenses.json", "title": "ChaosNexus Forge Backend (Rust Tauri)", "type": "backend", "slug": "chaosnexus-forge-backend"},
         {"file": "chaosnexus-forge-frontend-licenses.json", "title": "ChaosNexus Forge Frontend & Vhai (UI/Node)", "type": "frontend", "slug": "chaosnexus-forge-frontend"},
-        {"file": "chaosnexus-codex-licenses.json", "title": "ChaosNexus Website (VitePress)", "type": "frontend", "slug": "chaosnexus-website"},
+        {"file": "chaosnexus-codex-licenses.json", "title": "ChaosNexus Codex (Rust Documentation Engine)", "type": "backend", "slug": "chaosnexus-codex"},
+        {"file": "chaosnexus-crucible-licenses.json", "title": "ChaosNexus Crucible (Rust Candle/Burn Machine Learning Runtime)", "type": "backend", "slug": "chaosnexus-crucible"},
     ]
     
     index_content = [
         "# Attributions & Third-Party Licenses\n",
-        "ChaosNexus, including ChaosNexus Forge and ChaosNexus Anvil, relies on incredible open-source projects. "
+        "ChaosNexus, including ChaosNexus Forge, ChaosNexus Anvil, ChaosNexus Codex, and ChaosNexus Crucible, relies on incredible open-source projects. "
         "We are extremely grateful for the work of the maintainers of these projects.\n",
         "Please select a module below to view its associated licenses:\n"
     ]
@@ -95,9 +96,9 @@ def generate_attributions():
                                     md_content.append(f"**Repository**: [{repo}]({repo})")
                                 elif isinstance(repo, str):
                                     md_content.append(f"**Repository**: {repo}")
-                            md_content.append("\n<details><summary>View License Text</summary>\n")
-                            md_content.append(f"```text\n{text}\n```")
-                            md_content.append("</details>\n")
+                                md_content.append("\n<details><summary>View License Text</summary>\n")
+                                md_content.append(f"```text\n{text}\n```")
+                                md_content.append("</details>\n")
                 except Exception as e:
                     md_content.append(f"> Error parsing licenses for {title}: {e}\n")
                     
