@@ -108,8 +108,35 @@ pub async fn spawn_cli_agent(
         }
     }
 
-    let mut command = Command::new(&profile.binary);
-    command.args(&cmd_args);
+    let has_bwrap = std::process::Command::new("which")
+        .arg("bwrap")
+        .output()
+        .map(|o| o.status.success())
+        .unwrap_or(false);
+
+    let target_dir = cwd.as_deref().unwrap_or(".");
+    let (binary, final_args) = if has_bwrap && cfg!(target_os = "linux") {
+        let mut bwrap_args = vec![
+            "--ro-bind".to_string(), "/".to_string(), "/".to_string(),
+            "--dev".to_string(), "/dev".to_string(),
+            "--proc".to_string(), "/proc".to_string(),
+        ];
+        if !target_dir.trim().is_empty() && std::path::Path::new(target_dir).exists() {
+            bwrap_args.push("--bind".to_string());
+            bwrap_args.push(target_dir.to_string());
+            bwrap_args.push(target_dir.to_string());
+            bwrap_args.push("--chdir".to_string());
+            bwrap_args.push(target_dir.to_string());
+        }
+        bwrap_args.push(profile.binary.clone());
+        bwrap_args.extend(cmd_args);
+        ("bwrap".to_string(), bwrap_args)
+    } else {
+        (profile.binary.clone(), cmd_args)
+    };
+
+    let mut command = Command::new(&binary);
+    command.args(&final_args);
     command.envs(&profile.env);
     command.stdout(Stdio::piped());
     command.stderr(Stdio::piped());
