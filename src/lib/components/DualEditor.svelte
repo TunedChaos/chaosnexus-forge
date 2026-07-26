@@ -398,46 +398,111 @@
   });
   let pendingAstTimer: ReturnType<typeof setTimeout> | undefined;
 
-  function checkRhaiSyntaxError(source: string): string | null {
+  interface RhaiSyntaxError {
+    message: string;
+    line: number;
+    column: number;
+  }
+
+  function checkRhaiSyntaxError(source: string): RhaiSyntaxError | null {
     if (!source) return null;
-    let openBraces = 0;
-    let openParens = 0;
+
+    let line = 1;
+    let column = 1;
+
+    let stringStartLine = 1;
+    let stringStartCol = 1;
+
+    const openBraces: { line: number; col: number }[] = [];
+    const openParens: { line: number; col: number }[] = [];
+
     let inString = false;
     let stringChar = "";
 
     for (let i = 0; i < source.length; i++) {
       const char = source[i];
-      const prev = i > 0 ? source[i - 1] : "";
+
+      if (char === "\n") {
+        line++;
+        column = 1;
+        continue;
+      }
 
       if (inString) {
-        if (char === stringChar && prev !== "\\") {
-          inString = false;
+        if (char === stringChar) {
+          // Count preceding backslashes to verify whether this quote is escaped
+          let backslashCount = 0;
+          for (let j = i - 1; j >= 0 && source[j] === "\\"; j--) {
+            backslashCount++;
+          }
+          if (backslashCount % 2 === 0) {
+            inString = false;
+          }
         }
+        column++;
         continue;
       }
 
       if (char === '"' || char === "'") {
         inString = true;
         stringChar = char;
+        stringStartLine = line;
+        stringStartCol = column;
+        column++;
         continue;
       }
 
-      if (char === "{") openBraces++;
-      else if (char === "}") openBraces--;
-      else if (char === "(") openParens++;
-      else if (char === ")") openParens--;
+      if (char === "{") {
+        openBraces.push({ line, col: column });
+      } else if (char === "}") {
+        if (openBraces.length > 0) {
+          openBraces.pop();
+        } else {
+          return { message: "Unexpected closing brace '}'", line, column };
+        }
+      } else if (char === "(") {
+        openParens.push({ line, col: column });
+      } else if (char === ")") {
+        if (openParens.length > 0) {
+          openParens.pop();
+        } else {
+          return { message: "Unexpected closing parenthesis ')'", line, column };
+        }
+      }
+
+      column++;
     }
 
-    if (inString) return "Unclosed string literal";
-    if (openBraces > 0) return `Unclosed code block (${openBraces} missing '}')`;
-    if (openBraces < 0) return "Unexpected closing brace '}'";
-    if (openParens > 0) return `Unclosed parenthesis (${openParens} missing ')')`;
-    if (openParens < 0) return "Unexpected closing parenthesis ')'";
+    if (inString) {
+      return {
+        message: "Unclosed string literal",
+        line: stringStartLine,
+        column: stringStartCol,
+      };
+    }
+
+    if (openBraces.length > 0) {
+      const last = openBraces[openBraces.length - 1];
+      return {
+        message: `Unclosed code block (${openBraces.length} missing '}')`,
+        line: last.line,
+        column: last.col,
+      };
+    }
+
+    if (openParens.length > 0) {
+      const last = openParens[openParens.length - 1];
+      return {
+        message: `Unclosed parenthesis (${openParens.length} missing ')')`,
+        line: last.line,
+        column: last.col,
+      };
+    }
 
     return null;
   }
 
-  let rhaiSyntaxError = $derived(
+  let rhaiSyntaxError = $derived<RhaiSyntaxError | null>(
     isRhai && activeContent ? checkRhaiSyntaxError(activeContent) : null
   );
 
@@ -445,9 +510,53 @@
 
   let regenerateTooltip = $derived(
     rhaiSyntaxError
-      ? `Cannot regenerate: ${rhaiSyntaxError}`
+      ? `Cannot regenerate: Line ${rhaiSyntaxError.line}, Col ${rhaiSyntaxError.column}: ${rhaiSyntaxError.message}`
       : "Regenerate visual canvas from Rhai code"
   );
+
+  // Sync syntax error diagnostics with Monaco editor markers (red squiggly underlines)
+  $effect(() => {
+    const err = rhaiSyntaxError;
+    const inst = monacoInstance;
+    const key = activeKey;
+
+    if (!inst || !key) return;
+
+    untrack(() => {
+      try {
+        const model = inst.getModel?.();
+        if (!model) return;
+
+        const globalMonaco = (window as unknown as { monaco?: any }).monaco;
+        if (!globalMonaco?.editor) return;
+
+        if (err) {
+          globalMonaco.editor.setModelMarkers(model, "rhai-syntax", [
+            {
+              startLineNumber: err.line,
+              startColumn: err.column,
+              endLineNumber: err.line,
+              endColumn: err.column + 1,
+              message: err.message,
+              severity: globalMonaco.MarkerSeverity.Error,
+            },
+          ]);
+        } else {
+          globalMonaco.editor.setModelMarkers(model, "rhai-syntax", []);
+        }
+      } catch (e) {
+        console.error("Failed to update Monaco model markers:", e);
+      }
+    });
+  });
+
+  function jumpToSyntaxError(line: number, column: number) {
+    if (monacoInstance) {
+      monacoInstance.revealLineInCenter(line);
+      monacoInstance.setPosition({ lineNumber: line, column });
+      monacoInstance.focus();
+    }
+  }
 
   async function handleRegenerateCanvas() {
     if (!canRegenerate || !activeKey || activeContent === undefined) return;
@@ -906,6 +1015,24 @@
 
             <!-- Pending Plugin Review Banner -->
             <DualEditorPendingBanner />
+
+            <!-- Rhai Syntax Error Warning Banner -->
+            {#if isRhai && rhaiSyntaxError}
+              <button
+                type="button"
+                onclick={() => jumpToSyntaxError(rhaiSyntaxError!.line, rhaiSyntaxError!.column)}
+                class="px-3 py-1.5 bg-red-950/90 border-b border-red-800/80 text-red-200 text-xs font-mono flex items-center justify-between gap-2 hover:bg-red-900/90 transition-colors text-left cursor-pointer group shrink-0"
+                title="Click to jump to syntax error in Monaco editor"
+              >
+                <div class="flex items-center gap-2 overflow-hidden">
+                  <span class="px-1.5 py-0.5 rounded bg-red-900 border border-red-700 text-[10px] font-bold tracking-wider text-red-100 shrink-0">
+                    LINE {rhaiSyntaxError.line}, COL {rhaiSyntaxError.column}
+                  </span>
+                  <span class="truncate font-medium">{rhaiSyntaxError.message}</span>
+                </div>
+                <span class="text-[10px] opacity-75 group-hover:opacity-100 underline shrink-0">Jump to line →</span>
+              </button>
+            {/if}
 
             <div class="relative flex-1 w-full h-full min-h-0 theme-bg-main">
               <div use:monacoHost class="absolute inset-0"></div>
