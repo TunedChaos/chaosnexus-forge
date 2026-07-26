@@ -9,7 +9,7 @@
   import EditorPaneHeader from "./dual_editor/EditorPaneHeader.svelte";
   import Splitter from "./Splitter.svelte";
   import { isDisplayOnlyCanvas } from "$lib/dual_editor/canvas_schema";
-  import { mergeCanvasWithExistingLayout } from "$lib/dual_editor/canvas_layout";
+  import { mergeCanvasWithExistingLayout, finalizeCanvasDocumentLayout } from "$lib/dual_editor/canvas_layout";
   import DualEditorFlowPane from "./dual_editor/DualEditorFlowPane.svelte";
   import DualEditorPendingBanner from "./dual_editor/DualEditorPendingBanner.svelte";
   import DualEditorWelcomePane from "./dual_editor/DualEditorWelcomePane.svelte";
@@ -461,9 +461,13 @@
         const newCanvas = JSON.parse(res.ast_canvas);
         const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
         const filename = workbench.activeTab?.filename || "script.rhai";
-        const existingCanvas = workbench.canvasContents[activeKey];
-        const mergedCanvas = mergeCanvasWithExistingLayout(newCanvas, existingCanvas);
-        workbench.updateCanvasContent(pluginName, filename, mergedCanvas);
+        
+        // Fresh auto-layout from scratch: re-position nodes and fit group containers cleanly
+        const freshCanvas = finalizeCanvasDocumentLayout(newCanvas);
+        workbench.updateCanvasContent(pluginName, filename, freshCanvas);
+        if (pluginName !== "__PENDING__") {
+          void workbench.saveCanvasSidecar(pluginName, filename);
+        }
       }
     } catch (e) {
       console.error("Failed to manually regenerate visual script AST:", e);
