@@ -20,23 +20,18 @@ export interface Rect {
 }
 
 /** Fallback when a leaf node has not been measured yet. */
-export const DEFAULT_NODE_SIZE: Size = { width: 200, height: 90 };
+export const DEFAULT_NODE_SIZE: Size = { width: 220, height: 95 };
 
 /** Inner padding between a group's edge and its members. */
-export const GROUP_PADDING = { x: 30, y: 45 } as const;
+export const GROUP_PADDING = { x: 24, y: 36 } as const;
 
 /**
  * Smallest footprint that still keeps an *empty* group's header/title legible.
- * Derived from the header row in `CustomGroupNode.svelte` (`px-3` = 12px of side
- * padding each edge, `py-1` = 4px top/bottom, one bold ~14px text row plus the
- * 2px dashed border), padded out to a readable label width and a little body
- * breathing room. {@link MIN_GROUP_SIZE} MUST stay ≥ this in both axes so the
- * structural floor can never hide the header.
  */
-export const GROUP_HEADER_MIN_SIZE: Size = { width: 200, height: 120 };
+export const GROUP_HEADER_MIN_SIZE: Size = { width: 180, height: 90 };
 
 /** Floor so a group never collapses to a broken or negative box. */
-export const MIN_GROUP_SIZE: Size = { width: 220, height: 140 };
+export const MIN_GROUP_SIZE: Size = { width: 200, height: 100 };
 
 /**
  * Minimum footprint for a group with no members: the larger of the structural

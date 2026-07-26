@@ -402,6 +402,78 @@
   });
   let pendingAstTimer: ReturnType<typeof setTimeout> | undefined;
 
+  function checkRhaiSyntaxError(source: string): string | null {
+    if (!source) return null;
+    let openBraces = 0;
+    let openParens = 0;
+    let inString = false;
+    let stringChar = "";
+
+    for (let i = 0; i < source.length; i++) {
+      const char = source[i];
+      const prev = i > 0 ? source[i - 1] : "";
+
+      if (inString) {
+        if (char === stringChar && prev !== "\\") {
+          inString = false;
+        }
+        continue;
+      }
+
+      if (char === '"' || char === "'") {
+        inString = true;
+        stringChar = char;
+        continue;
+      }
+
+      if (char === "{") openBraces++;
+      else if (char === "}") openBraces--;
+      else if (char === "(") openParens++;
+      else if (char === ")") openParens--;
+    }
+
+    if (inString) return "Unclosed string literal";
+    if (openBraces > 0) return `Unclosed code block (${openBraces} missing '}')`;
+    if (openBraces < 0) return "Unexpected closing brace '}'";
+    if (openParens > 0) return `Unclosed parenthesis (${openParens} missing ')')`;
+    if (openParens < 0) return "Unexpected closing parenthesis ')'";
+
+    return null;
+  }
+
+  let rhaiSyntaxError = $derived(
+    isRhai && activeContent ? checkRhaiSyntaxError(activeContent) : null
+  );
+
+  let canRegenerate = $derived(rhaiSyntaxError === null);
+
+  let regenerateTooltip = $derived(
+    rhaiSyntaxError
+      ? `Cannot regenerate: ${rhaiSyntaxError}`
+      : "Regenerate visual canvas from Rhai code"
+  );
+
+  async function handleRegenerateCanvas() {
+    if (!canRegenerate || !activeKey || activeContent === undefined) return;
+    try {
+      const { invoke } = await import("@tauri-apps/api/core");
+      const res = await invoke<{ ast_canvas: string; rhai_source: string }>(
+        "chaoswrench_parse_rhai_ast",
+        { source: activeContent }
+      );
+      if (res.ast_canvas) {
+        const newCanvas = JSON.parse(res.ast_canvas);
+        const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
+        const filename = workbench.activeTab?.filename || "script.rhai";
+        const existingCanvas = workbench.canvasContents[activeKey];
+        const mergedCanvas = mergeCanvasWithExistingLayout(newCanvas, existingCanvas);
+        workbench.updateCanvasContent(pluginName, filename, mergedCanvas);
+      }
+    } catch (e) {
+      console.error("Failed to manually regenerate visual script AST:", e);
+    }
+  }
+
   // Debounced AST generation for live-reloading visual script while editing pending plugins
   $effect(() => {
     const content = activeContent;
@@ -412,7 +484,7 @@
 
     const isLive = (isPending && editingEnabled) || (workbench.activeTab?.viewMode === "split");
 
-    if (isLive && key && filename && content !== undefined) {
+    if (isLive && key && filename && content !== undefined && canRegenerate) {
       untrack(() => {
         clearTimeout(pendingAstTimer);
         pendingAstTimer = setTimeout(async () => {
@@ -868,6 +940,9 @@
             {unboundFunctions}
             {nativeFunctions}
             {canvasDisplayOnly}
+            onRegenerate={handleRegenerateCanvas}
+            {canRegenerate}
+            {regenerateTooltip}
           />
         {/if}
       </div>

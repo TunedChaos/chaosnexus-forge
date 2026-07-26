@@ -117,23 +117,18 @@ export function parseRhaiToFlow(
       if (n.type === "group") {
         if (n.id === "main_group") hasMainGroup = true;
         activeNodeIds.add(n.id);
-        const sanitizedSize = parseGroupSize(n.style || "width: 800px; height: 600px;");
+        const sanitizedSize = parseGroupSize(n.style || "width: 600px; height: 380px;");
         const sanitizedStyle = formatGroupStyle(sanitizedSize);
         finalNodes.push({
           id: n.id,
           type: "group",
           data: {
             label: n.label || "",
-            // Honor a persisted manual size so a user's resize survives reload.
-            // Absent on legacy/corrupted sidecars, which therefore re-fit snugly
-            // (this is what heals the runaway-inflated groups on next load).
             manualWidth: n.manualWidth,
             manualHeight: n.manualHeight,
           },
           position: { x: n.x, y: n.y },
           parentId: n.parentId,
-          // Mirror size into width/height: Svelte Flow's NodeWrapper applies these
-          // after `style`, so they must agree (and feed accurate drag hit-testing).
           width: sanitizedSize.width,
           height: sanitizedSize.height,
           style: sanitizedStyle,
@@ -142,8 +137,6 @@ export function parseRhaiToFlow(
             (n.id === "main_group"
               ? "main-logic-group border-2 !border-primary/80 bg-primary/5 rounded-xl shadow-lg shadow-primary/20 backdrop-blur-md"
               : "light-group"),
-          // Main Logic is pinned to the very back; every other group floats above
-          // it but stays below leaf nodes so child nodes remain visible.
           zIndex: n.id === "main_group" ? Z_MAIN_GROUP : Z_GROUP,
         });
       }
@@ -159,9 +152,9 @@ export function parseRhaiToFlow(
       type: "group",
       data: { label: "Main Logic" },
       position: { x: 50, y: 50 },
-      width: 800,
-      height: 600,
-      style: "width: 800px; height: 600px;",
+      width: 600,
+      height: 380,
+      style: "width: 600px; height: 380px;",
       class:
         "main-logic-group border-2 !border-primary/80 bg-primary/5 rounded-xl shadow-lg shadow-primary/20 backdrop-blur-md",
       zIndex: Z_MAIN_GROUP,

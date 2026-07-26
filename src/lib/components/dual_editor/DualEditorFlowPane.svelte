@@ -45,6 +45,9 @@
     unboundFunctions: string[];
     nativeFunctions: string[];
     canvasDisplayOnly?: boolean;
+    onRegenerate?: () => void;
+    canRegenerate?: boolean;
+    regenerateTooltip?: string;
   }
 
   let {
@@ -74,6 +77,9 @@
     unboundFunctions = [],
     nativeFunctions = [],
     canvasDisplayOnly = false,
+    onRegenerate,
+    canRegenerate = true,
+    regenerateTooltip = "",
   }: Props = $props();
 
   let paletteOpen = $state(false);
@@ -117,6 +123,9 @@
       {canUndo}
       {canRedo}
       onAddNode={triggerAddNode}
+      {onRegenerate}
+      {canRegenerate}
+      {regenerateTooltip}
     />
 
     {#if canvasDisplayOnly}

@@ -4,16 +4,16 @@
 
 import type { CanvasNodeRecord } from "./canvas_schema";
 
-/** Rendered card max-width (`NodeShell` uses min-w 190 / max-w 260). */
-export const NODE_W = 260;
-/** Approximate rendered card height (Branch / For Each nodes run taller). */
-export const NODE_H = 200;
+/** Rendered card max-width (`NodeShell` uses min-w 190 / max-w 240). */
+export const NODE_W = 220;
+/** Rendered card height (leaf nodes are ~90-100px tall). */
+export const NODE_H = 100;
 /** Vertical gap between nodes in the layout grid. */
-export const GAP_Y = 40;
+export const GAP_Y = 24;
 /** Horizontal gap between nodes in the layout grid. */
-export const GAP_X = 40;
-/** Padding applied around the main group to encapsulate its children. */
-export const GROUP_PAD = 48;
+export const GAP_X = 36;
+/** Padding applied around the main group to encapsulate its children snugly. */
+export const GROUP_PAD = 32;
 
 /** Y band within which nodes are treated as the same horizontal row. */
 const ROW_BAND = 36;

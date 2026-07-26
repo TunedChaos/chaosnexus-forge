@@ -11,6 +11,7 @@
   import IconRedo from "~icons/lucide/redo-2";
   import IconScan from "~icons/lucide/scan-search";
   import IconChevronDown from "~icons/lucide/chevron-down";
+  import IconRefreshCw from "~icons/lucide/refresh-cw";
   import { workbench } from "$lib/state.svelte";
 
   let viewMode = $derived(workbench.activeTab?.viewMode || "split");
@@ -32,6 +33,9 @@
     canUndo = false,
     canRedo = false,
     onAddNode,
+    onRegenerate,
+    canRegenerate = true,
+    regenerateTooltip = "",
   } = $props<{
     /** Whether the right-side properties palette is open. */
     paletteOpen?: boolean;
@@ -47,6 +51,12 @@
     canRedo?: boolean;
     /** Callback triggered to add a new node to the canvas at an optional anchor. */
     onAddNode: (anchor?: DOMRect) => void;
+    /** Callback triggered to manually force Rhai AST re-parse and canvas regeneration. */
+    onRegenerate?: () => void;
+    /** Whether code syntax allows visual canvas regeneration. */
+    canRegenerate?: boolean;
+    /** Tooltip explaining why regeneration is disabled when syntax is invalid. */
+    regenerateTooltip?: string;
   }>();
 
   const { fitView } = useSvelteFlow();
@@ -109,6 +119,19 @@
     >
       <IconGroup class="w-3.5 h-3.5" />
       New Group
+    </button>
+
+    <button
+      data-testid="visual-regenerate-btn"
+      onclick={onRegenerate}
+      disabled={!canRegenerate}
+      class="px-2 py-0.5 text-xs font-bold uppercase theme-bg-sidebar hover:theme-bg-header theme-text-main border theme-border rounded transition-all cursor-pointer shrink-0 flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed"
+      title={canRegenerate
+        ? "Regenerate visual canvas from Rhai code"
+        : (regenerateTooltip || "Cannot regenerate: syntax error in code")}
+    >
+      <IconRefreshCw class="w-3.5 h-3.5" />
+      Regenerate
     </button>
 
     <div class="h-4 w-px theme-bg-border mx-1 shrink-0"></div>
