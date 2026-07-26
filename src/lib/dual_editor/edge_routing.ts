@@ -178,6 +178,144 @@ export function stubPoint(
  * @param options Routing options.
  * @returns The SVG `d` path string representing the routed edge.
  */
+export interface Point {
+  x: number;
+  y: number;
+}
+
+/**
+ * Simplifies consecutive collinear or near-duplicate points to clean up SVG path generation.
+ */
+export function simplifyPoints(pts: Point[]): Point[] {
+  if (pts.length <= 2) return pts;
+  const result: Point[] = [pts[0]];
+
+  for (let i = 1; i < pts.length; i++) {
+    const prev = result[result.length - 1];
+    const curr = pts[i];
+
+    if (Math.hypot(curr.x - prev.x, curr.y - prev.y) < 0.5) {
+      continue;
+    }
+
+    if (result.length >= 2) {
+      const p0 = result[result.length - 2];
+      const isCollinear =
+        (Math.abs(p0.x - prev.x) < 0.1 && Math.abs(prev.x - curr.x) < 0.1) ||
+        (Math.abs(p0.y - prev.y) < 0.1 && Math.abs(prev.y - curr.y) < 0.1);
+      if (isCollinear) {
+        result[result.length - 1] = curr;
+        continue;
+      }
+    }
+
+    result.push(curr);
+  }
+
+  return result;
+}
+
+/**
+ * Builds an SVG path string from 2D waypoints, rounding all interior corners with quadratic
+ * bezier arcs (`Q`) of up to `borderRadius` pixels to prevent sharp stair-stepping.
+ */
+export function buildRoundedPath(points: Point[], borderRadius = 16): string {
+  if (points.length === 0) return "";
+  if (points.length === 1) return `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+  if (points.length === 2) {
+    return `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)} L ${points[1].x.toFixed(1)} ${points[1].y.toFixed(1)}`;
+  }
+
+  let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+
+  for (let i = 1; i < points.length - 1; i++) {
+    const prev = points[i - 1];
+    const curr = points[i];
+    const next = points[i + 1];
+
+    const v1x = curr.x - prev.x;
+    const v1y = curr.y - prev.y;
+    const len1 = Math.hypot(v1x, v1y);
+
+    const v2x = next.x - curr.x;
+    const v2y = next.y - curr.y;
+    const len2 = Math.hypot(v2x, v2y);
+
+    if (len1 < 0.001 || len2 < 0.001) {
+      d += ` L ${curr.x.toFixed(1)} ${curr.y.toFixed(1)}`;
+      continue;
+    }
+
+    const r = Math.min(borderRadius, len1 / 2, len2 / 2);
+
+    const startX = curr.x - (v1x / len1) * r;
+    const startY = curr.y - (v1y / len1) * r;
+
+    const endX = curr.x + (v2x / len2) * r;
+    const endY = curr.y + (v2y / len2) * r;
+
+    d += ` L ${startX.toFixed(1)} ${startY.toFixed(1)} Q ${curr.x.toFixed(1)} ${curr.y.toFixed(1)} ${endX.toFixed(1)} ${endY.toFixed(1)}`;
+  }
+
+  const last = points[points.length - 1];
+  d += ` L ${last.x.toFixed(1)} ${last.y.toFixed(1)}`;
+  return d;
+}
+
+/**
+ * Builds tight obstacles with minimal padding (2px) specifically for testing if a smooth
+ * bezier curve intersects node bodies, preventing false-positive fallback triggers.
+ */
+export function buildStrictObstacles(
+  rawNodes: FlowNodeLike[],
+  options: BuildObstaclesOptions
+): Obstacle[] {
+  const { source, target } = options;
+  const byId = new Map(rawNodes.map((n) => [n.id, n]));
+  const obstacles: Obstacle[] = [];
+
+  for (const n of rawNodes) {
+    if (n.type === "group") {
+      const origin = absoluteNodeOrigin(n, byId);
+      const size =
+        typeof n.width === "number" && typeof n.height === "number"
+          ? { width: n.width, height: n.height }
+          : parseGroupSize(typeof n.style === "string" ? n.style : undefined);
+      obstacles.push({
+        x: origin.x - 2,
+        y: origin.y - 2,
+        width: size.width + 4,
+        height: GROUP_HEADER_BAND_H + 4,
+      });
+      continue;
+    }
+
+    if (n.id === source || n.id === target) continue;
+
+    const origin = absoluteNodeOrigin(n, byId);
+    const { width, height } = nodeSize(n);
+    obstacles.push({
+      x: origin.x - 2,
+      y: origin.y - 2,
+      width: width + 4,
+      height: height + 4,
+    });
+  }
+
+  return obstacles;
+}
+
+/** 
+ * Routes an edge through A* and returns an SVG path string with rounded corners.
+ * 
+ * @param sourceX The source pin X coordinate.
+ * @param sourceY The source pin Y coordinate.
+ * @param targetX The target pin X coordinate.
+ * @param targetY The target pin Y coordinate.
+ * @param rawNodes All flow nodes used to compute obstacles.
+ * @param options Routing options.
+ * @returns The SVG `d` path string representing the routed edge.
+ */
 export function routeEdgePath(
   sourceX: number,
   sourceY: number,
@@ -195,17 +333,16 @@ export function routeEdgePath(
   const pts = findSmartPath(start.x, start.y, end.x, end.y, obstacles);
   if (pts.length === 0) return "";
 
-  let d = `M ${sourceX} ${sourceY} L ${start.x} ${start.y}`;
-  for (const p of pts) {
-    d += ` L ${p.x} ${p.y}`;
-  }
-  d += ` L ${end.x} ${end.y} L ${targetX} ${targetY}`;
-  return d;
-}
+  const fullPoints: Point[] = [
+    { x: sourceX, y: sourceY },
+    start,
+    ...pts,
+    end,
+    { x: targetX, y: targetY },
+  ];
 
-interface Point {
-  x: number;
-  y: number;
+  const cleaned = simplifyPoints(fullPoints);
+  return buildRoundedPath(cleaned, 16);
 }
 
 const BEZIER_SAMPLES = 24;
@@ -239,7 +376,7 @@ function horizontalBezier(
   const p1 = { x: sourceX + k, y: sourceY };
   const p2 = { x: targetX - k, y: targetY };
 
-  const d = `M ${p0.x},${p0.y} C ${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y}`;
+  const d = `M ${p0.x.toFixed(1)},${p0.y.toFixed(1)} C ${p1.x.toFixed(1)},${p1.y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)} ${p3.x.toFixed(1)},${p3.y.toFixed(1)}`;
   const samples: Point[] = [];
   for (let i = 0; i <= BEZIER_SAMPLES; i++) {
     samples.push(cubicAt(i / BEZIER_SAMPLES, p0, p1, p2, p3));
@@ -258,7 +395,7 @@ function pointInObstacle(p: Point, obstacles: { x: number; y: number; width: num
 
 /**
  * Primary edge router: a clean horizontal bezier when it does not cross any node
- * body or group-header band, otherwise the obstacle-avoiding A* orthogonal path.
+ * body or group-header band, otherwise the obstacle-avoiding A* path with smooth rounded corners.
  * 
  * @param sourceX The source pin X coordinate.
  * @param sourceY The source pin Y coordinate.
@@ -276,11 +413,12 @@ export function routeEdge(
   rawNodes: FlowNodeLike[],
   options: BuildObstaclesOptions
 ): string {
-  const obstacles = buildObstacles(rawNodes, options);
+  const strictObstacles = buildStrictObstacles(rawNodes, options);
   const bezier = horizontalBezier(sourceX, sourceY, targetX, targetY);
 
-  const blocked = bezier.samples.some((p) => pointInObstacle(p, obstacles));
+  const blocked = bezier.samples.some((p) => pointInObstacle(p, strictObstacles));
   if (!blocked) return bezier.d;
 
   return routeEdgePath(sourceX, sourceY, targetX, targetY, rawNodes, options);
 }
+

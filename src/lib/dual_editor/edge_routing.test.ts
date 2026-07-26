@@ -8,9 +8,11 @@
 import { describe, expect, it } from "vitest";
 import {
   buildObstacles,
+  buildRoundedPath,
   GROUP_HEADER_BAND_H,
   routeEdge,
   routeEdgePath,
+  simplifyPoints,
   type FlowNodeLike,
 } from "./edge_routing";
 
@@ -53,8 +55,36 @@ describe("edge_routing buildObstacles", () => {
   });
 });
 
+describe("edge_routing buildRoundedPath & simplifyPoints", () => {
+  it("simplifies collinear points", () => {
+    const pts = [
+      { x: 0, y: 0 },
+      { x: 50, y: 0 },
+      { x: 100, y: 0 },
+      { x: 100, y: 100 },
+    ];
+    const simplified = simplifyPoints(pts);
+    expect(simplified).toEqual([
+      { x: 0, y: 0 },
+      { x: 100, y: 0 },
+      { x: 100, y: 100 },
+    ]);
+  });
+
+  it("builds quadratic bezier arcs (Q) for interior corners", () => {
+    const pts = [
+      { x: 0, y: 0 },
+      { x: 100, y: 0 },
+      { x: 100, y: 100 },
+    ];
+    const path = buildRoundedPath(pts, 16);
+    expect(path).toContain("Q");
+    expect(path).toContain("L");
+  });
+});
+
 describe("edge_routing routeEdgePath", () => {
-  it("produces a routed SVG path between distant nodes", () => {
+  it("produces a routed SVG path between distant nodes with rounded corners", () => {
     const nodes = [mainGroup, left, right];
     const d = routeEdgePath(140, 180, 440, 180, nodes, {
       source: "left",
@@ -76,7 +106,7 @@ describe("edge_routing routeEdge", () => {
     expect(d).toContain("C");
   });
 
-  it("falls back to orthogonal A* routing when an obstacle sits on the straight line", () => {
+  it("falls back to obstacle-avoiding routing when an obstacle sits on the straight line", () => {
     // A blocker node directly between source and target forces the A* fallback.
     const blocker: FlowNodeLike = {
       id: "blocker",
@@ -93,3 +123,4 @@ describe("edge_routing routeEdge", () => {
     expect(d).not.toContain("C");
   });
 });
+
