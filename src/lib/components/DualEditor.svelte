@@ -7,7 +7,6 @@
   import { pendingPlugins } from "$lib/pending.svelte";
   import EditorActionBar from "./dual_editor/EditorActionBar.svelte";
   import EditorPaneHeader from "./dual_editor/EditorPaneHeader.svelte";
-  import MacroDrawer from "./MacroDrawer.svelte";
   import Splitter from "./Splitter.svelte";
   import { isDisplayOnlyCanvas } from "$lib/dual_editor/canvas_schema";
   import { mergeCanvasWithExistingLayout } from "$lib/dual_editor/canvas_layout";
@@ -159,11 +158,8 @@
     await handleSave();
   }
 
-  // Macro Drawer Settings State
-  let isDrawerOpen = $state(false);
-  let drawerNodeId = $state("");
-  let drawerNodeLabel = $state("");
-  let drawerInitialCode = $state("");
+  // Transient Monaco line jump decoration IDs
+  let jumpDecorationIds: string[] = [];
 
   /**
    * Pending destructive delete awaiting confirmation (opens
@@ -774,29 +770,66 @@
     }
   }
 
-  // Macro settings drawer openers and handlers
+  // Jumps to the target node's code block line in Monaco and applies a 1.5s highlight
   function handleOpenNodeSettings(nodeId: string, label: string) {
-    drawerNodeId = nodeId;
-    drawerNodeLabel = label;
-    drawerInitialCode = getNodeCode(activeContent, label);
-    isDrawerOpen = true;
-  }
+    const targetNode = nodes.find((n) => n.id === nodeId);
+    const fnName = (targetNode?.data as { fn?: string })?.fn || label;
+    const content = activeContent || "";
+    const lines = content.split("\n");
 
-  function handleSaveNodeMacro(newCode: string) {
-    const updatedFullCode = updateNodeCode(activeContent, drawerNodeLabel, newCode);
+    let targetLine = 1;
 
-    if (updatedFullCode !== activeContent) {
-      workbench.updateFileContent(
-        workbench.activeTab!.pluginName,
-        workbench.activeTab!.filename,
-        updatedFullCode
+    const anchorIdx = lines.findIndex(
+      (l) => l.includes("[NODE:") && l.includes(label)
+    );
+    if (anchorIdx !== -1) {
+      targetLine = anchorIdx + 1;
+    } else {
+      const fnIdx = lines.findIndex(
+        (l) =>
+          l.trim().startsWith(`fn ${fnName}`) ||
+          l.trim().startsWith(`fn ${label}`)
       );
-
-      if (monacoInstance) {
-        monacoInstance.setValue(updatedFullCode);
+      if (fnIdx !== -1) {
+        targetLine = fnIdx + 1;
+      } else if (label) {
+        const strIdx = lines.findIndex((l) => l.includes(label));
+        if (strIdx !== -1) targetLine = strIdx + 1;
       }
     }
-    isDrawerOpen = false;
+
+    if (viewMode === "visual") {
+      setViewMode("split");
+    }
+
+    setTimeout(() => {
+      if (monacoInstance) {
+        monacoInstance.revealLineInCenter(targetLine);
+        monacoInstance.setPosition({ lineNumber: targetLine, column: 1 });
+        monacoInstance.focus();
+
+        jumpDecorationIds = monacoInstance.deltaDecorations(jumpDecorationIds, [
+          {
+            range: {
+              startLineNumber: targetLine,
+              startColumn: 1,
+              endLineNumber: targetLine,
+              endColumn: (lines[targetLine - 1]?.length || 0) + 1,
+            },
+            options: {
+              isWholeLine: true,
+              className: "node-jump-highlight",
+            },
+          },
+        ]);
+
+        setTimeout(() => {
+          if (monacoInstance) {
+            jumpDecorationIds = monacoInstance.deltaDecorations(jumpDecorationIds, []);
+          }
+        }, 1500);
+      }
+    }, 50);
   }
   // Check for graph loop/cycles
   let hasCycles = $derived(getCyclicEdges(edges).size > 0);
@@ -945,17 +978,6 @@
         {/if}
       </div>
     </div>
-
-    <!-- Slide-out Settings Drawer with mini Monaco instance -->
-    <MacroDrawer
-      isOpen={isDrawerOpen}
-      nodeLabel={drawerNodeLabel}
-      initialCode={drawerInitialCode}
-      onSave={handleSaveNodeMacro}
-      onClose={() => {
-        isDrawerOpen = false;
-      }}
-    />
 
     <ConfirmDeleteModal
       open={!!pendingDelete}
