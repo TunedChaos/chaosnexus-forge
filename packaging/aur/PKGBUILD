@@ -1,0 +1,34 @@
+# chaosnexus-forge/packaging/aur/PKGBUILD
+# Maintainer: Tuned Chaos <lane@tunedchaos.com>
+#
+# DRAFT — not submitted to the AUR yet.
+# Local test (after symlinking monorepo artifacts into this directory):
+#   cd chaosnexus-forge/packaging/aur && makepkg -si
+#
+# Until public Codeberg Releases exist, prefer:
+#   just forge-release-linux
+
+pkgname=chaosnexus-forge
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Local-first visual scripting IDE for ChaosNexus Anvil"
+arch=('x86_64')
+url="https://chaosnexus.ai"
+license=('AGPL-3.0-or-later')
+depends=('webkit2gtk-4.1' 'gtk3' 'libsoup3' 'openssl')
+provides=("${pkgname}")
+conflicts=("${pkgname}")
+# Local files next to this PKGBUILD (symlink from artifacts/ — see README.md).
+# Replace with Codeberg release URLs + real checksums when publishing to AUR.
+source=(
+  "${pkgname}-${pkgver}-x86_64-unknown-linux-gnu"
+  "ai.chaosnexus.forge.desktop"
+)
+sha256sums=('SKIP' 'SKIP')
+
+package() {
+  install -Dm755 "${srcdir}/${pkgname}-${pkgver}-x86_64-unknown-linux-gnu" \
+    "${pkgdir}/usr/bin/chaosnexus-forge"
+  install -Dm644 "${srcdir}/ai.chaosnexus.forge.desktop" \
+    "${pkgdir}/usr/share/applications/ai.chaosnexus.forge.desktop"
+}

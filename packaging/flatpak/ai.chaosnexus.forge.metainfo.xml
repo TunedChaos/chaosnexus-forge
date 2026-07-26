@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- chaosnexus-forge/packaging/flatpak/ai.chaosnexus.forge.metainfo.xml -->
+<component type="desktop-application">
+  <id>ai.chaosnexus.forge</id>
+  <name>ChaosNexus Forge</name>
+  <summary>Local-first visual scripting IDE for ChaosNexus</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>AGPL-3.0-or-later</project_license>
+  <developer_name>Tuned Chaos</developer_name>
+  <description>
+    <p>
+      ChaosNexus Forge is the desktop IDE for reviewing and approving ChaosNexus Anvil
+      plugins, editing Rhai scripts, and exploring illustrative canvases locally.
+    </p>
+  </description>
+  <launchable type="desktop-id">ai.chaosnexus.forge.desktop</launchable>
+  <url type="homepage">https://chaosnexus.ai</url>
+  <url type="bugtracker">https://codeberg.org/TunedChaos/chaosnexus-forge/issues</url>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="0.1.0" date="2026-07-24" />
+  </releases>
+</component>

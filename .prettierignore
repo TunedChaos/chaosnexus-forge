@@ -1,0 +1,8 @@
+node_modules
+.svelte-kit
+build
+dist
+src-tauri/gen
+src-tauri/target
+playwright-report
+pnpm-lock.yaml

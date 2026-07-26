@@ -1,0 +1,50 @@
+# Monaco bundle metrics (whitelist optimization, 2026-06-30)
+# Captured from: pnpm run build (chaosnexus-forge)
+
+## Strategy
+Import the trimmed `monaco-editor/esm/vs/editor/edcore.main` entry (editor core +
+ALL standalone features) instead of the default `monaco-editor` barrel, then
+re-add only the grammars we support. This drops ~80 unused language grammars and
+the css/html/json/typescript language services (and, crucially, their workers).
+
+## Workers (loaded on demand by Monaco)
+                    BEFORE        AFTER
+ts.worker:          6.6 MB        removed
+css.worker:         1.1 MB        removed
+html.worker:        703 KB        removed
+json.worker:        400 KB        removed
+editor.worker:      ~579 KB       ~579 KB (still served via MonacoEnvironment)
+                    --------      --------
+total worker bytes: ~9.4 MB       ~0.58 MB   (~8.8 MB / ~94% reduction)
+
+## Client chunks
+monaco editor-core chunk: ~3.5 MB before AND after.
+  -> The editor core dominates this chunk; the 80 grammars + 4 language services
+     live in their now-removed worker/lang chunks, not the core, so the core
+     chunk size is unchanged. The real win is the eliminated workers + the
+     grammars/services that are no longer fetched or parsed at runtime.
+
+## Whitelisted languages
+- rhai      (custom Monarch grammar in monaco_languages.ts) -> .rhai/.rs
+- markdown  (built-in)  -> docs   [the only remaining built-in grammar]
+- toml      (custom Monarch grammar in monaco_languages.ts)
+- json      (custom Monarch grammar in monaco_languages.ts; no json.worker)
+
+## Update (2026-06-30, dedicated Rhai grammar)
+Replaced the `rust` built-in stand-in with a purpose-built Rhai Monarch grammar
++ language configuration (comment toggle, brackets, auto-close). The `rust`
+built-in grammar import is now dropped entirely (verified absent from the build:
+no rust.contribution chunk), leaving `markdown` as the sole built-in grammar.
+Rhai completion/hover providers and the macro drawer now bind the `rhai`
+language id. Editors also set `scrollBeyondLastLine: false`.
+
+## Features retained (edcore.main standalone contribs)
+command palette (F1), find/replace, folding, hover, suggest/IntelliSense,
+context menu, multicursor, comment toggle, bracket matching, word highlight,
+clipboard, rename, format actions, go-to-line/symbol, etc.
+
+## Build artifact note
+vite-plugin-monaco-editor mis-joins SvelteKit's absolute output base in
+writeBundle, creating a stray ./home/<abs-path>/.../editor.worker.bundle.js.
+This is gitignored (/home in chaosnexus-forge/.gitignore); the real worker is served
+from /monacoeditorwork via the plugin's MonacoEnvironment injection.
