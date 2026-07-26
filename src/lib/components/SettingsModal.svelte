@@ -1,6 +1,7 @@
 <!-- chaosnexus-forge/src/lib/components/SettingsModal.svelte -->
 <script lang="ts">
   import { onMount } from "svelte";
+  import { invoke } from "@tauri-apps/api/core";
   import ModalShell from "./ModalShell.svelte";
   import ThemedSelect from "./ThemedSelect.svelte";
   import {
@@ -200,13 +201,30 @@
           </p>
           <label class="block space-y-1">
             <span class="font-bold theme-text-main">Crucible binary</span>
-            <input
-              type="text"
-              class="w-full px-2 py-1.5 rounded border theme-border theme-bg-sidebar theme-text-main"
-              placeholder="/path/to/chaosnexus-crucible"
-              data-testid="settings-crucible-bin"
-              bind:value={appSettings.crucibleBin}
-            />
+            <div class="flex items-center gap-2">
+              <input
+                type="text"
+                class="flex-1 px-2 py-1.5 rounded border theme-border theme-bg-sidebar theme-text-main"
+                placeholder="/path/to/chaosnexus-crucible"
+                data-testid="settings-crucible-bin"
+                bind:value={appSettings.crucibleBin}
+              />
+              <button
+                type="button"
+                data-testid="settings-crucible-browse"
+                onclick={async () => {
+                  try {
+                    const selected = await invoke<string | null>("pick_file");
+                    if (selected) appSettings.crucibleBin = selected;
+                  } catch (e) {
+                    console.error("Failed to pick Crucible binary:", e);
+                  }
+                }}
+                class="px-3 py-1.5 theme-bg-sidebar hover:theme-bg-header border theme-border rounded font-bold uppercase transition-colors cursor-pointer shrink-0"
+              >
+                Browse…
+              </button>
+            </div>
           </label>
           <label class="block space-y-1">
             <span class="font-bold theme-text-main">Crucible port</span>

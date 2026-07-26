@@ -3,6 +3,7 @@
 import type { Node, Edge } from "@xyflow/svelte";
 import type { NodeDef } from "./types";
 import { formatGroupStyle, parseGroupSize } from "./dual_editor/group_geometry";
+import { col, row } from "./dual_editor/illustrative_layout";
 import {
   CANVAS_SCHEMA_VERSION,
   type CanvasDocumentV3,
@@ -163,20 +164,18 @@ export function parseRhaiToFlow(
 
   const defaultParentId = hasMainGroup ? "main_group" : undefined;
 
-  // Illustrative sidecars already contain the full wired graph; Rhai `[NODE:]`
-  // anchors must not spawn duplicate Function nodes on top of catalog nodes.
-  if (!metadata.displayOnly) activeLabels.forEach((label, index) => {
+  activeLabels.forEach((label, index) => {
     const metaNode = metadata.nodes?.find((n) => n.label === label);
 
     let id = `node_${index + 1}`;
-    let x = 100;
-    let y = 100 + index * 100;
+    let x = col(index);
+    let y = row(index);
     let parentId: string | undefined = defaultParentId;
 
     if (metaNode) {
       id = metaNode.id;
-      x = Number.isFinite(metaNode.x) ? metaNode.x : 100;
-      y = Number.isFinite(metaNode.y) ? metaNode.y : 100 + index * 100;
+      x = Number.isFinite(metaNode.x) ? metaNode.x : col(index);
+      y = Number.isFinite(metaNode.y) ? metaNode.y : row(index);
       // Honor the saved parent exactly. An explicitly absent parent means the
       // node lives at the root, which MUST round-trip: otherwise a node dragged
       // out of every group snaps back into Main on the next parse (the cause of
@@ -293,12 +292,10 @@ export function parseRhaiToFlow(
  */
 export function buildCanvasMetadata(
   nodes: Node[],
-  edges: Edge[],
-  options?: { displayOnly?: boolean }
+  edges: Edge[]
 ): CanvasMetadata {
   return {
     version: CANVAS_SCHEMA_VERSION,
-    displayOnly: options?.displayOnly,
     nodes: nodes.map((n) => {
       const data = n.data as {
         label?: string;

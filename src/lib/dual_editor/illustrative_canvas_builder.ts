@@ -113,7 +113,6 @@ function dataEdge(source: string, target: string, sourceHandle: string, targetHa
 function doc(nodes: N[], edges: E[]): CanvasDocumentV3 {
   return {
     version: CANVAS_SCHEMA_VERSION,
-    displayOnly: true,
     nodes: finalizeLayout(nodes),
     edges,
   };

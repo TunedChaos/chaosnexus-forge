@@ -342,6 +342,10 @@
     }
   }
 
+  import CrucibleBinaryModal from "../CrucibleBinaryModal.svelte";
+
+  let showCrucibleModal = $state(false);
+
   function toggleDiagnostics(index: number) {
     const target = messages[index];
     if (target) {
@@ -351,10 +355,14 @@
 
   async function onCrucibleToggle() {
     try {
-      if (crucible.isRunning) await crucible.stop();
-      else await crucible.start();
+      if (crucible.isRunning) {
+        await crucible.stop();
+      } else {
+        await crucible.start();
+      }
     } catch (e) {
       sessionError = String(e);
+      showCrucibleModal = true;
     }
   }
 </script>
@@ -519,3 +527,12 @@
     </div>
   </div>
 </div>
+
+<CrucibleBinaryModal
+  open={showCrucibleModal}
+  onClose={() => (showCrucibleModal = false)}
+  onSaveAndStart={async () => {
+    sessionError = null;
+    await crucible.start();
+  }}
+/>

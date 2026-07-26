@@ -557,6 +557,14 @@ fn pick_folder() -> Option<String> {
         .and_then(|path| path.to_str().map(|s| s.to_string()))
 }
 
+/// Opens a native OS dialog to pick an executable or file, returning the selected path as a string.
+#[tauri::command]
+fn pick_file() -> Option<String> {
+    rfd::FileDialog::new()
+        .pick_file()
+        .and_then(|path| path.to_str().map(|s| s.to_string()))
+}
+
 /// Returns the default list of node definitions registered with the system.
 #[tauri::command]
 fn get_node_registry() -> Vec<NodeDef> {
@@ -948,6 +956,7 @@ pub fn run() {
             delete_canvas_sidecar,
             extract_plugin_functions,
             pick_folder,
+            pick_file,
             settings::pick_file,
             settings::get_app_settings,
             settings::set_app_settings,

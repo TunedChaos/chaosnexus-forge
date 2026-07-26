@@ -666,9 +666,7 @@
     // this write is idempotent, so it won't fight us; this guarantees every node
     // mutation reaches the sidecar instead of depending on guard timing.
     if (activeKey && currentNodes.length > 0 && tab) {
-      const metadata = buildCanvasMetadata(currentNodes, currentEdges, {
-        displayOnly: activeCanvas?.displayOnly,
-      });
+      const metadata = buildCanvasMetadata(currentNodes, currentEdges);
       const serialized = JSON.stringify(metadata);
       const existing = workbench.canvasContents[activeKey];
       if (serialized !== JSON.stringify(existing)) {

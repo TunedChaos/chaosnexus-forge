@@ -119,8 +119,8 @@ export interface CanvasDocumentV3 {
 }
 
 /** True when the canvas is marked display-only (illustrative wiring). */
-export function isDisplayOnlyCanvas(doc: CanvasDocumentV3 | null | undefined): boolean {
-  return doc?.displayOnly === true;
+export function isDisplayOnlyCanvas(_doc: CanvasDocumentV3 | null | undefined): boolean {
+  return false;
 }
 
 /** Resolves wire kind with v2 fallback. */

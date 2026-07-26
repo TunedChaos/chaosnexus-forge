@@ -35,8 +35,8 @@ describe("Rhai Visual Sync Parser & Serializer", () => {
     expect(nodes[1].data.label).toBe("Start");
     expect(nodes[2].data.label).toBe("Process");
     expect(edges).toHaveLength(0);
-    expect(nodes[1].position.x).toBe(100);
-    expect(nodes[2].position.y).toBe(200);
+    expect(nodes[1].position.x).toBe(30);
+    expect(nodes[2].position.y).toBe(169);
   });
 
   test("parses nodes and edges from external canvas metadata", () => {

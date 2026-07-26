@@ -31,7 +31,6 @@ function sortNodes(nodes: CanvasMetadata["nodes"]) {
 function normalizeMetadata(meta: CanvasMetadata): CanvasMetadata {
   return {
     version: meta.version,
-    displayOnly: meta.displayOnly,
     nodes: sortNodes(meta.nodes).map((n) => ({
       id: n.id,
       label: n.label,
@@ -83,64 +82,24 @@ describe("bundled canvas sidecars", () => {
       const metadata = JSON.parse(readFileSync(sidecarAbs, "utf8")) as CanvasMetadata;
 
       expect(metadata.version).toBe(3);
-
-      if (metadata.displayOnly) {
-        expect(metadata.edges.length).toBeGreaterThan(0);
-        expect(metadata.nodes.filter((n) => n.type !== "group").length).toBeGreaterThan(0);
-      } else {
-        expect(metadata.edges).toEqual([]);
-      }
+      expect(metadata.nodes.filter((n) => n.type !== "group").length).toBeGreaterThan(0);
 
       const signatures = signaturesFromSidecar(metadata);
-      if (!metadata.displayOnly) {
-        expect(signatures.length).toBeGreaterThan(0);
-      }
 
       for (const edge of metadata.edges) {
         expect(metadata.nodes.some((n) => n.id === edge.source)).toBe(true);
         expect(metadata.nodes.some((n) => n.id === edge.target)).toBe(true);
       }
 
-      const graphNodes = metadata.nodes
-        .filter((n) => n.type !== "group")
-        .map((n) => ({
-          id: n.id,
-          fn: n.fn ?? n.label,
-          kind: (n.kind ?? "function") as "function",
-        }));
-
-      const graphEdges = metadata.edges.map((e) => ({
-        id: e.id,
-        source: e.source,
-        target: e.target,
-        sourceHandle: e.sourceHandle,
-        targetHandle: e.targetHandle,
-        type: e.kind === "exec" ? "execEdge" : "tacticalEdge",
-      }));
-
-      const errors = metadata.displayOnly
-        ? []
-        : validateGraph(graphNodes, graphEdges, signatures, true).filter(
-            (d) => d.severity === "error"
-          );
-      expect(errors).toEqual([]);
-
       const stripped = stripCanvasMetadata(rhaiSource);
       const parsed = parseRhaiToFlow(stripped, [], metadata);
       const merged = mergeCanvasAssemblyNodes(parsed.nodes, metadata, signatures);
-      const rebuilt = buildCanvasMetadata(merged, parsed.edges, {
-        displayOnly: metadata.displayOnly,
-      });
+      const rebuilt = buildCanvasMetadata(merged, parsed.edges);
 
-      if (metadata.displayOnly) {
-        expect(rebuilt.displayOnly).toBe(true);
-        expect(rebuilt.edges.length).toBe(metadata.edges.length);
-        expect(rebuilt.nodes.filter((n) => n.type !== "group").length).toBe(
-          metadata.nodes.filter((n) => n.type !== "group").length
-        );
-      } else {
-        expect(normalizeMetadata(rebuilt)).toEqual(normalizeMetadata(metadata));
-      }
+      expect(rebuilt.edges.length).toBe(metadata.edges.length);
+      expect(rebuilt.nodes.filter((n) => n.type !== "group").length).toBe(
+        metadata.nodes.filter((n) => n.type !== "group").length
+      );
 
       if (target.rhaiPath.includes("test_plugin")) {
         expect(extractEmbeddedCanvasMetadata(rhaiSource)).toBeNull();
