@@ -17,7 +17,6 @@ export function generateRhaiFromCanvas(
   
   for (const ev of events) {
     const fnName = (ev.data as any).eventId || "on_plugin_start";
-    output += `// --- [NODE: ${fnName}] ---\n`;
     output += `fn ${fnName}() {\n`;
     output += traverseExec(ev.id, "then", nodes, edges, registry, 1);
     output += `}\n\n`;
