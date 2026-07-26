@@ -233,9 +233,59 @@ export function parseRhaiToFlow(
     });
   });
 
-  // v3: canvas-only catalog nodes (no Rhai `[NODE:]` anchor) still restore wires.
+  // v3: canvas-only catalog nodes (nodes with `kind` or active canvas records)
   metadata.nodes?.forEach((metaNode) => {
-    if (metaNode.id && metaNode.kind) activeNodeIds.add(metaNode.id);
+    if (metaNode.type === "group" || !metaNode.id) return;
+    // Skip legacy anchor nodes (without `kind`) that are no longer present in Rhai code comments
+    if (!metaNode.kind && !activeLabels.includes(metaNode.label)) return;
+
+    if (finalNodes.some((n) => n.id === metaNode.id)) {
+      activeNodeIds.add(metaNode.id);
+      return;
+    }
+
+    activeNodeIds.add(metaNode.id);
+
+    let nodeDef: NodeDef | undefined = undefined;
+    let type = "codeNativeNode";
+
+    if (
+      metaNode.type &&
+      metaNode.type !== "default" &&
+      metaNode.type !== "rhaiNode" &&
+      metaNode.type !== "codeNativeNode"
+    ) {
+      nodeDef = nodeRegistry.find((d) => d.type_id === metaNode.type);
+      if (nodeDef) type = metaNode.type;
+    }
+
+    finalNodes.push({
+      id: metaNode.id,
+      type: type === "codeNativeNode" ? "codeNativeNode" : "rhaiNode",
+      data: {
+        label: metaNode.label || "",
+        def: nodeDef,
+        nodeType: type,
+        isEntryAnchor: metaNode.label === PLUGIN_ENTRY_ANCHOR,
+        fn: metaNode.fn ?? metaNode.label,
+        kind: metaNode.kind,
+        value: metaNode.value,
+        valueType: metaNode.valueType,
+        pins: metaNode.pins,
+        scriptBody: metaNode.scriptBody,
+        operatorId: metaNode.operatorId,
+        varName: metaNode.varName,
+        eventId: metaNode.eventId,
+      },
+      position: {
+        x: Number.isFinite(metaNode.x) ? metaNode.x : 50,
+        y: Number.isFinite(metaNode.y) ? metaNode.y : 50,
+      },
+      parentId: metaNode.parentId,
+      style: metaNode.style || undefined,
+      class: metaNode.class || undefined,
+      zIndex: Z_NODE_BASE + finalNodes.length,
+    });
   });
 
   const nodeKindById = new Map(
