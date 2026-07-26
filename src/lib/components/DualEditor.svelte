@@ -10,6 +10,7 @@
   import MacroDrawer from "./MacroDrawer.svelte";
   import Splitter from "./Splitter.svelte";
   import { isDisplayOnlyCanvas } from "$lib/dual_editor/canvas_schema";
+  import { mergeCanvasWithExistingLayout } from "$lib/dual_editor/canvas_layout";
   import DualEditorFlowPane from "./dual_editor/DualEditorFlowPane.svelte";
   import DualEditorPendingBanner from "./dual_editor/DualEditorPendingBanner.svelte";
   import DualEditorWelcomePane from "./dual_editor/DualEditorWelcomePane.svelte";

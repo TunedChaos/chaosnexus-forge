@@ -360,17 +360,64 @@
 </script>
 
 <div class="flex flex-col h-full theme-bg-main theme-text-main font-mono text-xs" data-testid="agent-chat-ui">
-  <div class="flex-none flex items-center justify-between px-3 py-2 theme-bg-header theme-border-b gap-2">
-    <div class="flex items-center gap-2 min-w-0">
-      <div
-        class="w-2 h-2 rounded-full shrink-0 {crucible.isRunning ? 'bg-green-500' : 'bg-zinc-500'}"
-        data-testid="crucible-status-dot"
-      ></div>
-      <span class="font-bold uppercase tracking-wider text-xs shrink-0">Agent Chat</span>
+  <div class="flex-none flex flex-col theme-bg-header theme-border-b px-3 py-2 gap-2">
+    <!-- Top Row: Title, Dot + Action Controls -->
+    <div class="flex items-center justify-between gap-2 min-w-0">
+      <div class="flex items-center gap-2 min-w-0">
+        <div
+          class="w-2 h-2 rounded-full shrink-0 {crucible.isRunning ? 'bg-green-500' : 'bg-zinc-500'}"
+          data-testid="crucible-status-dot"
+        ></div>
+        <span class="font-bold uppercase tracking-wider text-xs shrink-0 truncate">Agent Chat</span>
+      </div>
 
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button
+          type="button"
+          class="px-2 py-0.5 rounded border theme-border text-[10px] uppercase font-bold hover:theme-bg-accent transition-colors"
+          data-testid="crucible-toggle"
+          onclick={onCrucibleToggle}
+        >
+          {crucible.isRunning ? "Stop LLM" : "Start LLM"}
+        </button>
+        {#if onUndock && agentChat.mode === "docked"}
+          <button type="button" class="theme-text-muted hover:theme-text-main px-1 text-xs" data-testid="agent-chat-undock" onclick={onUndock} aria-label="Undock chat">
+            ⧉
+          </button>
+        {/if}
+        {#if onRedock && agentChat.mode === "float"}
+          <button type="button" class="theme-text-muted hover:theme-text-main px-1 text-xs" data-testid="agent-chat-redock" onclick={onRedock} aria-label="Redock chat">
+            ▤
+          </button>
+        {/if}
+        {#if isTyping}
+          <button
+            type="button"
+            class="px-2 py-0.5 bg-red-800 hover:bg-red-700 text-white rounded text-[10px] uppercase font-bold"
+            onclick={stopCurrentAgent}
+          >
+            Stop
+          </button>
+        {/if}
+        {#if onClose}
+          <button
+            type="button"
+            class="theme-text-muted hover:theme-text-main text-xs px-1"
+            aria-label="Close Chat"
+            data-testid="agent-chat-close"
+            onclick={onClose}
+          >
+            ✕
+          </button>
+        {/if}
+      </div>
+    </div>
+
+    <!-- Bottom Row: Dropdown Selection Controls -->
+    <div class="flex items-center gap-2 min-w-0">
       <select
         bind:value={selectedProvider}
-        class="theme-bg-sidebar theme-border rounded px-1.5 py-0.5 text-[11px] outline-none cursor-pointer max-w-[140px]"
+        class="flex-1 min-w-0 theme-bg-sidebar theme-border rounded px-1.5 py-0.5 text-[11px] outline-none cursor-pointer truncate"
         disabled={isTyping}
         data-testid="agent-provider-select"
       >
@@ -383,7 +430,7 @@
 
       {#if projectRoot}
         <select
-          class="theme-bg-sidebar theme-border rounded px-1.5 py-0.5 text-[11px] max-w-[120px]"
+          class="flex-1 min-w-0 theme-bg-sidebar theme-border rounded px-1.5 py-0.5 text-[11px] outline-none cursor-pointer truncate"
           data-testid="agent-session-select"
           value={activeSessionId ?? ""}
           onchange={(e) => {
@@ -396,47 +443,6 @@
             <option value={s.id}>{s.title}</option>
           {/each}
         </select>
-      {/if}
-    </div>
-
-    <div class="flex items-center gap-1 shrink-0">
-      <button
-        type="button"
-        class="px-2 py-0.5 rounded border theme-border text-[10px] uppercase font-bold"
-        data-testid="crucible-toggle"
-        onclick={onCrucibleToggle}
-      >
-        {crucible.isRunning ? "Stop LLM" : "Start LLM"}
-      </button>
-      {#if onUndock && agentChat.mode === "docked"}
-        <button type="button" class="theme-text-muted hover:theme-text-main px-1" data-testid="agent-chat-undock" onclick={onUndock} aria-label="Undock chat">
-          ⧉
-        </button>
-      {/if}
-      {#if onRedock && agentChat.mode === "float"}
-        <button type="button" class="theme-text-muted hover:theme-text-main px-1" data-testid="agent-chat-redock" onclick={onRedock} aria-label="Redock chat">
-          ▤
-        </button>
-      {/if}
-      {#if isTyping}
-        <button
-          type="button"
-          class="px-2 py-0.5 bg-red-800 hover:bg-red-700 text-white rounded text-[10px] uppercase font-bold"
-          onclick={stopCurrentAgent}
-        >
-          Stop
-        </button>
-      {/if}
-      {#if onClose}
-        <button
-          type="button"
-          class="theme-text-muted hover:theme-text-main"
-          aria-label="Close Chat"
-          data-testid="agent-chat-close"
-          onclick={onClose}
-        >
-          ✕
-        </button>
       {/if}
     </div>
   </div>
