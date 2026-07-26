@@ -119,6 +119,13 @@
     };
     mediaQuery.addEventListener("change", handleSystemThemeChange);
 
+    // Dismiss initial loading overlay with a smooth opacity fade
+    const loader = document.getElementById("initial-loader");
+    if (loader) {
+      loader.style.opacity = "0";
+      setTimeout(() => loader.remove(), 350);
+    }
+
     // Close Tauri Splash Screen if we are running under Tauri
     if (window.__TAURI_INTERNALS__) {
       import("@tauri-apps/api/core")

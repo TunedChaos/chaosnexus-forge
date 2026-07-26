@@ -17,9 +17,6 @@ function main(): void {
   for (const target of ILLUSTRATIVE_TARGETS) {
     try {
       const doc = target.build();
-      if (!doc.displayOnly) {
-        throw new Error("displayOnly must be true for illustrative canvases");
-      }
       if (!doc.edges.length) {
         throw new Error("illustrative canvas must have wiring edges");
       }

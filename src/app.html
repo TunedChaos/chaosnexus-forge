@@ -6,6 +6,112 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ChaosNexus Forge</title>
     %sveltekit.head%
+    <style>
+      #initial-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--loader-bg, #09090b);
+        color: var(--loader-text, #f4f4f5);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        transition: opacity 0.35s ease, visibility 0.35s ease;
+        pointer-events: none;
+      }
+      .loader-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.25rem;
+      }
+      .loader-icon-container {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .loader-ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        border-top-color: #f59e0b;
+        border-right-color: #d97706;
+        animation: loader-spin 1.2s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+      }
+      .loader-ring-outer {
+        position: absolute;
+        inset: -8px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        border-bottom-color: rgba(245, 158, 11, 0.35);
+        border-left-color: rgba(245, 158, 11, 0.15);
+        animation: loader-spin-reverse 2.4s linear infinite;
+      }
+      .loader-logo {
+        width: 32px;
+        height: 32px;
+        color: #f59e0b;
+        animation: loader-pulse 1.8s ease-in-out infinite;
+      }
+      .loader-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .loader-subtext {
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        opacity: 0.65;
+        animation: loader-fade-pulse 2s ease-in-out infinite;
+      }
+      .loader-bar {
+        width: 140px;
+        height: 3px;
+        border-radius: 9999px;
+        background: rgba(245, 158, 11, 0.15);
+        overflow: hidden;
+        position: relative;
+      }
+      .loader-bar-fill {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 40%;
+        background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        border-radius: 9999px;
+        animation: loader-progress 1.5s ease-in-out infinite;
+      }
+      @keyframes loader-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes loader-spin-reverse {
+        0% { transform: rotate(360deg); }
+        100% { transform: rotate(0deg); }
+      }
+      @keyframes loader-pulse {
+        0%, 100% { transform: scale(1); opacity: 0.9; }
+        50% { transform: scale(1.08); opacity: 1; }
+      }
+      @keyframes loader-fade-pulse {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 0.85; }
+      }
+      @keyframes loader-progress {
+        0% { left: -40%; }
+        100% { left: 100%; }
+      }
+    </style>
     <script>
       (function () {
         try {
@@ -34,11 +140,29 @@
           document.documentElement.setAttribute("data-theme", activeTheme);
           const isDark = activeTheme.includes("dark");
           document.documentElement.style.backgroundColor = isDark ? "#09090b" : "#fafafa";
+          document.documentElement.style.setProperty("--loader-bg", isDark ? "#09090b" : "#fafafa");
+          document.documentElement.style.setProperty("--loader-text", isDark ? "#f4f4f5" : "#18181b");
         } catch (e) {}
       })();
     </script>
   </head>
   <body data-sveltekit-preload-data="hover">
+    <div id="initial-loader">
+      <div class="loader-content">
+        <div class="loader-icon-container">
+          <div class="loader-ring-outer"></div>
+          <div class="loader-ring"></div>
+          <svg class="loader-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="loader-title">ChaosNexus Forge</div>
+        <div class="loader-bar">
+          <div class="loader-bar-fill"></div>
+        </div>
+        <div class="loader-subtext">Initializing Anvil engine & visual workspace...</div>
+      </div>
+    </div>
     <div style="display: contents">%sveltekit.body%</div>
   </body>
 </html>
