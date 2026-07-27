@@ -49,6 +49,10 @@
     canRegenerate?: boolean;
     regenerateTooltip?: string;
     isGeneratingCanvas?: boolean;
+    /** Incremented by DualEditor after layout spring settles to trigger fitView. */
+    fitViewNonce?: number;
+    /** When true, skip post-measure bubble physics so it does not fight the spring. */
+    layoutSpringActive?: boolean;
   }
 
   let {
@@ -82,6 +86,8 @@
     canRegenerate = true,
     regenerateTooltip = "",
     isGeneratingCanvas = false,
+    fitViewNonce = 0,
+    layoutSpringActive = false,
   }: Props = $props();
 
   let paletteOpen = $state(false);
@@ -207,6 +213,8 @@
         {svelteFlowColorMode}
         {paletteOpen}
         {paletteItems}
+        {fitViewNonce}
+        {layoutSpringActive}
         onConnect={onConnect}
         onSelectPaletteItem={handlePaletteItem}
         {onEditNode}

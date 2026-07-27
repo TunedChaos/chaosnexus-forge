@@ -12,7 +12,7 @@ import {
   type CanvasPinDescriptor,
   resolveWireKind,
 } from "./dual_editor/canvas_schema";
-import { catalogByKind, catalogPinsToDescriptors } from "./dual_editor/node_catalog";
+import { catalogByKind, catalogPinsToDescriptors, flowTypeForKind } from "./dual_editor/node_catalog";
 import { buildEdgeStyle, sourceDataTypeFor } from "./dual_editor/edge_visuals";
 
 /** Re-export v3 canvas document shape (sidecar SSOT). */
@@ -128,7 +128,12 @@ export function parseRhaiToFlow(
             manualWidth: n.manualWidth,
             manualHeight: n.manualHeight,
           },
-          position: { x: n.x, y: n.y },
+          // Null/undefined group coords (common from Rust AST dumps) must become
+          // finite numbers or xyflow collapses every child to 0,0.
+          position: {
+            x: Number.isFinite(n.x) ? n.x : 50,
+            y: Number.isFinite(n.y) ? n.y : 50,
+          },
           parentId: n.parentId,
           width: sanitizedSize.width,
           height: sanitizedSize.height,
@@ -249,13 +254,7 @@ export function parseRhaiToFlow(
     let nodeDef: NodeDef | undefined = undefined;
     
     const kind = metaNode.kind ?? "function";
-    let type = metaNode.type ?? (
-      kind === "branch" ? "branchNode" :
-      kind === "iterator" || kind === "for-each" ? "iteratorNode" :
-      kind === "event" || kind === "script" || kind === "set-variable" ? "rhaiNode" :
-      kind === "literal" ? "literalNode" :
-      "codeNativeNode"
-    );
+    let type = metaNode.type ?? flowTypeForKind(kind);
 
     if (
       type !== "default" &&
@@ -263,7 +262,12 @@ export function parseRhaiToFlow(
       type !== "codeNativeNode" &&
       type !== "branchNode" &&
       type !== "iteratorNode" &&
-      type !== "literalNode"
+      type !== "literalNode" &&
+      type !== "eventNode" &&
+      type !== "forEachNode" &&
+      type !== "setVariableNode" &&
+      type !== "scriptNode" &&
+      type !== "returnNode"
     ) {
       nodeDef = nodeRegistry.find((d) => d.type_id === type);
     }

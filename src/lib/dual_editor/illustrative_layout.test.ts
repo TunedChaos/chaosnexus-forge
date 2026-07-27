@@ -6,11 +6,21 @@
  * used to format illustrative canvases in ChaosNexus Forge.
  */
 import { describe, expect, it } from "vitest";
-import { col, deOverlapNodes, GAP_X, NODE_H, NODE_W, row } from "./illustrative_layout";
+import {
+  BUBBLE_PAD,
+  bubbleRadius,
+  col,
+  deOverlapNodes,
+  GAP_X,
+  NODE_H,
+  NODE_W,
+  physicsDeOverlapNodes,
+  row,
+} from "./illustrative_layout";
 import type { CanvasNodeRecord } from "./canvas_schema";
 
-function leaf(id: string, x: number, y: number): CanvasNodeRecord {
-  return { id, label: id, x, y, parentId: "main_group", kind: "script" };
+function leaf(id: string, x: number, y: number, h = NODE_H): CanvasNodeRecord {
+  return { id, label: id, x, y, height: h, parentId: "main_group", kind: "script" };
 }
 
 describe("illustrative_layout deOverlapNodes", () => {
@@ -48,5 +58,24 @@ describe("illustrative_layout deOverlapNodes", () => {
     const overlapX = Math.min(n1.x + NODE_W + 36 - n2.x, n2.x + NODE_W + 36 - n1.x);
     const overlapY = Math.min(n1.y + NODE_H + 24 - n2.y, n2.y + NODE_H + 24 - n1.y);
     expect(overlapX <= 0 || overlapY <= 0).toBe(true);
+  });
+
+  it("separates tall overlapping cards beyond bubble personal space", () => {
+    const tall = 180;
+    const nodes = physicsDeOverlapNodes([
+      { id: "main_group", label: "Main Logic", x: 50, y: 50, type: "group" },
+      leaf("tall_a", 30, 45, tall),
+      leaf("tall_b", 40, 50, tall),
+    ]);
+
+    const a = nodes.find((n) => n.id === "tall_a")!;
+    const b = nodes.find((n) => n.id === "tall_b")!;
+    const cxA = a.x + NODE_W / 2;
+    const cyA = a.y + tall / 2;
+    const cxB = b.x + NODE_W / 2;
+    const cyB = b.y + tall / 2;
+    const dist = Math.hypot(cxB - cxA, cyB - cyA);
+    const minDist = bubbleRadius(NODE_W, tall) + bubbleRadius(NODE_W, tall) + BUBBLE_PAD;
+    expect(dist).toBeGreaterThanOrEqual(minDist - 1);
   });
 });

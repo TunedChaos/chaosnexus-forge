@@ -24,6 +24,10 @@
   import type { PaletteItem, FlowPosition } from "$lib/dual_editor/node_palette";
   import { resizeGroupsBottomUp, type Size } from "$lib/dual_editor/group_geometry";
   import {
+    applyPhysicsToFlowNodes,
+    flowNodesHaveBubbleOverlaps,
+  } from "$lib/dual_editor/illustrative_layout";
+  import {
     isReparentableOnDrag,
     isSelfOrDescendant,
     liftNodesToRootForDrag,
@@ -55,6 +59,10 @@
     openAddNodeMenu?: (anchor?: DOMRect) => void;
     /** Exposes measured node sizes to node_actions (DualEditor sits above the provider). */
     getNodeSize?: (id: string) => Size | undefined;
+    /** When incremented, fit the viewport to the laid-out graph (post spring settle). */
+    fitViewNonce?: number;
+    /** When true, skip post-measure bubble physics so it does not fight the spring. */
+    layoutSpringActive?: boolean;
   }
 
   let {
@@ -77,15 +85,32 @@
     onPaletteClose,
     openAddNodeMenu = $bindable(),
     getNodeSize = $bindable(),
+    fitViewNonce = 0,
+    layoutSpringActive = false,
   }: Props = $props();
 
-  const { screenToFlowPosition, getInternalNode } = useSvelteFlow();
+  const { screenToFlowPosition, getInternalNode, fitView } = useSvelteFlow();
 
   getNodeSize = (id: string) => {
     const measured = getInternalNode(id)?.measured;
     if (!measured?.width || !measured?.height) return undefined;
     return { width: measured.width, height: measured.height };
   };
+
+  // After layout spring settles, DualEditor bumps fitViewNonce so we frame main_group.
+  // Use duration 0: an animated fitView leaves fitViewQueued true for the whole tween,
+  // and node measure/drag updates re-call resolveFitView — which feels like the camera
+  // is springing / recentering on main_group while the user pans or drags.
+  let lastFitNonce = $state(0);
+  $effect(() => {
+    const nonce = fitViewNonce;
+    if (nonce <= 0 || nonce === lastFitNonce) return;
+    lastFitNonce = nonce;
+    // Defer one frame so snug-fit group sizes from settle are committed first.
+    requestAnimationFrame(() => {
+      fitView({ nodes: [{ id: "main_group" }], padding: 0.2, duration: 0 });
+    });
+  });
 
   // The parse pass sizes groups before leaf nodes are measured, so it falls back
   // to DEFAULT_NODE_SIZE and can leave a group too small for its members (the
@@ -113,7 +138,13 @@
       if (!sig || sig === lastMeasureSig) return;
       lastMeasureSig = sig;
 
-      const reflowed = resizeGroupsBottomUp(nodes, (id) => getNodeSize?.(id));
+      const sizeOf = (id: string) => getNodeSize?.(id);
+      let reflowed = resizeGroupsBottomUp(nodes, sizeOf);
+      // Tall script cards often exceed the layout floor height; once measured,
+      // re-run bubble physics so residual AABB overlaps clear without waiting for drag.
+      if (!layoutSpringActive && flowNodesHaveBubbleOverlaps(reflowed, sizeOf)) {
+        reflowed = resizeGroupsBottomUp(applyPhysicsToFlowNodes(reflowed, sizeOf), sizeOf);
+      }
       const shape = (n: Node) =>
         `${n.id}|${typeof n.style === "string" ? n.style : ""}|${n.position.x},${n.position.y}`;
       if (reflowed.some((n, i) => shape(n) !== shape(nodes[i]))) nodes = reflowed;
@@ -426,7 +457,7 @@
     minZoom={0.2}
     maxZoom={2}
     fitView
-    fitViewOptions={{ padding: 0.25, maxZoom: 1 }}
+    fitViewOptions={{ padding: 0.25, maxZoom: 1, duration: 0 }}
     elevateNodesOnSelect={false}
     selectionOnDrag={true}
     panOnDrag={[1]}

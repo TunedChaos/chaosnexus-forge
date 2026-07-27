@@ -27,11 +27,51 @@ export function isStaircasedLayout(canvas: CanvasDocumentV3 | null | undefined):
   return staircaseMatches / leafNodes.length >= 0.6;
 }
 
+/** Options for {@link finalizeCanvasDocumentLayout}. */
+export interface FinalizeLayoutOptions {
+  /**
+   * When true, always recomputes function-lane X/Y even if nodes already have
+   * coordinates (used by the Regenerate button).
+   */
+  force?: boolean;
+}
+
+/**
+ * Priority for outbound exec handles: continue horizontally first (then/true/item),
+ * then drop to the next row for false/completed forks.
+ */
+function execHandleLayoutPriority(handle: string | undefined): number {
+  switch (handle) {
+    case "then":
+    case "then_0":
+    case "exec_out":
+    case "out":
+      return 0;
+    case "true":
+    case "item":
+    case "body":
+    case "try":
+      return 1;
+    case "false":
+    case "completed":
+    case "catch":
+    case "default":
+      return 2;
+    default:
+      return 3;
+  }
+}
+
+type ExecOut = { target: string; handle?: string };
+
 /**
  * Runs full automatic layout for a freshly generated canvas document (e.g. on initial load without a sidecar).
  * Groups nodes into horizontal function lanes and execution chains, avoiding diagonal staircasing.
  */
-export function finalizeCanvasDocumentLayout(doc: CanvasDocumentV3): CanvasDocumentV3 {
+export function finalizeCanvasDocumentLayout(
+  doc: CanvasDocumentV3,
+  options: FinalizeLayoutOptions = {}
+): CanvasDocumentV3 {
   if (!doc.nodes || doc.nodes.length === 0) return doc;
 
   const leafNodes = doc.nodes.filter((n) => n.type !== "group");
@@ -39,6 +79,7 @@ export function finalizeCanvasDocumentLayout(doc: CanvasDocumentV3): CanvasDocum
 
   // Check if nodes already have valid non-staircased preplaced coordinates
   const hasPreplacedCoordinates =
+    !options.force &&
     leafNodes.length > 0 &&
     leafNodes.every((n) => Number.isFinite(n.x) && Number.isFinite(n.y) && (n.x !== 0 || n.y !== 0)) &&
     !isStaircasedLayout(doc);
@@ -54,7 +95,7 @@ export function finalizeCanvasDocumentLayout(doc: CanvasDocumentV3): CanvasDocum
   const edges = doc.edges || [];
 
   // Build adjacency maps for execution flow (ignoring data wires for layout tree structure)
-  const targetMap = new Map<string, string[]>();
+  const targetMap = new Map<string, ExecOut[]>();
   const execInDegree = new Map<string, number>();
 
   for (const node of leafNodes) {
@@ -68,8 +109,18 @@ export function finalizeCanvasDocumentLayout(doc: CanvasDocumentV3): CanvasDocum
       execInDegree.set(edge.target, (execInDegree.get(edge.target) || 0) + 1);
     }
     if (targetMap.has(edge.source)) {
-      targetMap.get(edge.source)!.push(edge.target);
+      targetMap.get(edge.source)!.push({
+        target: edge.target,
+        handle: edge.sourceHandle,
+      });
     }
+  }
+
+  // Sort each adjacency list so true/item stay on the parent row and false drops below.
+  for (const [, outs] of targetMap) {
+    outs.sort(
+      (a, b) => execHandleLayoutPriority(a.handle) - execHandleLayoutPriority(b.handle)
+    );
   }
 
   // Root nodes start new horizontal function lanes
@@ -97,14 +148,26 @@ export function finalizeCanvasDocumentLayout(doc: CanvasDocumentV3): CanvasDocum
       });
     }
 
-    const nextTargets = (targetMap.get(nodeId) || []).filter((t: string) => !visited.has(t));
+    const nextTargets = (targetMap.get(nodeId) || [])
+      .filter((t) => !visited.has(t.target))
+      // Deduplicate targets that appear on multiple handles.
+      .filter((t, idx, arr) => arr.findIndex((o) => o.target === t.target) === idx);
     if (nextTargets.length === 0) {
       return startRow;
     }
 
     let childStartRow = startRow;
     for (let i = 0; i < nextTargets.length; i++) {
-      const childMaxRow = layoutTree(nextTargets[i], depthCol + 1, childStartRow);
+      const out = nextTargets[i];
+      // false/completed forks always start on a fresh row beneath the true lane.
+      if (i > 0 || execHandleLayoutPriority(out.handle) >= 2) {
+        if (i > 0) {
+          childStartRow = maxRowUsed + 1;
+        } else if (execHandleLayoutPriority(out.handle) >= 2) {
+          childStartRow = startRow + 1;
+        }
+      }
+      const childMaxRow = layoutTree(out.target, depthCol + 1, childStartRow);
       maxRowUsed = Math.max(maxRowUsed, childMaxRow);
       childStartRow = maxRowUsed + 1;
     }
@@ -116,11 +179,11 @@ export function finalizeCanvasDocumentLayout(doc: CanvasDocumentV3): CanvasDocum
   const chainRoots = orderedRoots.filter((r) => (targetMap.get(r.id) || []).length > 0);
   const standaloneRoots = orderedRoots.filter((r) => (targetMap.get(r.id) || []).length === 0);
 
-  // 1. Layout execution chains
+  // 1. Layout execution chains — leave one blank row between event lanes for readability.
   for (const root of chainRoots) {
     if (visited.has(root.id)) continue;
     const maxRow = layoutTree(root.id, 0, nextAvailableRow);
-    nextAvailableRow = maxRow + 1;
+    nextAvailableRow = maxRow + 2;
   }
 
   // 2. Layout standalone functions in a balanced multi-column grid

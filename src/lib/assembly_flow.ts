@@ -10,6 +10,7 @@ import type { CanvasMetadata } from "./parser";
 import {
   catalogByKind,
   catalogPinsToDescriptors,
+  flowTypeForKind,
 } from "./dual_editor/node_catalog";
 
 /**
@@ -277,15 +278,7 @@ export function mergeCanvasAssemblyNodes(
       continue;
     }
 
-    const nodeType =
-      cn.type ??
-      (kind === "branch"
-        ? "branchNode"
-        : kind === "iterator" || kind === "for-each"
-          ? "iteratorNode"
-          : kind === "event" || kind === "script" || kind === "set-variable"
-            ? "rhaiNode"
-            : "codeNativeNode");
+    const nodeType = cn.type ?? flowTypeForKind(kind);
 
     merged.push({
       id: cn.id,

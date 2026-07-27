@@ -15,6 +15,7 @@
     "tauri": "node scripts/tauri-failsafe.js",
     "test:unit": "vitest run",
     "generate:canvases": "pnpm dlx tsx scripts/generate-canvases.ts",
+    "generate:ast-canvases": "pnpm dlx tsx scripts/regenerate-ast-canvases.ts",
     "test:e2e": "playwright test",
     "test": "npm run test:unit && npm run test:e2e"
   },

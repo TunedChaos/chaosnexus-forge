@@ -424,6 +424,18 @@ export function catalogByKind(kind: string): CatalogNodeDef | undefined {
   return NODE_CATALOG.find((n) => n.kind === kind);
 }
 
+/**
+ * Resolves the Svelte Flow `type` for a canvas node kind so catalog visuals
+ * (header color / pins) attach correctly for AST-generated graphs.
+ */
+export function flowTypeForKind(kind: string | undefined): string {
+  if (!kind) return "codeNativeNode";
+  const cat = catalogByKind(kind);
+  if (cat?.flowType) return cat.flowType;
+  if (kind === "function") return "codeNativeNode";
+  return "rhaiNode";
+}
+
 /** Lookup catalog entry by Svelte Flow type id. */
 export function catalogByFlowType(flowType: string): CatalogNodeDef | undefined {
   return NODE_CATALOG.find((n) => n.flowType === flowType);

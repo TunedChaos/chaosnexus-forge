@@ -86,4 +86,57 @@ describe("canvas_layout", () => {
     expect(Number.isFinite(fn3!.y)).toBe(true);
     expect(fn3!.x !== fn2!.x || fn3!.y !== fn2!.y).toBe(true);
   });
+
+  it("finalizeCanvasDocumentLayout stacks false branch below true arm (not a 1D strip)", () => {
+    const branched: CanvasDocumentV3 = {
+      version: 3,
+      nodes: [
+        { id: "main_group", label: "Main Logic", x: 0, y: 0, type: "group" },
+        { id: "evt_1", label: "execute", x: 0, y: 0, kind: "event" },
+        { id: "br_1", label: 'os == "windows"', x: 0, y: 0, kind: "branch" },
+        { id: "scr_true", label: 'shell = "powershell"', x: 0, y: 0, kind: "script" },
+        { id: "scr_false", label: "sys_os", x: 0, y: 0, kind: "script" },
+      ],
+      edges: [
+        { id: "w0", source: "evt_1", target: "br_1", sourceHandle: "then", kind: "exec" },
+        { id: "w1", source: "br_1", target: "scr_true", sourceHandle: "true", kind: "exec" },
+        { id: "w2", source: "br_1", target: "scr_false", sourceHandle: "false", kind: "exec" },
+      ],
+    };
+
+    const laid = finalizeCanvasDocumentLayout(branched, { force: true });
+    const ys = laid.nodes.filter((n) => n.type !== "group").map((n) => n.y);
+    const uniqueYs = new Set(ys);
+    expect(uniqueYs.size).toBeGreaterThanOrEqual(2);
+
+    const trueNode = laid.nodes.find((n) => n.id === "scr_true")!;
+    const falseNode = laid.nodes.find((n) => n.id === "scr_false")!;
+    expect(falseNode.y).toBeGreaterThan(trueNode.y);
+
+    const xs = laid.nodes.filter((n) => n.type !== "group").map((n) => n.x);
+    const width = Math.max(...xs) - Math.min(...xs);
+    const height = Math.max(...ys) - Math.min(...ys);
+    // Must not look like a single horizontal ribbon (width >> height with one Y).
+    expect(height).toBeGreaterThan(50);
+    expect(width / Math.max(height, 1)).toBeLessThan(20);
+  });
+
+  it("force: true recomputes layout even when nodes already have coordinates", () => {
+    const preplaced: CanvasDocumentV3 = {
+      version: 3,
+      nodes: [
+        { id: "main_group", label: "Main Logic", x: 50, y: 50, type: "group" },
+        { id: "evt_1", label: "on_start", x: 999, y: 999, kind: "event" },
+        { id: "fn_2", label: "log_info", x: 1234, y: 999, kind: "function" },
+      ],
+      edges: [{ id: "w_1", source: "evt_1", target: "fn_2", sourceHandle: "then", kind: "exec" }],
+    };
+
+    const laid = finalizeCanvasDocumentLayout(preplaced, { force: true });
+    const evt = laid.nodes.find((n) => n.id === "evt_1")!;
+    const fn = laid.nodes.find((n) => n.id === "fn_2")!;
+    expect(evt.x).not.toBe(999);
+    expect(fn.x).toBeGreaterThan(evt.x);
+    expect(evt.y).toBe(fn.y);
+  });
 });

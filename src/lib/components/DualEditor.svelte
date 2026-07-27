@@ -1,8 +1,8 @@
 <!-- chaosnexus-forge/src/lib/components/DualEditor.svelte -->
 <script lang="ts">
-  import { untrack } from "svelte";
+  import { untrack, onDestroy } from "svelte";
   import { invoke } from "@tauri-apps/api/core";
-  import { type Node, type Edge, useSvelteFlow } from "@xyflow/svelte";
+  import { type Node, type Edge } from "@xyflow/svelte";
   import { fade } from "svelte/transition";
   import { workbench } from "$lib/state.svelte";
   import { extractSignaturesFromSource } from "$lib/graph";
@@ -37,6 +37,15 @@
     collectGroupDescendants,
   } from "$lib/dual_editor/group_membership";
   import { resizeGroupsBottomUp, type Size } from "$lib/dual_editor/group_geometry";
+  import {
+    animateNodesToPositions,
+    cancelLayoutSpring,
+    type SpringTargets,
+  } from "$lib/dual_editor/layout_spring";
+  import {
+    applyPhysicsToFlowNodes,
+    flowNodesHaveBubbleOverlaps,
+  } from "$lib/dual_editor/illustrative_layout";
   import IconPanelLeftClose from "~icons/lucide/panel-left-close";
   import IconPanelLeftOpen from "~icons/lucide/panel-left-open";
   import { assembly } from "$lib/assembly.svelte";
@@ -63,6 +72,86 @@
   let nodes = $state<Node[]>([]);
   let edges = $state<Edge[]>([]);
   let getNodeSize = $state<((id: string) => Size | undefined) | undefined>(undefined);
+
+  /**
+   * Pending spring settle after Regenerate (or first-open). Live keystroke merge
+   * never sets this - only structured layout recomputes animate to targets.
+   */
+  let pendingLayoutSpring: { from: SpringTargets; fitAfter: boolean } | null = null;
+  /** Blocks parse/sidecar writes from fighting the in-flight spring. */
+  let layoutSpringActive = $state(false);
+  /** Bumped after spring settle so FlowCanvas can fitView. */
+  let fitViewNonce = $state(0);
+
+  /** Captures leaf (+ group) positions for spring start. */
+  function captureFlowPositions(ns: Node[]): SpringTargets {
+    const m: SpringTargets = new Map();
+    for (const n of ns) {
+      m.set(n.id, { x: n.position.x, y: n.position.y });
+    }
+    return m;
+  }
+
+  /** Builds spring destination map from laid-out flow nodes. */
+  function targetsFromFlowNodes(ns: Node[]): SpringTargets {
+    return captureFlowPositions(ns);
+  }
+
+  /**
+   * Starts at previous positions when known; new ids ease in from a soft inward
+   * offset so first-open / id-churn regenerate still feels springy.
+   */
+  function applySpringStartPositions(ns: Node[], from: SpringTargets): Node[] {
+    return ns.map((n) => {
+      const prev = from.get(n.id);
+      if (prev) return { ...n, position: { x: prev.x, y: prev.y } };
+      return {
+        ...n,
+        position: {
+          x: n.position.x * 0.55 + 20,
+          y: n.position.y * 0.55 + 20,
+        },
+      };
+    });
+  }
+
+  /**
+   * Runs the damped spring from start nodes toward layout targets, then snugs
+   * groups and optionally requests fitView.
+   */
+  function runLayoutSpring(startNodes: Node[], targets: SpringTargets, fitAfter: boolean): void {
+    layoutSpringActive = true;
+    animateNodesToPositions(startNodes, targets, {
+      onFrame: (partial) => {
+        const byId = new Map(partial.map((p) => [p.id, p.position]));
+        nodes = nodes.map((n) => {
+          const p = byId.get(n.id);
+          return p ? { ...n, position: { x: p.x, y: p.y } } : n;
+        });
+      },
+      onDone: (settled, cancelled) => {
+        layoutSpringActive = false;
+        if (cancelled) return;
+        const byId = new Map(settled.map((p) => [p.id, p.position]));
+        let placed = nodes.map((n) => {
+          const p = byId.get(n.id);
+          return p ? { ...n, position: { x: p.x, y: p.y } } : n;
+        });
+        const sizeOf = (id: string) => getNodeSize?.(id);
+        // Measured sizes may arrive during the spring; clear any leftover bubble overlaps.
+        if (flowNodesHaveBubbleOverlaps(placed, sizeOf)) {
+          placed = applyPhysicsToFlowNodes(placed, sizeOf);
+        }
+        nodes = restackGroups(resizeGroupsBottomUp(placed, sizeOf));
+        if (fitAfter) fitViewNonce += 1;
+      },
+    });
+  }
+
+  onDestroy(() => {
+    cancelLayoutSpring();
+    layoutSpringActive = false;
+  });
 
   // Undo/redo history for the visual editor. One stack per open tab, capturing
   // {content, canvas} snapshots so undo covers code edits AND layout operations
@@ -582,9 +671,7 @@
 
       const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
       const filename = workbench.activeTab?.filename || "script.rhai";
-      const existingCanvas = activeKey ? workbench.canvasContents[activeKey] : null;
 
-      let newCanvas: CanvasDocumentV3;
       let freshCanvas: CanvasDocumentV3 | null = null;
       try {
         const res = await invoke<{ ast_canvas: string; rhai_source: string }>(
@@ -603,45 +690,18 @@
         freshCanvas = buildCanvasMetadata(nodes, edges);
       }
 
-      if (existingCanvas && existingCanvas.nodes && existingCanvas.nodes.length > 0 && freshCanvas) {
-        const mergedNodes = freshCanvas.nodes.map(freshNode => {
-           const existing = existingCanvas.nodes.find(n => n.id === freshNode.id);
-           if (existing) {
-             return {
-               ...freshNode,
-               x: existing.x,
-               y: existing.y,
-               parentId: existing.parentId,
-               width: existing.width,
-               height: existing.height,
-               manualWidth: existing.manualWidth,
-               manualHeight: existing.manualHeight,
-               style: existing.style,
-               class: existing.class,
-             };
-           }
-           return freshNode;
-        });
-
-        const existingGroups = existingCanvas.nodes.filter(n => n.type === "group");
-        for (const group of existingGroups) {
-           if (!mergedNodes.some(n => n.id === group.id)) {
-               mergedNodes.push(group);
-           }
-        }
-
-        newCanvas = {
-           ...freshCanvas,
-           nodes: mergedNodes,
-        };
-      } else if (freshCanvas) {
-        newCanvas = freshCanvas;
-      } else {
+      if (!freshCanvas) {
         return;
       }
 
-      // Finalize layout: preserves preplaced sidecar coordinates while updating group bounds and de-overlapping
-      const laidOutCanvas = finalizeCanvasDocumentLayout(newCanvas);
+      // Regenerate always recomputes function-lane layout from the fresh AST —
+      // never reuse stale sidecar X/Y (that produced the flat 1D strip).
+      // Capture current positions so the parse pass can spring to new targets.
+      pendingLayoutSpring = {
+        from: captureFlowPositions(nodes),
+        fitAfter: true,
+      };
+      const laidOutCanvas = finalizeCanvasDocumentLayout(freshCanvas, { force: true });
       workbench.updateCanvasContent(pluginName, filename, laidOutCanvas);
       if (pluginName !== "__PENDING__") {
         void workbench.saveCanvasSidecar(pluginName, filename);
@@ -710,6 +770,8 @@
 
     untrack(() => {
       if (!rhaiTab || !key || content === undefined) return;
+      // Do not rebuild mid-spring - frame updates would fight layout targets.
+      if (layoutSpringActive) return;
 
       const parsed = parseRhaiToFlow(content, workbench.nodeRegistry, canvas);
       const merged = mergeCanvasAssemblyNodes(parsed.nodes, canvas, activeManifest);
@@ -804,9 +866,22 @@
       // committed form is the idempotent finalNodes, re-running this parse after
       // our own sidecar write compares equal and stops (the structural diff is
       // the loop-breaker that replaced the old timing guard).
-      if (nodesChanged || edgesChanged) {
-        nodes = finalNodes;
+      const springReq = pendingLayoutSpring;
+      const firstOpenSpring = !springReq && nodes.length === 0 && finalNodes.length > 0;
+      if (nodesChanged || edgesChanged || springReq || firstOpenSpring) {
         edges = mappedEdges;
+
+        if (springReq || firstOpenSpring) {
+          pendingLayoutSpring = null;
+          const from = springReq?.from ?? new Map();
+          const fitAfter = springReq?.fitAfter ?? true;
+          const targets = targetsFromFlowNodes(finalNodes);
+          const started = applySpringStartPositions(finalNodes, from);
+          nodes = started;
+          runLayoutSpring(started, targets, fitAfter);
+        } else {
+          nodes = finalNodes;
+        }
 
         if (monacoInstance) {
           setTimeout(() => {
@@ -853,6 +928,9 @@
     const currentEdges = edges;
     const tab = workbench.activeTab;
     const currentViewMode = viewMode;
+
+    // Skip intermediate spring frames - persist once settle commits final coords.
+    if (layoutSpringActive) return;
 
     // Always persist a genuine change (diff-gated). The parse pass that reacts to
     // this write is idempotent, so it won't fight us; this guarantees every node
@@ -1193,6 +1271,8 @@
             {canRegenerate}
             {regenerateTooltip}
             {isGeneratingCanvas}
+            {fitViewNonce}
+            {layoutSpringActive}
           />
         {/if}
       </div>
