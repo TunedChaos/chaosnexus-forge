@@ -3,6 +3,7 @@
 // Spacing grid and deterministic de-overlap for display-only illustrative canvases.
 
 import type { CanvasNodeRecord } from "./canvas_schema";
+import type { Size } from "./group_geometry";
 
 /** Rendered card max-width (`NodeShell` uses min-w 190 / max-w 240). */
 export const NODE_W = 220;
@@ -185,6 +186,87 @@ export function fitMainGroup(nodes: CanvasNodeRecord[]): CanvasNodeRecord[] {
   const height = Math.max(220, maxY + GROUP_PAD);
 
   group.style = `width: ${width}px; height: ${height}px;`;
+  return out;
+}
+
+/**
+ * Applies iterative AABB physics collision resolution directly to SvelteFlow Node[].
+ * Ensures no two sibling nodes occupy the same space or overlap when placed or dragged.
+ */
+export function applyPhysicsToFlowNodes<T extends { id: string; type?: string; parentId?: string; position: { x: number; y: number }; width?: number; height?: number }>(
+  nodes: T[],
+  getNodeSize?: (id: string) => Size | undefined,
+  padX = GAP_X,
+  padY = GAP_Y,
+  maxIterations = 25
+): T[] {
+  const out = nodes.map((n) => ({
+    ...n,
+    position: { ...n.position },
+  }));
+
+  const byParent = new Map<string, T[]>();
+
+  for (const n of out) {
+    if (n.type === "group") continue;
+    const key = n.parentId ?? "";
+    if (!byParent.has(key)) byParent.set(key, []);
+    byParent.get(key)!.push(n);
+  }
+
+  for (const siblings of byParent.values()) {
+    if (siblings.length < 2) continue;
+
+    for (let iter = 0; iter < maxIterations; iter++) {
+      let moved = false;
+
+      for (let i = 0; i < siblings.length; i++) {
+        for (let j = i + 1; j < siblings.length; j++) {
+          const a = siblings[i];
+          const b = siblings[j];
+
+          const sizeA = getNodeSize?.(a.id);
+          const sizeB = getNodeSize?.(b.id);
+
+          const wA = a.width ?? sizeA?.width ?? NODE_W;
+          const hA = a.height ?? sizeA?.height ?? NODE_H;
+          const wB = b.width ?? sizeB?.width ?? NODE_W;
+          const hB = b.height ?? sizeB?.height ?? NODE_H;
+
+          // Compute padded bounding box overlap
+          const overlapX = Math.min(
+            a.position.x + wA + padX - b.position.x,
+            b.position.x + wB + padX - a.position.x
+          );
+          const overlapY = Math.min(
+            a.position.y + hA + padY - b.position.y,
+            b.position.y + hB + padY - a.position.y
+          );
+
+          if (overlapX > 0 && overlapY > 0) {
+            moved = true;
+            // Push along axis of minimum penetration to separate nodes
+            if (overlapX < overlapY) {
+              if (a.position.x < b.position.x) {
+                b.position.x += overlapX;
+              } else {
+                a.position.x += overlapX;
+              }
+            } else {
+              if (a.position.y < b.position.y) {
+                b.position.y += overlapY;
+              } else {
+                a.position.y += overlapY;
+              }
+            }
+          }
+        }
+      }
+
+      if (!moved) break;
+    }
+  }
+
   return out;
 }
 

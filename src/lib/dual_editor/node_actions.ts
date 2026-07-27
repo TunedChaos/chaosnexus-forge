@@ -49,6 +49,7 @@ import type { PaletteAction, FlowPosition } from "$lib/dual_editor/node_palette"
 import { createCatalogNodeByKind } from "$lib/dual_editor/catalog_node_factory";
 import { importRhaiManifestToGraph } from "$lib/dual_editor/rhai_import";
 import { resolveConnectionWireKind } from "$lib/dual_editor/node_catalog";
+import { applyPhysicsToFlowNodes } from "$lib/dual_editor/illustrative_layout";
 
 /** Reactive accessors/mutators the handlers operate through (owned by DualEditor). */
 export interface NodeActionsContext {
@@ -106,9 +107,10 @@ export interface NodeActions {
  * @returns The handler surface consumed by the flow pane and palette.
  */
 export function createNodeActions(ctx: NodeActionsContext): NodeActions {
-  /** Resize groups bottom-up, restack z-order, and commit the new nodes. */
+  /** Apply AABB physics collision de-overlapping, resize groups bottom-up, restack z-order, and commit the new nodes. */
   function recomputeGroups(next: Node[]): void {
-    const sized = resizeGroupsBottomUp(next, ctx.getNodeSize);
+    const deOverlapped = applyPhysicsToFlowNodes(next, ctx.getNodeSize);
+    const sized = resizeGroupsBottomUp(deOverlapped, ctx.getNodeSize);
     ctx.setNodes(restackGroups(sized));
   }
 
