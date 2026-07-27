@@ -38,68 +38,78 @@ export function finalizeCanvasDocumentLayout(doc: CanvasDocumentV3): CanvasDocum
   const groupNodes = doc.nodes.filter((n) => n.type === "group");
   const edges = doc.edges || [];
 
-  // Build adjacency map & in-degree map for execution flow
+  // Build adjacency maps for execution flow (ignoring data wires for layout tree structure)
   const targetMap = new Map<string, string[]>();
-  const inDegree = new Map<string, number>();
+  const execInDegree = new Map<string, number>();
 
   for (const node of leafNodes) {
-    inDegree.set(node.id, 0);
+    execInDegree.set(node.id, 0);
     targetMap.set(node.id, []);
   }
 
   for (const edge of edges) {
-    if (inDegree.has(edge.target)) {
-      inDegree.set(edge.target, (inDegree.get(edge.target) || 0) + 1);
+    if (edge.kind === "data") continue; // Only trace execution flow for function lanes
+    if (execInDegree.has(edge.target)) {
+      execInDegree.set(edge.target, (execInDegree.get(edge.target) || 0) + 1);
     }
     if (targetMap.has(edge.source)) {
       targetMap.get(edge.source)!.push(edge.target);
     }
   }
 
-  // Root nodes start new horizontal function lanes (event nodes first, then un-parented nodes)
+  // Root nodes start new horizontal function lanes
   const eventRoots = leafNodes.filter((n) => n.kind === "event");
-  const otherRoots = leafNodes.filter((n) => n.kind !== "event" && inDegree.get(n.id) === 0);
+  const otherRoots = leafNodes.filter((n) => n.kind !== "event" && execInDegree.get(n.id) === 0);
   const orderedRoots = [...eventRoots, ...otherRoots];
 
   const visited = new Set<string>();
   const positionedNodes: CanvasNodeRecord[] = [];
+  let nextAvailableRow = 0;
 
-  let rowIndex = 0;
+  function layoutTree(nodeId: string, depthCol: number, startRow: number): number {
+    if (visited.has(nodeId)) return startRow;
+    visited.add(nodeId);
+
+    const node = leafNodes.find((n) => n.id === nodeId);
+    let maxRowUsed = startRow;
+
+    if (node) {
+      positionedNodes.push({
+        ...node,
+        x: col(depthCol),
+        y: row(startRow),
+        parentId: node.parentId ?? "main_group",
+      });
+    }
+
+    const nextTargets = (targetMap.get(nodeId) || []).filter((t: string) => !visited.has(t));
+    if (nextTargets.length === 0) {
+      return startRow;
+    }
+
+    let childStartRow = startRow;
+    for (let i = 0; i < nextTargets.length; i++) {
+      const childMaxRow = layoutTree(nextTargets[i], depthCol + 1, childStartRow);
+      maxRowUsed = Math.max(maxRowUsed, childMaxRow);
+      childStartRow = maxRowUsed + 1;
+    }
+
+    return maxRowUsed;
+  }
 
   for (const root of orderedRoots) {
     if (visited.has(root.id)) continue;
-
-    let colIndex = 0;
-    let curr: string | undefined = root.id;
-
-    // Advance horizontally along row(rowIndex) across columns
-    while (curr && !visited.has(curr)) {
-      visited.add(curr);
-      const node = leafNodes.find((n) => n.id === curr);
-      if (node) {
-        positionedNodes.push({
-          ...node,
-          x: col(colIndex),
-          y: row(rowIndex),
-          parentId: node.parentId ?? "main_group",
-        });
-        colIndex++;
-      }
-
-      const nextTargets: string[] = (targetMap.get(curr) || []).filter((t: string) => !visited.has(t));
-      curr = nextTargets.length > 0 ? nextTargets[0] : undefined;
-    }
-
-    rowIndex++;
+    const maxRow = layoutTree(root.id, 0, nextAvailableRow);
+    nextAvailableRow = maxRow + 1;
   }
 
-  // Position any remaining unvisited nodes (loops, branches, or standalone blocks)
+  // Position any remaining unvisited nodes (orphan data nodes or cyclic loops)
   let orphanIndex = 0;
   for (const node of leafNodes) {
     if (!visited.has(node.id)) {
       visited.add(node.id);
       const gridCol = orphanIndex % 4;
-      const gridRow = rowIndex + Math.floor(orphanIndex / 4);
+      const gridRow = nextAvailableRow + Math.floor(orphanIndex / 4);
       positionedNodes.push({
         ...node,
         x: col(gridCol),
