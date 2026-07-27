@@ -398,6 +398,17 @@
   });
   let pendingAstTimer: ReturnType<typeof setTimeout> | undefined;
 
+  let lastEditSourceKey = $state("");
+  let lastEditSourceValue = $state<"code" | "canvas">("code");
+
+  function setLastEditSource(key: string, source: "code" | "canvas") {
+    lastEditSourceKey = key;
+    lastEditSourceValue = source;
+  }
+  function getLastEditSource(key: string): "code" | "canvas" {
+    return lastEditSourceKey === key ? lastEditSourceValue : "code";
+  }
+
   interface RhaiSyntaxError {
     message: string;
     line: number;
@@ -607,7 +618,12 @@
               const newCanvas = JSON.parse(res.ast_canvas);
               const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
               const existingCanvas = key ? workbench.canvasContents[key] : null;
-              const mergedCanvas = mergeCanvasWithExistingLayout(newCanvas, existingCanvas);
+              
+              const mergedCanvas = 
+                getLastEditSource(key) === "code" || !existingCanvas
+                  ? finalizeCanvasDocumentLayout(newCanvas)
+                  : mergeCanvasWithExistingLayout(newCanvas, existingCanvas);
+
               workbench.updateCanvasContent(pluginName, filename, mergedCanvas);
             }
           } catch (e) {
@@ -792,6 +808,7 @@
              const currentCode = activeContent;
              // Only update if the logic structurally differs to avoid infinite cursor jumping
              if (generatedRhai.trim() !== currentCode.trim()) {
+                 setLastEditSource(tab.pluginName + ":" + tab.filename, "canvas");
                  workbench.updateFileContent(tab.pluginName, tab.filename, generatedRhai);
                  monacoInstance.setValue(generatedRhai);
              }
@@ -812,6 +829,7 @@
         if (!tab || nodes.length === 0) return;
         const generatedRhai = generateRhaiFromCanvas(nodes, edges);
         if (generatedRhai.trim() !== activeContent.trim()) {
+           setLastEditSource(tab.pluginName + ":" + tab.filename, "canvas");
            workbench.updateFileContent(tab.pluginName, tab.filename, generatedRhai);
            if (monacoInstance) monacoInstance.setValue(generatedRhai);
         }
@@ -837,6 +855,7 @@
     onContentChange: (val) => {
       if (isUpdatingFromState || !workbench.activeTab) return;
       isUpdatingFromState = true;
+      setLastEditSource(workbench.activeTab.pluginName + ":" + workbench.activeTab.filename, "code");
       workbench.updateFileContent(
         workbench.activeTab.pluginName,
         workbench.activeTab.filename,
@@ -868,6 +887,7 @@
           // Sync Visual -> Code instantly
           const generatedRhai = generateRhaiFromCanvas(nodes, edges);
           if (generatedRhai.trim() !== activeContent.trim()) {
+            setLastEditSource(workbench.activeTab.pluginName + ":" + workbench.activeTab.filename, "canvas");
             workbench.updateFileContent(workbench.activeTab.pluginName, workbench.activeTab.filename, generatedRhai);
             if (monacoInstance) monacoInstance.setValue(generatedRhai);
           }
