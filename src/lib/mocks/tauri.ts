@@ -239,6 +239,15 @@ export async function invoke(cmd: string, args: Record<string, unknown> = {}): P
       writeStoredJson(STORAGE_PENDING, mockPending);
       return null;
     }
+    case "chaoswrench_parse_rhai_ast": {
+      const source = String(args.source ?? "");
+      return {
+        ast_canvas: "",
+        rhai_source: source,
+      };
+    }
+    case "get_node_registry":
+      return [];
     case "list_agent_profiles":
       return [
         {
