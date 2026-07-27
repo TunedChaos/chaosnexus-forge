@@ -278,7 +278,14 @@ export function mergeCanvasAssemblyNodes(
     }
 
     const nodeType =
-      kind === "branch" ? "branchNode" : kind === "iterator" ? "iteratorNode" : "codeNativeNode";
+      cn.type ??
+      (kind === "branch"
+        ? "branchNode"
+        : kind === "iterator" || kind === "for-each"
+          ? "iteratorNode"
+          : kind === "event" || kind === "script" || kind === "set-variable"
+            ? "rhaiNode"
+            : "codeNativeNode");
 
     merged.push({
       id: cn.id,
