@@ -485,3 +485,27 @@ export function validateGraph(
 
   return diagnostics;
 }
+
+/**
+ * Extracts function signatures directly from Rhai source code using a regex parser.
+ * This provides a fast, frontend-only way to generate signature-based canvas skeletons
+ * without requiring the backend AST compiler.
+ */
+export function extractSignaturesFromSource(source: string): FnSignature[] {
+  const regex = /^\s*(?:private\s+)?fn\s+([a-zA-Z_]\w*)\s*\(([^)]*)\)/gm;
+  const signatures: FnSignature[] = [];
+  let match;
+  while ((match = regex.exec(source)) !== null) {
+    const isPrivate = match[0].includes("private");
+    const name = match[1];
+    const paramStr = match[2].trim();
+    const params = paramStr ? paramStr.split(",").map(p => p.trim()) : [];
+    signatures.push({ 
+      name, 
+      params, 
+      access: isPrivate ? "private" : "public", 
+      doc: "" 
+    });
+  }
+  return signatures;
+}

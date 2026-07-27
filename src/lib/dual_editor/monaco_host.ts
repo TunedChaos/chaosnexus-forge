@@ -154,6 +154,7 @@ export function createMonacoHost(getOptions: () => MonacoHostOptions) {
         scrollBeyondLastLine: false,
         fontSize: workbench.fontSize,
         fontFamily: workbench.fontFamily,
+        lineNumbers: "on",
         lineHeight: 0,
         padding: { top: 10, bottom: 10 },
       });

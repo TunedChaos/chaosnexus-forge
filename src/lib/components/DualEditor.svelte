@@ -1,8 +1,11 @@
 <!-- chaosnexus-forge/src/lib/components/DualEditor.svelte -->
 <script lang="ts">
   import { untrack } from "svelte";
-  import type { Node, Edge } from "@xyflow/svelte";
+  import { type Node, type Edge, useSvelteFlow } from "@xyflow/svelte";
+  import { fade } from "svelte/transition";
   import { workbench } from "$lib/state.svelte";
+  import { extractSignaturesFromSource } from "$lib/graph";
+  import { buildSkeletonGraph } from "$lib/dual_editor/canvas_skeleton";
   import { engine } from "$lib/engine.svelte";
   import { pendingPlugins } from "$lib/pending.svelte";
   import EditorActionBar from "./dual_editor/EditorActionBar.svelte";
@@ -548,7 +551,7 @@
               startLineNumber: err.line,
               startColumn: err.column,
               endLineNumber: err.line,
-              endColumn: err.column + 1,
+              endColumn: 999,
               message: err.message,
               severity: globalMonaco.MarkerSeverity.Error,
             },
@@ -576,22 +579,18 @@
       isGeneratingCanvas = true;
       await new Promise((resolve) => setTimeout(resolve, 50));
 
-      const { invoke } = await import("@tauri-apps/api/core");
-      const res = await invoke<{ ast_canvas: string; rhai_source: string }>(
-        "chaoswrench_parse_rhai_ast",
-        { source: activeContent }
-      );
-      if (res.ast_canvas) {
-        const newCanvas = JSON.parse(res.ast_canvas);
-        const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
-        const filename = workbench.activeTab?.filename || "script.rhai";
-        
-        // Fresh auto-layout from scratch: re-position nodes and fit group containers cleanly
-        const freshCanvas = finalizeCanvasDocumentLayout(newCanvas);
-        workbench.updateCanvasContent(pluginName, filename, freshCanvas);
-        if (pluginName !== "__PENDING__") {
-          void workbench.saveCanvasSidecar(pluginName, filename);
-        }
+      const signatures = extractSignaturesFromSource(activeContent);
+      const { nodes, edges } = buildSkeletonGraph(signatures);
+      const newCanvas = buildCanvasMetadata(nodes, edges);
+      
+      const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
+      const filename = workbench.activeTab?.filename || "script.rhai";
+      
+      // Fresh auto-layout from scratch: re-position nodes and fit group containers cleanly
+      const freshCanvas = finalizeCanvasDocumentLayout(newCanvas);
+      workbench.updateCanvasContent(pluginName, filename, freshCanvas);
+      if (pluginName !== "__PENDING__") {
+        void workbench.saveCanvasSidecar(pluginName, filename);
       }
     } catch (e) {
       console.error("Failed to manually regenerate visual script AST:", e);
@@ -618,23 +617,19 @@
             isGeneratingCanvas = true;
             await new Promise((resolve) => setTimeout(resolve, 10));
 
-            const { invoke } = await import("@tauri-apps/api/core");
-            const res = await invoke<{ ast_canvas: string; rhai_source: string }>(
-              "chaoswrench_parse_rhai_ast",
-              { source: content }
-            );
-            if (res.ast_canvas) {
-              const newCanvas = JSON.parse(res.ast_canvas);
-              const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
-              const existingCanvas = key ? workbench.canvasContents[key] : null;
-              
-              const mergedCanvas = 
-                getLastEditSource(key) === "code" || !existingCanvas
-                  ? finalizeCanvasDocumentLayout(newCanvas)
-                  : mergeCanvasWithExistingLayout(newCanvas, existingCanvas);
+            const signatures = extractSignaturesFromSource(content);
+            const { nodes, edges } = buildSkeletonGraph(signatures);
+            const newCanvas = buildCanvasMetadata(nodes, edges);
+            
+            const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
+            const existingCanvas = key ? workbench.canvasContents[key] : null;
+            
+            const mergedCanvas = 
+              getLastEditSource(key) === "code" || !existingCanvas
+                ? finalizeCanvasDocumentLayout(newCanvas)
+                : mergeCanvasWithExistingLayout(newCanvas, existingCanvas);
 
-              workbench.updateCanvasContent(pluginName, filename, mergedCanvas);
-            }
+            workbench.updateCanvasContent(pluginName, filename, mergedCanvas);
           } catch (e) {
             console.error("Failed to live-reload visual script AST:", e);
           } finally {

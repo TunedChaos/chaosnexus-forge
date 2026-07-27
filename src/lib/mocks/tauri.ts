@@ -266,6 +266,8 @@ export async function invoke(cmd: string, args: Record<string, unknown> = {}): P
           description: "Custom shell command or script runner.",
         },
       ];
+    case "pick_folder":
+      return "/home/flyingmongoose/Projects/TunedChaos/tuned-chaos/chaosnexus-scripts/plugins";
     case "spawn_cli_agent":
       return null;
     case "stop_cli_agent":
