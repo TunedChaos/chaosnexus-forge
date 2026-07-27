@@ -50,6 +50,7 @@
   let monacoInstance: any = $state(null);
   let isUpdatingFromState = false;
   let codeWidth = $state(50);
+  let isGeneratingCanvas = $state(false);
 
   /** Flow positions queued for code-appended nodes before the parse pass materializes them. */
   const pendingNodePositions = new Map<string, FlowPosition>();
@@ -572,6 +573,9 @@
   async function handleRegenerateCanvas() {
     if (!canRegenerate || !activeKey || activeContent === undefined) return;
     try {
+      isGeneratingCanvas = true;
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
       const { invoke } = await import("@tauri-apps/api/core");
       const res = await invoke<{ ast_canvas: string; rhai_source: string }>(
         "chaoswrench_parse_rhai_ast",
@@ -591,6 +595,8 @@
       }
     } catch (e) {
       console.error("Failed to manually regenerate visual script AST:", e);
+    } finally {
+      isGeneratingCanvas = false;
     }
   }
 
@@ -609,6 +615,9 @@
         clearTimeout(pendingAstTimer);
         pendingAstTimer = setTimeout(async () => {
           try {
+            isGeneratingCanvas = true;
+            await new Promise((resolve) => setTimeout(resolve, 10));
+
             const { invoke } = await import("@tauri-apps/api/core");
             const res = await invoke<{ ast_canvas: string; rhai_source: string }>(
               "chaoswrench_parse_rhai_ast",
@@ -628,6 +637,8 @@
             }
           } catch (e) {
             console.error("Failed to live-reload visual script AST:", e);
+          } finally {
+            isGeneratingCanvas = false;
           }
         }, 600); // Debounce to avoid constant parsing while typing
       });
@@ -1125,6 +1136,7 @@
             onRegenerate={handleRegenerateCanvas}
             {canRegenerate}
             {regenerateTooltip}
+            {isGeneratingCanvas}
           />
         {/if}
       </div>
