@@ -36,6 +36,21 @@ export function finalizeCanvasDocumentLayout(doc: CanvasDocumentV3): CanvasDocum
 
   const leafNodes = doc.nodes.filter((n) => n.type !== "group");
   const groupNodes = doc.nodes.filter((n) => n.type === "group");
+
+  // Check if nodes already have valid non-staircased preplaced coordinates
+  const hasPreplacedCoordinates =
+    leafNodes.length > 0 &&
+    leafNodes.every((n) => Number.isFinite(n.x) && Number.isFinite(n.y) && (n.x !== 0 || n.y !== 0)) &&
+    !isStaircasedLayout(doc);
+
+  if (hasPreplacedCoordinates) {
+    const finalNodes = finalizeLayout(doc.nodes);
+    return {
+      ...doc,
+      nodes: finalNodes,
+    };
+  }
+
   const edges = doc.edges || [];
 
   // Build adjacency maps for execution flow (ignoring data wires for layout tree structure)

@@ -582,28 +582,36 @@
 
       const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
       const filename = workbench.activeTab?.filename || "script.rhai";
+      const existingCanvas = activeKey ? workbench.canvasContents[activeKey] : null;
 
       let newCanvas: CanvasDocumentV3;
 
-      // Invoke the Rust AST parser to generate full 1:1 detailed visual nodes (events, script snippets, calls, branches, wires)
-      try {
-        const res = await invoke<{ ast_canvas: string; rhai_source: string }>(
-          "chaoswrench_parse_rhai_ast",
-          { source: activeContent }
-        );
-        if (res.ast_canvas) {
-          newCanvas = JSON.parse(res.ast_canvas) as CanvasDocumentV3;
-        } else {
-          throw new Error("Empty AST canvas returned");
+      if (existingCanvas && existingCanvas.nodes && existingCanvas.nodes.length > 0) {
+        // Preserve 1:1 detailed assembly nodes and layout coordinates from existing canvas sidecar
+        const parsed = parseRhaiToFlow(activeContent, workbench.nodeRegistry, existingCanvas);
+        const merged = mergeCanvasAssemblyNodes(parsed.nodes, existingCanvas, activeManifest);
+        newCanvas = buildCanvasMetadata(merged, parsed.edges);
+      } else {
+        // Invoke the Rust AST parser to generate full 1:1 detailed visual nodes (events, script snippets, calls, branches, wires)
+        try {
+          const res = await invoke<{ ast_canvas: string; rhai_source: string }>(
+            "chaoswrench_parse_rhai_ast",
+            { source: activeContent }
+          );
+          if (res.ast_canvas) {
+            newCanvas = JSON.parse(res.ast_canvas) as CanvasDocumentV3;
+          } else {
+            throw new Error("Empty AST canvas returned");
+          }
+        } catch (err) {
+          console.warn("Failed to parse detailed Rhai AST via Rust engine, using signature graph fallback:", err);
+          const signatures = extractSignaturesFromSource(activeContent);
+          const { nodes, edges } = buildSkeletonGraph(signatures);
+          newCanvas = buildCanvasMetadata(nodes, edges);
         }
-      } catch (err) {
-        console.warn("Failed to parse detailed Rhai AST via Rust engine, using signature graph fallback:", err);
-        const signatures = extractSignaturesFromSource(activeContent);
-        const { nodes, edges } = buildSkeletonGraph(signatures);
-        newCanvas = buildCanvasMetadata(nodes, edges);
       }
 
-      // Fresh auto-layout: re-position nodes using horizontal function lanes and AABB physics collision resolution
+      // Finalize layout: preserves preplaced sidecar coordinates while updating group bounds and de-overlapping
       const freshCanvas = finalizeCanvasDocumentLayout(newCanvas);
       workbench.updateCanvasContent(pluginName, filename, freshCanvas);
       if (pluginName !== "__PENDING__") {
