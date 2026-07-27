@@ -247,21 +247,30 @@ export function parseRhaiToFlow(
     activeNodeIds.add(metaNode.id);
 
     let nodeDef: NodeDef | undefined = undefined;
-    let type = "codeNativeNode";
+    
+    const kind = metaNode.kind ?? "function";
+    let type = metaNode.type ?? (
+      kind === "branch" ? "branchNode" :
+      kind === "iterator" || kind === "for-each" ? "iteratorNode" :
+      kind === "event" || kind === "script" || kind === "set-variable" ? "rhaiNode" :
+      kind === "literal" ? "literalNode" :
+      "codeNativeNode"
+    );
 
     if (
-      metaNode.type &&
-      metaNode.type !== "default" &&
-      metaNode.type !== "rhaiNode" &&
-      metaNode.type !== "codeNativeNode"
+      type !== "default" &&
+      type !== "rhaiNode" &&
+      type !== "codeNativeNode" &&
+      type !== "branchNode" &&
+      type !== "iteratorNode" &&
+      type !== "literalNode"
     ) {
-      nodeDef = nodeRegistry.find((d) => d.type_id === metaNode.type);
-      if (nodeDef) type = metaNode.type;
+      nodeDef = nodeRegistry.find((d) => d.type_id === type);
     }
 
     finalNodes.push({
       id: metaNode.id,
-      type: type === "codeNativeNode" ? "codeNativeNode" : "rhaiNode",
+      type: type,
       data: {
         label: metaNode.label || "",
         def: nodeDef,

@@ -585,35 +585,64 @@
       const existingCanvas = activeKey ? workbench.canvasContents[activeKey] : null;
 
       let newCanvas: CanvasDocumentV3;
-
-      if (existingCanvas && existingCanvas.nodes && existingCanvas.nodes.length > 0) {
-        // Preserve 1:1 detailed assembly nodes and layout coordinates from existing canvas sidecar
-        const parsed = parseRhaiToFlow(activeContent, workbench.nodeRegistry, existingCanvas);
-        const merged = mergeCanvasAssemblyNodes(parsed.nodes, existingCanvas, activeManifest);
-        newCanvas = buildCanvasMetadata(merged, parsed.edges);
-      } else {
-        // Invoke the Rust AST parser to generate full 1:1 detailed visual nodes (events, script snippets, calls, branches, wires)
-        try {
-          const res = await invoke<{ ast_canvas: string; rhai_source: string }>(
-            "chaoswrench_parse_rhai_ast",
-            { source: activeContent }
-          );
-          if (res.ast_canvas) {
-            newCanvas = JSON.parse(res.ast_canvas) as CanvasDocumentV3;
-          } else {
-            throw new Error("Empty AST canvas returned");
-          }
-        } catch (err) {
-          console.warn("Failed to parse detailed Rhai AST via Rust engine, using signature graph fallback:", err);
-          const signatures = extractSignaturesFromSource(activeContent);
-          const { nodes, edges } = buildSkeletonGraph(signatures);
-          newCanvas = buildCanvasMetadata(nodes, edges);
+      let freshCanvas: CanvasDocumentV3 | null = null;
+      try {
+        const res = await invoke<{ ast_canvas: string; rhai_source: string }>(
+          "chaoswrench_parse_rhai_ast",
+          { source: activeContent }
+        );
+        if (res.ast_canvas) {
+          freshCanvas = JSON.parse(res.ast_canvas) as CanvasDocumentV3;
+        } else {
+          throw new Error("Empty AST canvas returned");
         }
+      } catch (err) {
+        console.warn("Failed to parse detailed Rhai AST via Rust engine, using signature graph fallback:", err);
+        const signatures = extractSignaturesFromSource(activeContent);
+        const { nodes, edges } = buildSkeletonGraph(signatures);
+        freshCanvas = buildCanvasMetadata(nodes, edges);
+      }
+
+      if (existingCanvas && existingCanvas.nodes && existingCanvas.nodes.length > 0 && freshCanvas) {
+        const mergedNodes = freshCanvas.nodes.map(freshNode => {
+           const existing = existingCanvas.nodes.find(n => n.id === freshNode.id);
+           if (existing) {
+             return {
+               ...freshNode,
+               x: existing.x,
+               y: existing.y,
+               parentId: existing.parentId,
+               width: existing.width,
+               height: existing.height,
+               manualWidth: existing.manualWidth,
+               manualHeight: existing.manualHeight,
+               style: existing.style,
+               class: existing.class,
+             };
+           }
+           return freshNode;
+        });
+
+        const existingGroups = existingCanvas.nodes.filter(n => n.type === "group");
+        for (const group of existingGroups) {
+           if (!mergedNodes.some(n => n.id === group.id)) {
+               mergedNodes.push(group);
+           }
+        }
+
+        newCanvas = {
+           ...freshCanvas,
+           nodes: mergedNodes,
+        };
+      } else if (freshCanvas) {
+        newCanvas = freshCanvas;
+      } else {
+        return;
       }
 
       // Finalize layout: preserves preplaced sidecar coordinates while updating group bounds and de-overlapping
-      const freshCanvas = finalizeCanvasDocumentLayout(newCanvas);
-      workbench.updateCanvasContent(pluginName, filename, freshCanvas);
+      const laidOutCanvas = finalizeCanvasDocumentLayout(newCanvas);
+      workbench.updateCanvasContent(pluginName, filename, laidOutCanvas);
       if (pluginName !== "__PENDING__") {
         void workbench.saveCanvasSidecar(pluginName, filename);
       }
