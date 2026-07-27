@@ -11,7 +11,7 @@
   import EditorActionBar from "./dual_editor/EditorActionBar.svelte";
   import EditorPaneHeader from "./dual_editor/EditorPaneHeader.svelte";
   import Splitter from "./Splitter.svelte";
-  import { isDisplayOnlyCanvas } from "$lib/dual_editor/canvas_schema";
+  import { isDisplayOnlyCanvas, type CanvasDocumentV3 } from "$lib/dual_editor/canvas_schema";
   import { mergeCanvasWithExistingLayout, finalizeCanvasDocumentLayout } from "$lib/dual_editor/canvas_layout";
   import DualEditorFlowPane from "./dual_editor/DualEditorFlowPane.svelte";
   import DualEditorPendingBanner from "./dual_editor/DualEditorPendingBanner.svelte";
@@ -579,14 +579,25 @@
       isGeneratingCanvas = true;
       await new Promise((resolve) => setTimeout(resolve, 50));
 
-      const signatures = extractSignaturesFromSource(activeContent);
-      const { nodes, edges } = buildSkeletonGraph(signatures);
-      const newCanvas = buildCanvasMetadata(nodes, edges);
-      
       const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
       const filename = workbench.activeTab?.filename || "script.rhai";
-      
-      // Fresh auto-layout from scratch: re-position nodes and fit group containers cleanly
+      const existingCanvas = activeKey ? workbench.canvasContents[activeKey] : null;
+
+      let newCanvas: CanvasDocumentV3;
+
+      if (existingCanvas && existingCanvas.nodes && existingCanvas.nodes.length > 0) {
+        // Preserve 1:1 detailed assembly nodes (events, scripts, branches, wires) from sidecar/embedded metadata
+        const parsed = parseRhaiToFlow(activeContent, workbench.nodeRegistry, existingCanvas);
+        const merged = mergeCanvasAssemblyNodes(parsed.nodes, existingCanvas, activeManifest);
+        newCanvas = buildCanvasMetadata(merged, parsed.edges);
+      } else {
+        // Fallback to signature skeleton if no sidecar canvas exists yet
+        const signatures = extractSignaturesFromSource(activeContent);
+        const { nodes, edges } = buildSkeletonGraph(signatures);
+        newCanvas = buildCanvasMetadata(nodes, edges);
+      }
+
+      // Fresh auto-layout: re-position nodes using multi-column grid and AABB physics collision resolution
       const freshCanvas = finalizeCanvasDocumentLayout(newCanvas);
       workbench.updateCanvasContent(pluginName, filename, freshCanvas);
       if (pluginName !== "__PENDING__") {
@@ -617,13 +628,20 @@
             isGeneratingCanvas = true;
             await new Promise((resolve) => setTimeout(resolve, 10));
 
-            const signatures = extractSignaturesFromSource(content);
-            const { nodes, edges } = buildSkeletonGraph(signatures);
-            const newCanvas = buildCanvasMetadata(nodes, edges);
-            
-            const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
             const existingCanvas = key ? workbench.canvasContents[key] : null;
-            
+            const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
+
+            let newCanvas: CanvasDocumentV3;
+            if (existingCanvas && existingCanvas.nodes && existingCanvas.nodes.length > 0) {
+              const parsed = parseRhaiToFlow(content, workbench.nodeRegistry, existingCanvas);
+              const merged = mergeCanvasAssemblyNodes(parsed.nodes, existingCanvas, activeManifest);
+              newCanvas = buildCanvasMetadata(merged, parsed.edges);
+            } else {
+              const signatures = extractSignaturesFromSource(content);
+              const { nodes, edges } = buildSkeletonGraph(signatures);
+              newCanvas = buildCanvasMetadata(nodes, edges);
+            }
+
             const mergedCanvas = 
               getLastEditSource(key) === "code" || !existingCanvas
                 ? finalizeCanvasDocumentLayout(newCanvas)
