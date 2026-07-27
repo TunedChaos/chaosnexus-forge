@@ -6,7 +6,7 @@
  * used to format illustrative canvases in ChaosNexus Forge.
  */
 import { describe, expect, it } from "vitest";
-import { col, deOverlapNodes, GAP_X, NODE_W, row } from "./illustrative_layout";
+import { col, deOverlapNodes, GAP_X, NODE_H, NODE_W, row } from "./illustrative_layout";
 import type { CanvasNodeRecord } from "./canvas_schema";
 
 function leaf(id: string, x: number, y: number): CanvasNodeRecord {
@@ -32,5 +32,21 @@ describe("illustrative_layout deOverlapNodes", () => {
         }
       }
     }
+  });
+
+  it("resolves exact overlapping node collisions via physics push-apart", () => {
+    const nodes = deOverlapNodes([
+      { id: "main_group", label: "Main Logic", x: 50, y: 50, type: "group" },
+      leaf("node_1", 30, 45),
+      leaf("node_2", 30, 45),
+    ]);
+
+    const n1 = nodes.find((n) => n.id === "node_1")!;
+    const n2 = nodes.find((n) => n.id === "node_2")!;
+
+    // Must be pushed apart so they no longer occupy the exact same space
+    const overlapX = Math.min(n1.x + NODE_W + 36 - n2.x, n2.x + NODE_W + 36 - n1.x);
+    const overlapY = Math.min(n1.y + NODE_H + 24 - n2.y, n2.y + NODE_H + 24 - n1.y);
+    expect(overlapX <= 0 || overlapY <= 0).toBe(true);
   });
 });

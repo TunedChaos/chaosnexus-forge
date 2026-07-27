@@ -61,14 +61,18 @@ export function buildSkeletonGraph(
   const edges: Edge[] = [];
 
   const parentId = includeMainGroup ? MAIN_GROUP_ID : undefined;
-  const columnX = 30;
-  const rowStride = 100;
-  let rowY = 45;
+
+  // Balanced multi-column grid layout
+  const count = publicSigs.length;
+  const numCols = count <= 3 ? 1 : count <= 8 ? 2 : 3;
+  const maxRowsPerCol = Math.ceil(Math.max(count, 1) / numCols);
+  
+  const colWidth = 260;
+  const rowHeight = 124;
 
   if (includeMainGroup) {
-    const memberCount = Math.max(publicSigs.length, 1);
-    const width = 320;
-    const height = Math.max(200, rowY + memberCount * rowStride + 30);
+    const width = Math.max(340, 30 + numCols * colWidth + 40);
+    const height = Math.max(220, 45 + maxRowsPerCol * rowHeight + 30);
     const size = { width, height };
     nodes.push({
       id: MAIN_GROUP_ID,
@@ -98,16 +102,22 @@ export function buildSkeletonGraph(
       nodes.push(event);
       prevExecSource = event.id;
       prevHandle = "then";
-      rowY = 45;
     }
   }
 
-  for (const sig of publicSigs) {
+  for (let i = 0; i < count; i++) {
+    const sig = publicSigs[i];
     const id = stableFnNodeId(sig.name, idPrefix);
+
+    const colIdx = i % numCols;
+    const rowIdx = Math.floor(i / numCols);
+    const posX = 30 + colIdx * colWidth;
+    const posY = 45 + rowIdx * rowHeight;
+
     const fnNode: Node = {
       id,
       type: "codeNativeNode",
-      position: { x: columnX, y: rowY },
+      position: { x: posX, y: posY },
       parentId,
       data: {
         label: sig.name,
@@ -133,8 +143,6 @@ export function buildSkeletonGraph(
       prevExecSource = id;
       prevHandle = EXEC_OUT;
     }
-
-    rowY += rowStride;
   }
 
   return { nodes, edges };

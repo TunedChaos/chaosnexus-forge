@@ -81,7 +81,26 @@ function separate(moving: CanvasNodeRecord, fixed: CanvasNodeRecord): void {
  * @param nodes The nodes to de-overlap.
  * @returns A new array of nodes with positions adjusted to prevent overlaps.
  */
+/** 
+ * Nudges sibling nodes apart when bounding boxes overlap using physics-inspired bounding box collision.
+ * 
+ * @param nodes The nodes to de-overlap.
+ * @returns A new array of nodes with positions adjusted to prevent overlaps.
+ */
 export function deOverlapNodes(nodes: CanvasNodeRecord[]): CanvasNodeRecord[] {
+  return physicsDeOverlapNodes(nodes);
+}
+
+/**
+ * Resolves overlapping node bounding boxes using iterative physics collision response.
+ * Enforces safety padding between sibling nodes so no two objects occupy the same space.
+ */
+export function physicsDeOverlapNodes(
+  nodes: CanvasNodeRecord[],
+  padX = GAP_X,
+  padY = GAP_Y,
+  maxIterations = 25
+): CanvasNodeRecord[] {
   const out = nodes.map((n) => ({ ...n }));
   const byParent = new Map<string, CanvasNodeRecord[]>();
 
@@ -93,20 +112,46 @@ export function deOverlapNodes(nodes: CanvasNodeRecord[]): CanvasNodeRecord[] {
   }
 
   for (const siblings of byParent.values()) {
-    siblings.sort((a, b) => a.y - b.y || a.x - b.x);
-    let changed = true;
-    while (changed) {
-      changed = false;
-      for (let i = 1; i < siblings.length; i++) {
-        for (let j = 0; j < i; j++) {
-          const beforeX = siblings[i].x;
-          const beforeY = siblings[i].y;
-          separate(siblings[i], siblings[j]);
-          if (siblings[i].x !== beforeX || siblings[i].y !== beforeY) {
-            changed = true;
+    if (siblings.length < 2) continue;
+
+    for (let iter = 0; iter < maxIterations; iter++) {
+      let moved = false;
+
+      for (let i = 0; i < siblings.length; i++) {
+        for (let j = i + 1; j < siblings.length; j++) {
+          const a = siblings[i];
+          const b = siblings[j];
+
+          const wA = a.width ?? NODE_W;
+          const hA = a.height ?? NODE_H;
+          const wB = b.width ?? NODE_W;
+          const hB = b.height ?? NODE_H;
+
+          // Compute padded bounding box overlap
+          const overlapX = Math.min(a.x + wA + padX - b.x, b.x + wB + padX - a.x);
+          const overlapY = Math.min(a.y + hA + padY - b.y, b.y + hB + padY - a.y);
+
+          if (overlapX > 0 && overlapY > 0) {
+            moved = true;
+            // Push along axis of minimum penetration to separate nodes
+            if (overlapX < overlapY) {
+              if (a.x < b.x) {
+                b.x += overlapX;
+              } else {
+                a.x += overlapX;
+              }
+            } else {
+              if (a.y < b.y) {
+                b.y += overlapY;
+              } else {
+                a.y += overlapY;
+              }
+            }
           }
         }
       }
+
+      if (!moved) break;
     }
   }
 
@@ -130,11 +175,16 @@ export function fitMainGroup(nodes: CanvasNodeRecord[]): CanvasNodeRecord[] {
   let maxX = 0;
   let maxY = 0;
   for (const c of children) {
-    maxX = Math.max(maxX, c.x + NODE_W);
-    maxY = Math.max(maxY, c.y + NODE_H);
+    const w = c.width ?? NODE_W;
+    const h = c.height ?? NODE_H;
+    maxX = Math.max(maxX, c.x + w);
+    maxY = Math.max(maxY, c.y + h);
   }
 
-  group.style = `width: ${maxX + GROUP_PAD}px; height: ${maxY + GROUP_PAD}px;`;
+  const width = Math.max(340, maxX + GROUP_PAD);
+  const height = Math.max(220, maxY + GROUP_PAD);
+
+  group.style = `width: ${width}px; height: ${height}px;`;
   return out;
 }
 
@@ -145,5 +195,5 @@ export function fitMainGroup(nodes: CanvasNodeRecord[]): CanvasNodeRecord[] {
  * @returns The finalized array of nodes.
  */
 export function finalizeLayout(nodes: CanvasNodeRecord[]): CanvasNodeRecord[] {
-  return fitMainGroup(deOverlapNodes(nodes));
+  return fitMainGroup(physicsDeOverlapNodes(nodes));
 }

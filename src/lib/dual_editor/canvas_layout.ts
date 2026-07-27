@@ -97,10 +97,39 @@ export function finalizeCanvasDocumentLayout(doc: CanvasDocumentV3): CanvasDocum
     return maxRowUsed;
   }
 
-  for (const root of orderedRoots) {
+  // Separate roots into execution chains vs standalone function nodes
+  const chainRoots = orderedRoots.filter((r) => (targetMap.get(r.id) || []).length > 0);
+  const standaloneRoots = orderedRoots.filter((r) => (targetMap.get(r.id) || []).length === 0);
+
+  // 1. Layout execution chains
+  for (const root of chainRoots) {
     if (visited.has(root.id)) continue;
     const maxRow = layoutTree(root.id, 0, nextAvailableRow);
     nextAvailableRow = maxRow + 1;
+  }
+
+  // 2. Layout standalone functions in a balanced multi-column grid
+  const unvisitedStandalone = standaloneRoots.filter((r) => !visited.has(r.id));
+  const sCount = unvisitedStandalone.length;
+  const numCols = sCount <= 3 ? 1 : sCount <= 8 ? 2 : 3;
+
+  for (let i = 0; i < sCount; i++) {
+    const root = unvisitedStandalone[i];
+    visited.add(root.id);
+
+    const colIdx = i % numCols;
+    const rowIdx = nextAvailableRow + Math.floor(i / numCols);
+
+    positionedNodes.push({
+      ...root,
+      x: col(colIdx),
+      y: row(rowIdx),
+      parentId: root.parentId ?? "main_group",
+    });
+  }
+
+  if (sCount > 0) {
+    nextAvailableRow += Math.ceil(sCount / numCols);
   }
 
   // Position any remaining unvisited nodes (orphan data nodes or cyclic loops)
