@@ -7,33 +7,112 @@ import type { CanvasDocumentV3, CanvasEdgeRecord, CanvasNodeRecord } from "./can
 import { col, finalizeLayout, GAP_X, NODE_W, row } from "./illustrative_layout";
 
 /**
+ * Detects whether a canvas sidecar document exhibits the legacy diagonal staircase layout pattern.
+ */
+export function isStaircasedLayout(canvas: CanvasDocumentV3 | null | undefined): boolean {
+  if (!canvas || !canvas.nodes) return false;
+  const leafNodes = canvas.nodes.filter((n) => n.type !== "group");
+  if (leafNodes.length < 3) return false;
+
+  let staircaseMatches = 0;
+  for (let i = 0; i < leafNodes.length; i++) {
+    const n = leafNodes[i];
+    const expectedX = col(i);
+    const expectedY = row(i);
+    if (Math.abs(n.x - expectedX) < 10 && Math.abs(n.y - expectedY) < 10) {
+      staircaseMatches++;
+    }
+  }
+
+  return staircaseMatches / leafNodes.length >= 0.6;
+}
+
+/**
  * Runs full automatic layout for a freshly generated canvas document (e.g. on initial load without a sidecar).
- * Assigns clean grid coordinates to unpositioned nodes, de-overlaps siblings, and fits group bounds.
+ * Groups nodes into horizontal function lanes and execution chains, avoiding diagonal staircasing.
  */
 export function finalizeCanvasDocumentLayout(doc: CanvasDocumentV3): CanvasDocumentV3 {
   if (!doc.nodes || doc.nodes.length === 0) return doc;
 
-  let leafIndex = 0;
-  const nodes = doc.nodes.map((n) => {
-    if (n.type === "group") {
-      return {
-        ...n,
-        x: Number.isFinite(n.x) ? n.x : 50,
-        y: Number.isFinite(n.y) ? n.y : 50,
-      };
-    }
-    const x = Number.isFinite(n.x) ? n.x : col(leafIndex);
-    const y = Number.isFinite(n.y) ? n.y : row(leafIndex);
-    leafIndex++;
-    return {
-      ...n,
-      x,
-      y,
-      parentId: n.parentId ?? "main_group",
-    };
-  });
+  const leafNodes = doc.nodes.filter((n) => n.type !== "group");
+  const groupNodes = doc.nodes.filter((n) => n.type === "group");
+  const edges = doc.edges || [];
 
-  const finalNodes = finalizeLayout(nodes);
+  // Build adjacency map & in-degree map for execution flow
+  const targetMap = new Map<string, string[]>();
+  const inDegree = new Map<string, number>();
+
+  for (const node of leafNodes) {
+    inDegree.set(node.id, 0);
+    targetMap.set(node.id, []);
+  }
+
+  for (const edge of edges) {
+    if (inDegree.has(edge.target)) {
+      inDegree.set(edge.target, (inDegree.get(edge.target) || 0) + 1);
+    }
+    if (targetMap.has(edge.source)) {
+      targetMap.get(edge.source)!.push(edge.target);
+    }
+  }
+
+  // Root nodes start new horizontal function lanes (event nodes first, then un-parented nodes)
+  const eventRoots = leafNodes.filter((n) => n.kind === "event");
+  const otherRoots = leafNodes.filter((n) => n.kind !== "event" && inDegree.get(n.id) === 0);
+  const orderedRoots = [...eventRoots, ...otherRoots];
+
+  const visited = new Set<string>();
+  const positionedNodes: CanvasNodeRecord[] = [];
+
+  let rowIndex = 0;
+
+  for (const root of orderedRoots) {
+    if (visited.has(root.id)) continue;
+
+    let colIndex = 0;
+    let curr: string | undefined = root.id;
+
+    // Advance horizontally along row(rowIndex) across columns
+    while (curr && !visited.has(curr)) {
+      visited.add(curr);
+      const node = leafNodes.find((n) => n.id === curr);
+      if (node) {
+        positionedNodes.push({
+          ...node,
+          x: col(colIndex),
+          y: row(rowIndex),
+          parentId: node.parentId ?? "main_group",
+        });
+        colIndex++;
+      }
+
+      const nextTargets: string[] = (targetMap.get(curr) || []).filter((t: string) => !visited.has(t));
+      curr = nextTargets.length > 0 ? nextTargets[0] : undefined;
+    }
+
+    rowIndex++;
+  }
+
+  // Position any remaining unvisited nodes (loops, branches, or standalone blocks)
+  let orphanIndex = 0;
+  for (const node of leafNodes) {
+    if (!visited.has(node.id)) {
+      visited.add(node.id);
+      const gridCol = orphanIndex % 4;
+      const gridRow = rowIndex + Math.floor(orphanIndex / 4);
+      positionedNodes.push({
+        ...node,
+        x: col(gridCol),
+        y: row(gridRow),
+        parentId: node.parentId ?? "main_group",
+      });
+      orphanIndex++;
+    }
+  }
+
+  const allNodes = [...groupNodes, ...positionedNodes];
+  const finalNodes = finalizeLayout(allNodes);
+
   return {
     ...doc,
     nodes: finalNodes,
@@ -69,8 +148,10 @@ function positionNewNodes(
       x = sourceNode.x + NODE_W + GAP_X;
       y = sourceNode.y;
     } else {
-      x = col(unplacedGridIndex);
-      y = row(unplacedGridIndex);
+      const gridCol = unplacedGridIndex % 4;
+      const gridRow = Math.floor(unplacedGridIndex / 4);
+      x = col(gridCol);
+      y = row(gridRow);
       unplacedGridIndex++;
     }
 
@@ -97,7 +178,12 @@ export function mergeCanvasWithExistingLayout(
   newCanvas: CanvasDocumentV3,
   existingCanvas: CanvasDocumentV3 | null | undefined
 ): CanvasDocumentV3 {
-  if (!existingCanvas || !existingCanvas.nodes || existingCanvas.nodes.length === 0) {
+  if (
+    !existingCanvas ||
+    !existingCanvas.nodes ||
+    existingCanvas.nodes.length === 0 ||
+    isStaircasedLayout(existingCanvas)
+  ) {
     return finalizeCanvasDocumentLayout(newCanvas);
   }
 
