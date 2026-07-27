@@ -1,6 +1,7 @@
 <!-- chaosnexus-forge/src/lib/components/DualEditor.svelte -->
 <script lang="ts">
   import { untrack } from "svelte";
+  import { invoke } from "@tauri-apps/api/core";
   import { type Node, type Edge, useSvelteFlow } from "@xyflow/svelte";
   import { fade } from "svelte/transition";
   import { workbench } from "$lib/state.svelte";
@@ -581,23 +582,28 @@
 
       const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
       const filename = workbench.activeTab?.filename || "script.rhai";
-      const existingCanvas = activeKey ? workbench.canvasContents[activeKey] : null;
 
       let newCanvas: CanvasDocumentV3;
 
-      if (existingCanvas && existingCanvas.nodes && existingCanvas.nodes.length > 0) {
-        // Preserve 1:1 detailed assembly nodes (events, scripts, branches, wires) from sidecar/embedded metadata
-        const parsed = parseRhaiToFlow(activeContent, workbench.nodeRegistry, existingCanvas);
-        const merged = mergeCanvasAssemblyNodes(parsed.nodes, existingCanvas, activeManifest);
-        newCanvas = buildCanvasMetadata(merged, parsed.edges);
-      } else {
-        // Fallback to signature skeleton if no sidecar canvas exists yet
+      // Invoke the Rust AST parser to generate full 1:1 detailed visual nodes (events, script snippets, calls, branches, wires)
+      try {
+        const res = await invoke<{ ast_canvas: string; rhai_source: string }>(
+          "chaoswrench_parse_rhai_ast",
+          { source: activeContent }
+        );
+        if (res.ast_canvas) {
+          newCanvas = JSON.parse(res.ast_canvas) as CanvasDocumentV3;
+        } else {
+          throw new Error("Empty AST canvas returned");
+        }
+      } catch (err) {
+        console.warn("Failed to parse detailed Rhai AST via Rust engine, using signature graph fallback:", err);
         const signatures = extractSignaturesFromSource(activeContent);
         const { nodes, edges } = buildSkeletonGraph(signatures);
         newCanvas = buildCanvasMetadata(nodes, edges);
       }
 
-      // Fresh auto-layout: re-position nodes using multi-column grid and AABB physics collision resolution
+      // Fresh auto-layout: re-position nodes using horizontal function lanes and AABB physics collision resolution
       const freshCanvas = finalizeCanvasDocumentLayout(newCanvas);
       workbench.updateCanvasContent(pluginName, filename, freshCanvas);
       if (pluginName !== "__PENDING__") {

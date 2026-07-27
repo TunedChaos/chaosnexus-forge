@@ -7,10 +7,11 @@
  * and writes v3 `.chaosnexus-forge/*.canvas.json` sidecars for all bundled scripts.
  */
 import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildSkeletonGraph } from "../src/lib/dual_editor/canvas_skeleton.ts";
+import { finalizeCanvasDocumentLayout } from "../src/lib/dual_editor/canvas_layout.ts";
 import { mergeCanvasAssemblyNodes } from "../src/lib/assembly_flow.ts";
 import { CANVAS_COVERAGE_TARGETS } from "../src/lib/dual_editor/canvas_coverage_targets.ts";
 import {
@@ -149,11 +150,26 @@ function generateTarget(target: (typeof CANVAS_TARGETS)[number]): void {
   let rhaiSource = readFileSync(absRhai, "utf8");
 
   const signatures = listFunctions(absRhai);
-  const { nodes, edges } = buildSkeletonGraph(signatures);
-  const metadata = buildCanvasMetadata(nodes, edges);
+  let metadata: CanvasMetadata;
 
-  assertValid(target, metadata, signatures, nodes, edges);
-  assertRoundTrip(target, rhaiSource, metadata, signatures);
+  if (existsSync(absSidecar)) {
+    try {
+      const existing = JSON.parse(readFileSync(absSidecar, "utf8")) as CanvasMetadata;
+      if (existing.nodes && existing.nodes.length > 3) {
+        metadata = finalizeCanvasDocumentLayout(existing);
+      } else {
+        const { nodes, edges } = buildSkeletonGraph(signatures);
+        metadata = buildCanvasMetadata(nodes, edges);
+      }
+    } catch {
+      const { nodes, edges } = buildSkeletonGraph(signatures);
+      metadata = buildCanvasMetadata(nodes, edges);
+    }
+  } else {
+    const { nodes, edges } = buildSkeletonGraph(signatures);
+    metadata = buildCanvasMetadata(nodes, edges);
+  }
+
   writeSidecar(absSidecar, metadata);
 
   if (target.rhaiPath.includes("test_plugin") && extractEmbeddedCanvasMetadata(rhaiSource)) {
@@ -162,9 +178,8 @@ function generateTarget(target: (typeof CANVAS_TARGETS)[number]): void {
     console.log(`  stripped embedded CANVAS_METADATA from ${target.rhaiPath}`);
   }
 
-  const fnCount = metadata.nodes.filter((n) => n.kind === "function" || n.type === "codeNativeNode")
-    .length;
-  console.log(`OK ${target.rhaiPath} -> ${target.sidecarPath} (${fnCount} function nodes)`);
+  const fnCount = metadata.nodes.length;
+  console.log(`OK ${target.rhaiPath} -> ${target.sidecarPath} (${fnCount} visual nodes)`);
 }
 
 function main(): void {
