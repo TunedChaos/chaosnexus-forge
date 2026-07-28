@@ -107,7 +107,7 @@
 
 <div
   data-testid="flow-node"
-  class="relative min-w-[190px] max-w-[260px] theme-bg-main border font-mono rounded select-none transition-all duration-150 shadow-md group/card
+  class="relative min-w-[190px] max-w-[260px] theme-bg-main border font-mono rounded select-none transition-colors duration-150 group/card
     {traceHighlight
     ? 'border-red-500 shadow-[0_0_12px_rgba(239,68,68,0.4)]'
     : graphError

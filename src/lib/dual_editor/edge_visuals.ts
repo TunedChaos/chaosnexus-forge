@@ -43,7 +43,7 @@ export interface EdgeStyleOptions {
 /**
  * Resolves the data type carried by a node's source handle, honoring per-node
  * pin overrides. Returns `undefined` for exec pins or when the handle is unknown.
- * 
+ *
  * @param pins The list of pin descriptors on the node.
  * @param handle The identifier of the specific handle (pin).
  * @returns The resolved data type, or undefined.
@@ -58,9 +58,9 @@ export function sourceDataTypeFor(
   return pin.dataType;
 }
 
-/** 
- * Resolves the CSS color token for an edge (source pin role, then node category). 
- * 
+/**
+ * Resolves the CSS color token for an edge (source pin role, then node category).
+ *
  * @param options The styling options and node metadata for the edge.
  * @returns A CSS variable reference for the edge color.
  */
@@ -93,9 +93,9 @@ export function edgeColorCssVar(options: EdgeStyleOptions): string {
   return "var(--pin-generic)";
 }
 
-/** 
- * Inline style string using CSS custom properties (hover rules read these, not literal stroke). 
- * 
+/**
+ * Inline style string using CSS custom properties (hover rules read these, not literal stroke).
+ *
  * @param options The styling options and node metadata for the edge.
  * @returns A CSS style string containing stroke and color properties.
  */
@@ -112,13 +112,13 @@ export function buildEdgeStyle(options: EdgeStyleOptions): string {
 }
 
 /**
- * Reconciles the visual styling (colors, dash array, cyclic warnings) for a set
- * of edges based on their connected source nodes. Returns a new array if any edge
- * required an update, or the original array if all were up to date.
- * 
+ * Reconciles visual styling (colors, dash array, cyclic warnings) for edges.
+ * Position-only node moves do NOT rebuild edge objects - obstacles come from
+ * `publishObstacleSnapshot`, not `data.nodes`.
+ *
  * @param edges The edges currently rendered in the canvas.
- * @param nodes The nodes currently rendered in the canvas.
- * @returns An updated array of edges with synchronized styles.
+ * @param nodes The nodes currently rendered in the canvas (for pin/kind lookup).
+ * @returns An updated array of edges with synchronized styles, or the original if unchanged.
  */
 export function reconcileVisualEdges(edges: Edge[], nodes: Node[]): Edge[] {
   let changed = false;
@@ -128,31 +128,41 @@ export function reconcileVisualEdges(edges: Edge[], nodes: Node[]): Edge[] {
   const mappedEdges = edges.map((e) => {
     const isExec = e.type === "execEdge";
     const isCyclic = !isExec && cyclicEdgeIds.has(e.id);
-    
-    if (e.data?.nodes !== nodes || e.data?.isCyclic !== isCyclic) {
-      changed = true;
-      const sourceNode = nodeById.get(e.source);
-      const sourceData = sourceNode?.data as
-        | { kind?: string; pins?: CanvasPinDescriptor[] }
-        | undefined;
-      const sourceKind = sourceData?.kind;
-      
-      return {
-        ...e,
-        type: isExec ? "execEdge" : "tacticalEdge",
-        animated: !isExec && !isCyclic,
-        class: "cf-edge",
-        style: buildEdgeStyle({
-          isExec,
-          isCyclic,
-          sourceKind,
-          sourceHandle: e.sourceHandle ?? undefined,
-          sourceDataType: sourceDataTypeFor(sourceData?.pins, e.sourceHandle),
-        }),
-        data: { ...e.data, nodes, isCyclic, kind: isExec ? "exec" : "data" },
-      };
-    }
-    return e;
+    const sourceNode = nodeById.get(e.source);
+    const sourceData = sourceNode?.data as
+      | { kind?: string; pins?: CanvasPinDescriptor[] }
+      | undefined;
+    const sourceKind = sourceData?.kind;
+    const nextStyle = buildEdgeStyle({
+      isExec,
+      isCyclic,
+      sourceKind,
+      sourceHandle: e.sourceHandle ?? undefined,
+      sourceDataType: sourceDataTypeFor(sourceData?.pins, e.sourceHandle),
+    });
+    const nextType = isExec ? "execEdge" : "tacticalEdge";
+    const hadStampedNodes = e.data != null && "nodes" in (e.data as object);
+
+    const needsUpdate =
+      e.data?.isCyclic !== isCyclic ||
+      e.style !== nextStyle ||
+      e.type !== nextType ||
+      e.animated !== false ||
+      hadStampedNodes;
+
+    if (!needsUpdate) return e;
+
+    changed = true;
+    const prevData = { ...(e.data as Record<string, unknown> | undefined) };
+    delete prevData.nodes;
+    return {
+      ...e,
+      type: nextType,
+      animated: false,
+      class: "cf-edge",
+      style: nextStyle,
+      data: { ...prevData, isCyclic, kind: isExec ? "exec" : "data" },
+    };
   });
 
   return changed ? mappedEdges : edges;

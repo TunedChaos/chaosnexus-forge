@@ -41,7 +41,7 @@ function group(id: string, label: string, w: number, h: number): N {
     y: 50,
     type: "group",
     style: `width: ${w}px; height: ${h}px;`,
-    class: "main-logic-group border-2 !border-primary/80 bg-primary/5 rounded-xl shadow-lg shadow-primary/20 backdrop-blur-md",
+    class: "main-logic-group border-2 !border-primary/80 bg-primary/10 rounded-xl",
   };
 }
 

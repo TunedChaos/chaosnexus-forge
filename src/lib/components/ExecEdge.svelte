@@ -1,7 +1,12 @@
 <!-- chaosnexus-forge/src/lib/components/ExecEdge.svelte -->
 <script lang="ts">
   import { BaseEdge } from "@xyflow/svelte";
-  import { routeEdge, type FlowNodeLike } from "$lib/dual_editor/edge_routing";
+  import { routeEdge } from "$lib/dual_editor/edge_routing";
+  import {
+    getObstacleSnapshot,
+    obstacleVersionStore,
+    edgeRoutingDragStore,
+  } from "$lib/dual_editor/edge_obstacles";
 
   /**
    * Props for the ExecEdge component.
@@ -25,11 +30,6 @@
     style?: string;
     /** SVG marker-end attribute (e.g. arrow url). */
     markerEnd?: string;
-    /** Optional metadata associated with the edge. */
-    data?: {
-      /** Nodes used to route the edge. */
-      nodes: FlowNodeLike[];
-    };
   }
 
   let {
@@ -42,15 +42,19 @@
     targetY,
     style = "",
     markerEnd = "",
-    data,
   }: Props = $props();
 
-  let path = $derived(
-    routeEdge(sourceX, sourceY, targetX, targetY, data?.nodes ?? [], {
+  let path = $derived.by(() => {
+    const version = $obstacleVersionStore;
+    const bezierOnly = $edgeRoutingDragStore;
+    void version;
+    return routeEdge(sourceX, sourceY, targetX, targetY, getObstacleSnapshot(), {
       source,
       target,
-    })
-  );
+      edgeId: id,
+      bezierOnly,
+    });
+  });
 </script>
 
 <BaseEdge
@@ -67,14 +71,11 @@
     stroke: var(--cf-edge-color, var(--pin-exec));
     stroke-width: var(--cf-edge-w, 3px);
     fill: none;
-    transition:
-      stroke-width 0.12s ease,
-      filter 0.12s ease;
+    transition: stroke-width 0.12s ease;
   }
 
   :global(.svelte-flow__edge.cf-edge.cf-exec-edge:hover .svelte-flow__edge-path),
   :global(.svelte-flow__edge.cf-edge.cf-exec-edge.selected .svelte-flow__edge-path) {
     stroke-width: calc(var(--cf-edge-w, 3px) + 2px);
-    filter: drop-shadow(0 0 4px var(--cf-edge-color, var(--pin-exec)));
   }
 </style>

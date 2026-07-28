@@ -28,6 +28,10 @@
     flowNodesHaveBubbleOverlaps,
   } from "$lib/dual_editor/illustrative_layout";
   import {
+    publishObstacleSnapshot,
+    setEdgeRoutingDragActive,
+  } from "$lib/dual_editor/edge_obstacles";
+  import {
     isReparentableOnDrag,
     isSelfOrDescendant,
     liftNodesToRootForDrag,
@@ -147,7 +151,10 @@
       }
       const shape = (n: Node) =>
         `${n.id}|${typeof n.style === "string" ? n.style : ""}|${n.position.x},${n.position.y}`;
-      if (reflowed.some((n, i) => shape(n) !== shape(nodes[i]))) nodes = reflowed;
+      if (reflowed.some((n, i) => shape(n) !== shape(nodes[i]))) {
+        nodes = reflowed;
+        publishObstacleSnapshot(reflowed);
+      }
     });
   });
 
@@ -357,6 +364,8 @@
     targetNode: Node | null;
     nodes: Node[];
   }) => {
+    // Bezier-only wires while dragging - full A* resumes on drop.
+    setEdgeRoutingDragActive(true);
     if (!isReparentableOnDrag(targetNode)) return;
     const movers = reparentableDragged(dragged ?? []);
     const ids = movers.map((n) => n.id);
@@ -392,7 +401,12 @@
   }) => {
     window.clearTimeout(dragHighlightTimer);
     onHighlightGroup(null);
-    if (!isReparentableOnDrag(targetNode)) return;
+    setEdgeRoutingDragActive(false);
+    if (!isReparentableOnDrag(targetNode)) {
+      // Still refresh obstacle snapshot after a non-reparent drag (e.g. main_group).
+      publishObstacleSnapshot(nodes);
+      return;
+    }
 
     const cursorFlow =
       lastDragCursorFlow ?? screenToFlowPosition(pointerClientXY(event));
@@ -458,6 +472,7 @@
     maxZoom={2}
     fitView
     fitViewOptions={{ padding: 0.25, maxZoom: 1, duration: 0 }}
+    onlyRenderVisibleElements={true}
     elevateNodesOnSelect={false}
     selectionOnDrag={true}
     panOnDrag={[1]}

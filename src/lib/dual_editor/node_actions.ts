@@ -108,8 +108,16 @@ export interface NodeActions {
  */
 export function createNodeActions(ctx: NodeActionsContext): NodeActions {
   /** Apply AABB physics collision de-overlapping, resize groups bottom-up, restack z-order, and commit the new nodes. */
-  function recomputeGroups(next: Node[]): void {
-    const deOverlapped = applyPhysicsToFlowNodes(next, ctx.getNodeSize);
+  function recomputeGroups(next: Node[], onlyParentKeys?: Set<string>): void {
+    const deOverlapped = applyPhysicsToFlowNodes(
+      next,
+      ctx.getNodeSize,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      onlyParentKeys
+    );
     const sized = resizeGroupsBottomUp(deOverlapped, ctx.getNodeSize);
     ctx.setNodes(restackGroups(sized));
   }
@@ -147,7 +155,7 @@ export function createNodeActions(ctx: NodeActionsContext): NodeActions {
     const absPos = absolutePosition(node, byId);
     const currentParent = node.parentId ?? null;
     if (currentParent === groupId) {
-      recomputeGroups(nodes);
+      recomputeGroups(nodes, new Set([currentParent ?? ""]));
       return;
     }
 
@@ -170,7 +178,8 @@ export function createNodeActions(ctx: NodeActionsContext): NodeActions {
     const affected = new Set<string>();
     if (currentParent) affected.add(currentParent);
     if (groupId) affected.add(groupId);
-    recomputeGroups(clearManualSizeFor(next, affected));
+    const parentKeys = new Set<string>([currentParent ?? "", groupId ?? ""]);
+    recomputeGroups(clearManualSizeFor(next, affected), parentKeys);
   }
 
   /**
@@ -200,7 +209,13 @@ export function createNodeActions(ctx: NodeActionsContext): NodeActions {
       if (currentParent) affected.add(currentParent);
     }
     if (moves.size === 0) {
-      recomputeGroups(nodes);
+      // Same-parent multi-drag: only physics the shared parent.
+      const keys = new Set(
+        nodeIds
+          .map((id) => byId.get(id)?.parentId ?? "")
+          .filter((k) => k !== undefined)
+      );
+      recomputeGroups(nodes, keys.size > 0 ? keys : undefined);
       return;
     }
     if (groupId) affected.add(groupId);
@@ -220,7 +235,8 @@ export function createNodeActions(ctx: NodeActionsContext): NodeActions {
       };
     });
 
-    recomputeGroups(clearManualSizeFor(next, affected));
+    const parentKeys = new Set<string>([...affected, groupId ?? ""]);
+    recomputeGroups(clearManualSizeFor(next, affected), parentKeys);
   }
 
   /**
@@ -340,7 +356,7 @@ export function createNodeActions(ctx: NodeActionsContext): NodeActions {
       sourceHandle: connection.sourceHandle ?? undefined,
       targetHandle: connection.targetHandle ?? undefined,
       type: isExec ? "execEdge" : "tacticalEdge",
-      animated: !isExec,
+      animated: false,
       style: isExec
         ? "stroke: #f4f4f5; stroke-width: 2.5;"
         : "stroke: #ef4444; stroke-width: 2;",

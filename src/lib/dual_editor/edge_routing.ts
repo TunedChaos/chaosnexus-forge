@@ -4,6 +4,12 @@
 
 import { findSmartPath, type Obstacle } from "$lib/pathfinder";
 import { parseGroupSize } from "./group_geometry";
+import {
+  getCachedRoute,
+  getObstacleVersion,
+  routeCacheKey,
+  setCachedRoute,
+} from "./edge_obstacles";
 
 /** Top strip of a group node that wires must not cross (matches CustomGroupNode header). */
 export const GROUP_HEADER_BAND_H = 32;
@@ -50,6 +56,13 @@ export interface BuildObstaclesOptions {
   target: string;
   /** When true, first stub step prefers vertical (exec top/bottom pins). */
   verticalFirst?: boolean;
+  /** Stable edge id for route caching (optional). */
+  edgeId?: string;
+  /**
+   * When true, never fall back to A* - return the horizontal bezier even if it
+   * crosses a node (used mid-drag for GPU/CPU headroom).
+   */
+  bezierOnly?: boolean;
 }
 
 function nodeSize(n: FlowNodeLike): { width: number; height: number } {
@@ -396,7 +409,9 @@ function pointInObstacle(p: Point, obstacles: { x: number; y: number; width: num
 /**
  * Primary edge router: a clean horizontal bezier when it does not cross any node
  * body or group-header band, otherwise the obstacle-avoiding A* path with smooth rounded corners.
- * 
+ *
+ * Results are cached by edge id + rounded endpoints + obstacle version when `edgeId` is set.
+ *
  * @param sourceX The source pin X coordinate.
  * @param sourceY The source pin Y coordinate.
  * @param targetX The target pin X coordinate.
@@ -413,9 +428,41 @@ export function routeEdge(
   rawNodes: FlowNodeLike[],
   options: BuildObstaclesOptions
 ): string {
-  const strictObstacles = buildStrictObstacles(rawNodes, options);
-  const bezier = horizontalBezier(sourceX, sourceY, targetX, targetY);
+  const bezierOnly = options.bezierOnly === true;
+  const edgeId = options.edgeId;
 
+  if (edgeId) {
+    const key = routeCacheKey(
+      edgeId,
+      sourceX,
+      sourceY,
+      targetX,
+      targetY,
+      getObstacleVersion(),
+      bezierOnly
+    );
+    const cached = getCachedRoute(key);
+    if (cached !== undefined) return cached;
+    const path = routeEdgeUncached(sourceX, sourceY, targetX, targetY, rawNodes, options);
+    setCachedRoute(key, path);
+    return path;
+  }
+
+  return routeEdgeUncached(sourceX, sourceY, targetX, targetY, rawNodes, options);
+}
+
+function routeEdgeUncached(
+  sourceX: number,
+  sourceY: number,
+  targetX: number,
+  targetY: number,
+  rawNodes: FlowNodeLike[],
+  options: BuildObstaclesOptions
+): string {
+  const bezier = horizontalBezier(sourceX, sourceY, targetX, targetY);
+  if (options.bezierOnly) return bezier.d;
+
+  const strictObstacles = buildStrictObstacles(rawNodes, options);
   const blocked = bezier.samples.some((p) => pointInObstacle(p, strictObstacles));
   if (!blocked) return bezier.d;
 

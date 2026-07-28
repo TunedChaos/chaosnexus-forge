@@ -177,6 +177,12 @@ function separateSiblingPair(
   return moved;
 }
 
+/** Caps soft+hard separation iterations by sibling crowding (avoids full 40×s² on huge lanes). */
+export function physicsIterationsForSiblingCount(siblingCount: number): number {
+  if (siblingCount < 2) return 0;
+  return Math.min(PHYSICS_MAX_ITERS, 8 + 2 * siblingCount);
+}
+
 /**
  * Resolves crowding with soft bubble fields then hard AABB clamps.
  * Enforces personal space between sibling nodes inside each parent group.
@@ -200,8 +206,9 @@ export function physicsDeOverlapNodes(
 
   for (const siblings of byParent.values()) {
     if (siblings.length < 2) continue;
+    const iters = Math.min(maxIterations, physicsIterationsForSiblingCount(siblings.length));
 
-    for (let iter = 0; iter < maxIterations; iter++) {
+    for (let iter = 0; iter < iters; iter++) {
       let moved = false;
 
       for (let i = 0; i < siblings.length; i++) {
@@ -274,6 +281,8 @@ export function fitMainGroup(nodes: CanvasNodeRecord[]): CanvasNodeRecord[] {
 /**
  * Applies soft bubble + hard AABB collision resolution directly to SvelteFlow Node[].
  * Ensures no two sibling nodes occupy the same space or crowd personal space.
+ *
+ * @param onlyParentKeys When set, only those parent groups (empty string = root) are resolved.
  */
 export function applyPhysicsToFlowNodes<
   T extends {
@@ -290,7 +299,8 @@ export function applyPhysicsToFlowNodes<
   padX = GAP_X,
   padY = GAP_Y,
   maxIterations = PHYSICS_MAX_ITERS,
-  bubblePad = BUBBLE_PAD
+  bubblePad = BUBBLE_PAD,
+  onlyParentKeys?: Set<string>
 ): T[] {
   const out = nodes.map((n) => ({
     ...n,
@@ -302,14 +312,16 @@ export function applyPhysicsToFlowNodes<
   for (const n of out) {
     if (n.type === "group") continue;
     const key = n.parentId ?? "";
+    if (onlyParentKeys && !onlyParentKeys.has(key)) continue;
     if (!byParent.has(key)) byParent.set(key, []);
     byParent.get(key)!.push(n);
   }
 
   for (const siblings of byParent.values()) {
     if (siblings.length < 2) continue;
+    const iters = Math.min(maxIterations, physicsIterationsForSiblingCount(siblings.length));
 
-    for (let iter = 0; iter < maxIterations; iter++) {
+    for (let iter = 0; iter < iters; iter++) {
       let moved = false;
 
       for (let i = 0; i < siblings.length; i++) {

@@ -46,6 +46,7 @@
     applyPhysicsToFlowNodes,
     flowNodesHaveBubbleOverlaps,
   } from "$lib/dual_editor/illustrative_layout";
+  import { publishObstacleSnapshot, isEdgeRoutingDragActive } from "$lib/dual_editor/edge_obstacles";
   import IconPanelLeftClose from "~icons/lucide/panel-left-close";
   import IconPanelLeftOpen from "~icons/lucide/panel-left-open";
   import { assembly } from "$lib/assembly.svelte";
@@ -143,6 +144,7 @@
           placed = applyPhysicsToFlowNodes(placed, sizeOf);
         }
         nodes = restackGroups(resizeGroupsBottomUp(placed, sizeOf));
+        publishObstacleSnapshot(nodes);
         if (fitAfter) fitViewNonce += 1;
       },
     });
@@ -907,14 +909,16 @@
     });
   });
 
-  // Keep edges obstacle node maps reactively in sync when nodes are dragged (Rhai only)
+  // Keep edge styles + cyclic flags in sync; publish obstacle snapshot for routers.
+  // Skip during layout spring and mid-drag - publish resumes on settle / drop.
   $effect(() => {
     if (!isRhai) return;
     const currentNodes = nodes;
 
     untrack(() => {
+      if (layoutSpringActive || isEdgeRoutingDragActive()) return;
+      publishObstacleSnapshot(currentNodes);
       if (edges.length > 0) {
-        let changed = false;
         edges = reconcileVisualEdges(edges, currentNodes);
       }
     });

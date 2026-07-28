@@ -141,7 +141,7 @@ export function parseRhaiToFlow(
           class:
             n.class ||
             (n.id === "main_group"
-              ? "main-logic-group border-2 !border-primary/80 bg-primary/5 rounded-xl shadow-lg shadow-primary/20 backdrop-blur-md"
+              ? "main-logic-group border-2 !border-primary/80 bg-primary/10 rounded-xl"
               : "light-group"),
           zIndex: n.id === "main_group" ? Z_MAIN_GROUP : Z_GROUP,
         });
@@ -162,7 +162,7 @@ export function parseRhaiToFlow(
       height: 380,
       style: "width: 600px; height: 380px;",
       class:
-        "main-logic-group border-2 !border-primary/80 bg-primary/5 rounded-xl shadow-lg shadow-primary/20 backdrop-blur-md",
+        "main-logic-group border-2 !border-primary/80 bg-primary/10 rounded-xl",
       zIndex: Z_MAIN_GROUP,
     });
   }
@@ -327,7 +327,7 @@ export function parseRhaiToFlow(
         targetHandle: edge.targetHandle ?? undefined,
         label: edge.label,
         type: isExec ? "execEdge" : "tacticalEdge",
-        animated: !isExec,
+        animated: false,
         class: "cf-edge",
         style: buildEdgeStyle({
           isExec,

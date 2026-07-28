@@ -6,7 +6,7 @@
  * data-type inheritance, error coloring (cyclic edges), and width adjustments.
  */
 import { describe, expect, it } from "vitest";
-import { buildEdgeStyle, edgeColorCssVar, sourceDataTypeFor } from "./edge_visuals";
+import { buildEdgeStyle, edgeColorCssVar, reconcileVisualEdges, sourceDataTypeFor } from "./edge_visuals";
 
 describe("edge_visuals sourceDataTypeFor", () => {
   const pins = [
@@ -75,5 +75,65 @@ describe("edge_visuals buildEdgeStyle", () => {
     const style = buildEdgeStyle({ isExec: true });
     expect(style).toContain("--cf-edge-color: var(--pin-exec)");
     expect(style).not.toContain("stroke-dasharray");
+  });
+});
+
+describe("edge_visuals reconcileVisualEdges", () => {
+  it("does not rebuild edge objects on position-only node updates", () => {
+    const nodesA = [
+      {
+        id: "a",
+        type: "scriptNode",
+        position: { x: 0, y: 0 },
+        data: { kind: "script", pins: [{ id: "return", pinKind: "data", dataType: "generic" }] },
+      },
+      {
+        id: "b",
+        type: "scriptNode",
+        position: { x: 200, y: 0 },
+        data: { kind: "script", pins: [] },
+      },
+    ] as unknown as import("@xyflow/svelte").Node[];
+    const edges = [
+      {
+        id: "e1",
+        source: "a",
+        target: "b",
+        sourceHandle: "return",
+        targetHandle: "exec_in",
+        type: "tacticalEdge",
+        animated: false,
+        style: buildEdgeStyle({ isExec: false, sourceKind: "script", sourceHandle: "return" }),
+        data: { isCyclic: false, kind: "data" },
+      },
+    ] as unknown as import("@xyflow/svelte").Edge[];
+
+    const first = reconcileVisualEdges(edges, nodesA);
+    const nodesB = nodesA.map((n) =>
+      n.id === "a" ? { ...n, position: { x: 40, y: 10 } } : n
+    );
+    const second = reconcileVisualEdges(first, nodesB);
+    expect(second).toBe(first);
+    expect(second[0].data).not.toHaveProperty("nodes");
+  });
+
+  it("forces animated false and strips stamped data.nodes", () => {
+    const nodes = [
+      { id: "a", type: "scriptNode", position: { x: 0, y: 0 }, data: { kind: "script" } },
+      { id: "b", type: "scriptNode", position: { x: 1, y: 0 }, data: { kind: "script" } },
+    ] as unknown as import("@xyflow/svelte").Node[];
+    const edges = [
+      {
+        id: "e1",
+        source: "a",
+        target: "b",
+        type: "tacticalEdge",
+        animated: true,
+        data: { nodes, isCyclic: false, kind: "data" },
+      },
+    ] as unknown as import("@xyflow/svelte").Edge[];
+    const out = reconcileVisualEdges(edges, nodes);
+    expect(out[0].animated).toBe(false);
+    expect(out[0].data).not.toHaveProperty("nodes");
   });
 });

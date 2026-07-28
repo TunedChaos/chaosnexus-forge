@@ -1,7 +1,12 @@
 <!-- chaosnexus-forge/src/lib/components/TacticalEdge.svelte -->
 <script lang="ts">
   import { BaseEdge } from "@xyflow/svelte";
-  import { routeEdge, type FlowNodeLike } from "$lib/dual_editor/edge_routing";
+  import { routeEdge } from "$lib/dual_editor/edge_routing";
+  import {
+    getObstacleSnapshot,
+    obstacleVersionStore,
+    edgeRoutingDragStore,
+  } from "$lib/dual_editor/edge_obstacles";
 
   /**
    * Properties for the TacticalEdge component.
@@ -25,11 +30,6 @@
     style?: string;
     /** Optional marker identifier for the end of the edge (e.g., arrow head). */
     markerEnd?: string;
-    /** Additional data payload for the edge, containing nodes for routing. */
-    data?: {
-      /** Collection of flow nodes used for edge routing calculation. */
-      nodes: FlowNodeLike[];
-    };
   }
 
   let {
@@ -42,15 +42,20 @@
     targetY,
     style = "",
     markerEnd = "",
-    data,
   }: Props = $props();
 
-  let pathD = $derived(
-    routeEdge(sourceX, sourceY, targetX, targetY, data?.nodes ?? [], {
+  // Subscribe to obstacle version / drag mode so paths refresh after publish.
+  let pathD = $derived.by(() => {
+    const version = $obstacleVersionStore;
+    const bezierOnly = $edgeRoutingDragStore;
+    void version;
+    return routeEdge(sourceX, sourceY, targetX, targetY, getObstacleSnapshot(), {
       source,
       target,
-    })
-  );
+      edgeId: id,
+      bezierOnly,
+    });
+  });
 </script>
 
 <BaseEdge
@@ -67,14 +72,11 @@
     stroke: var(--cf-edge-color, var(--pin-generic));
     stroke-width: var(--cf-edge-w, 3px);
     fill: none;
-    transition:
-      stroke-width 0.12s ease,
-      filter 0.12s ease;
+    transition: stroke-width 0.12s ease;
   }
 
   :global(.svelte-flow__edge.cf-edge.cf-data-edge:hover .svelte-flow__edge-path),
   :global(.svelte-flow__edge.cf-edge.cf-data-edge.selected .svelte-flow__edge-path) {
     stroke-width: calc(var(--cf-edge-w, 3px) + 2px);
-    filter: drop-shadow(0 0 4px var(--cf-edge-color, var(--pin-generic)));
   }
 </style>

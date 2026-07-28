@@ -229,7 +229,7 @@
         onPaletteClose={() => (paletteOpen = false)}
       />
       {#if isGeneratingCanvas}
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center pointer-events-none transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/50 z-[100] flex items-center justify-center pointer-events-none transition-opacity duration-300">
           <div class="bg-gray-900 border border-gray-700 p-6 rounded-2xl shadow-2xl flex flex-col items-center gap-5">
             <svg class="animate-spin h-10 w-10 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

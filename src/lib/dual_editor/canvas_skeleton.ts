@@ -18,7 +18,7 @@ export const MAIN_GROUP_ID = "main_group";
 
 /** Main Logic group chrome class (matches parser.ts synthesized group). */
 export const MAIN_GROUP_CLASS =
-  "main-logic-group border-2 !border-primary/80 bg-primary/5 rounded-xl shadow-lg shadow-primary/20 backdrop-blur-md";
+  "main-logic-group border-2 !border-primary/80 bg-primary/10 rounded-xl";
 
 /** Options for configuring the generated skeleton graph. */
 export interface SkeletonGraphOptions {
