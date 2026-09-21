@@ -1,0 +1,35 @@
+# chaosnexus-forge/packaging/flatpak/ai.chaosnexus.forge.yml
+# Flatpak Builder manifest for ChaosNexus Forge.
+# __BINARY_DIR__ is replaced by the forge-flatpak Just recipe with an absolute path
+# containing the prebuilt chaosnexus-forge binary + desktop/metainfo/icon files.
+#
+# Not published to Flathub yet. Local/CI only via: just forge-flatpak
+
+app-id: ai.chaosnexus.forge
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+command: chaosnexus-forge
+finish-args:
+  # Local IDE: home workspace + MCP/network + display
+  - --share=ipc
+  - --share=network
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  - --filesystem=home
+  - --talk-name=org.freedesktop.Notifications
+modules:
+  - name: chaosnexus-forge
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 chaosnexus-forge /app/bin/chaosnexus-forge
+      - install -Dm644 ai.chaosnexus.forge.desktop /app/share/applications/ai.chaosnexus.forge.desktop
+      - install -Dm644 ai.chaosnexus.forge.metainfo.xml /app/share/metainfo/ai.chaosnexus.forge.metainfo.xml
+      - |
+        if [ -f ai.chaosnexus.forge.png ]; then
+          install -Dm644 ai.chaosnexus.forge.png /app/share/icons/hicolor/128x128/apps/ai.chaosnexus.forge.png
+        fi
+    sources:
+      - type: dir
+        path: __BINARY_DIR__

@@ -1,0 +1,9 @@
+name = "terminal"
+version = "1.0.0"
+dependencies = []
+
+[capabilities]
+granted = ["shell", "env"]
+env_allowlist = ["SHELL"]
+
+[cvars]

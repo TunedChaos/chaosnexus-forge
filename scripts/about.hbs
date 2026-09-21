@@ -1,0 +1,13 @@
+[
+{{#each licenses}}
+  {{#each used_by}}
+  {
+    "name": "{{crate.name}}",
+    "version": "{{crate.version}}",
+    "repository": "{{crate.repository}}",
+    "license": "{{../name}}",
+    "license_text": {{json ../text}}
+  }{{#unless @last}},{{/unless}}
+  {{/each}}{{#unless @last}},{{/unless}}
+{{/each}}
+]

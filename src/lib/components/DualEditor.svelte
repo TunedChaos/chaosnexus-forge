@@ -1,0 +1,1297 @@
+<!-- chaosnexus-forge/src/lib/components/DualEditor.svelte -->
+<script lang="ts">
+  import { untrack, onDestroy } from "svelte";
+  import { invoke } from "@tauri-apps/api/core";
+  import { type Node, type Edge } from "@xyflow/svelte";
+  import { fade } from "svelte/transition";
+  import { workbench } from "$lib/state.svelte";
+  import { extractSignaturesFromSource } from "$lib/graph";
+  import { buildSkeletonGraph } from "$lib/dual_editor/canvas_skeleton";
+  import { engine } from "$lib/engine.svelte";
+  import { pendingPlugins } from "$lib/pending.svelte";
+  import EditorActionBar from "./dual_editor/EditorActionBar.svelte";
+  import EditorPaneHeader from "./dual_editor/EditorPaneHeader.svelte";
+  import Splitter from "./Splitter.svelte";
+  import { isDisplayOnlyCanvas, type CanvasDocumentV3 } from "$lib/dual_editor/canvas_schema";
+  import { mergeCanvasWithExistingLayout, finalizeCanvasDocumentLayout } from "$lib/dual_editor/canvas_layout";
+  import DualEditorFlowPane from "./dual_editor/DualEditorFlowPane.svelte";
+  import DualEditorPendingBanner from "./dual_editor/DualEditorPendingBanner.svelte";
+  import DualEditorWelcomePane from "./dual_editor/DualEditorWelcomePane.svelte";
+  import ConfirmDeleteModal from "./ConfirmDeleteModal.svelte";
+  import DualEditorMarkdownPane from "./dual_editor/DualEditorMarkdownPane.svelte";
+  import MarkdownToolbar from "./dual_editor/MarkdownToolbar.svelte";
+  import {
+    createMonacoHost,
+    bindEditorActionShortcuts,
+  } from "$lib/dual_editor/monaco_host";
+  import { bindMonacoEffects } from "$lib/dual_editor/monaco_sync.svelte";
+  import { generateRhaiFromCanvas } from "$lib/dual_editor/vhai_codegen";
+
+  import { parseRhaiToFlow, buildCanvasMetadata, getNodeCode, updateNodeCode } from "$lib/parser";
+  import type { FlowPosition } from "$lib/dual_editor/node_palette";
+  import { EditorHistory, type EditorSnapshot } from "$lib/dual_editor/history";
+  import { createNodeActions } from "$lib/dual_editor/node_actions";
+  import {
+    restackGroups,
+    resolveDropTargetAtPoint,
+    collectGroupDescendants,
+  } from "$lib/dual_editor/group_membership";
+  import { resizeGroupsBottomUp, type Size } from "$lib/dual_editor/group_geometry";
+  import {
+    animateNodesToPositions,
+    cancelLayoutSpring,
+    type SpringTargets,
+  } from "$lib/dual_editor/layout_spring";
+  import {
+    applyPhysicsToFlowNodes,
+    flowNodesHaveBubbleOverlaps,
+  } from "$lib/dual_editor/illustrative_layout";
+  import { publishObstacleSnapshot, isEdgeRoutingDragActive } from "$lib/dual_editor/edge_obstacles";
+  import IconPanelLeftClose from "~icons/lucide/panel-left-close";
+  import IconPanelLeftOpen from "~icons/lucide/panel-left-open";
+  import { assembly } from "$lib/assembly.svelte";
+  import { engineSchema } from "$lib/schema.svelte";
+  import {
+    enrichNodesWithManifest,
+    mergeCanvasAssemblyNodes,
+    applyGraphDiagnostics,
+  } from "$lib/assembly_flow";
+  import type { FnSignature } from "$lib/graph";
+  import { getCyclicEdges } from "$lib/cycle_detector";
+  import { reconcileVisualEdges } from "$lib/dual_editor/edge_visuals";
+  import type { CanvasPinDescriptor } from "$lib/dual_editor/canvas_schema";
+
+  let monacoInstance: any = $state(null);
+  let isUpdatingFromState = false;
+  let codeWidth = $state(50);
+  let isGeneratingCanvas = $state(false);
+
+  /** Flow positions queued for code-appended nodes before the parse pass materializes them. */
+  const pendingNodePositions = new Map<string, FlowPosition>();
+
+  // Visual graph nodes/edges state
+  let nodes = $state<Node[]>([]);
+  let edges = $state<Edge[]>([]);
+  let getNodeSize = $state<((id: string) => Size | undefined) | undefined>(undefined);
+
+  /**
+   * Pending spring settle after Regenerate (or first-open). Live keystroke merge
+   * never sets this - only structured layout recomputes animate to targets.
+   */
+  let pendingLayoutSpring: { from: SpringTargets; fitAfter: boolean } | null = null;
+  /** Blocks parse/sidecar writes from fighting the in-flight spring. */
+  let layoutSpringActive = $state(false);
+  /** Bumped after spring settle so FlowCanvas can fitView. */
+  let fitViewNonce = $state(0);
+
+  /** Captures leaf (+ group) positions for spring start. */
+  function captureFlowPositions(ns: Node[]): SpringTargets {
+    const m: SpringTargets = new Map();
+    for (const n of ns) {
+      m.set(n.id, { x: n.position.x, y: n.position.y });
+    }
+    return m;
+  }
+
+  /** Builds spring destination map from laid-out flow nodes. */
+  function targetsFromFlowNodes(ns: Node[]): SpringTargets {
+    return captureFlowPositions(ns);
+  }
+
+  /**
+   * Starts at previous positions when known; new ids ease in from a soft inward
+   * offset so first-open / id-churn regenerate still feels springy.
+   */
+  function applySpringStartPositions(ns: Node[], from: SpringTargets): Node[] {
+    return ns.map((n) => {
+      const prev = from.get(n.id);
+      if (prev) return { ...n, position: { x: prev.x, y: prev.y } };
+      return {
+        ...n,
+        position: {
+          x: n.position.x * 0.55 + 20,
+          y: n.position.y * 0.55 + 20,
+        },
+      };
+    });
+  }
+
+  /**
+   * Runs the damped spring from start nodes toward layout targets, then snugs
+   * groups and optionally requests fitView.
+   */
+  function runLayoutSpring(startNodes: Node[], targets: SpringTargets, fitAfter: boolean): void {
+    layoutSpringActive = true;
+    animateNodesToPositions(startNodes, targets, {
+      onFrame: (partial) => {
+        const byId = new Map(partial.map((p) => [p.id, p.position]));
+        nodes = nodes.map((n) => {
+          const p = byId.get(n.id);
+          return p ? { ...n, position: { x: p.x, y: p.y } } : n;
+        });
+      },
+      onDone: (settled, cancelled) => {
+        layoutSpringActive = false;
+        if (cancelled) return;
+        const byId = new Map(settled.map((p) => [p.id, p.position]));
+        let placed = nodes.map((n) => {
+          const p = byId.get(n.id);
+          return p ? { ...n, position: { x: p.x, y: p.y } } : n;
+        });
+        const sizeOf = (id: string) => getNodeSize?.(id);
+        // Measured sizes may arrive during the spring; clear any leftover bubble overlaps.
+        if (flowNodesHaveBubbleOverlaps(placed, sizeOf)) {
+          placed = applyPhysicsToFlowNodes(placed, sizeOf);
+        }
+        nodes = restackGroups(resizeGroupsBottomUp(placed, sizeOf));
+        publishObstacleSnapshot(nodes);
+        if (fitAfter) fitViewNonce += 1;
+      },
+    });
+  }
+
+  onDestroy(() => {
+    cancelLayoutSpring();
+    layoutSpringActive = false;
+  });
+
+  // Undo/redo history for the visual editor. One stack per open tab, capturing
+  // {content, canvas} snapshots so undo covers code edits AND layout operations
+  // (move/group/resize/delete). Capture is debounced so a continuous drag or a
+  // burst of typing collapses into a single, settled history entry.
+  const histories = new Map<string, EditorHistory>();
+  const HISTORY_DEBOUNCE_MS = 350;
+  let historyCaptureTimer: ReturnType<typeof setTimeout> | undefined;
+  let historyReleaseTimer: ReturnType<typeof setTimeout> | undefined;
+  /** Suppresses capture while a restored snapshot's reactive cascade settles. */
+  let isApplyingHistory = false;
+  /** Reactive mirrors of the active tab's history for the toolbar buttons. */
+  let canUndo = $state(false);
+  let canRedo = $state(false);
+
+  function historyFor(key: string): EditorHistory {
+    let h = histories.get(key);
+    if (!h) {
+      h = new EditorHistory();
+      histories.set(key, h);
+    }
+    return h;
+  }
+
+  /** Mirrors a tab's undo/redo availability into reactive state for the toolbar. */
+  function syncHistoryButtons(key: string): void {
+    if (key !== activeKey) return;
+    const h = histories.get(key);
+    canUndo = !!h?.canUndo();
+    canRedo = !!h?.canRedo();
+  }
+
+  /** Builds a snapshot of the current persistent editor state (content + sidecar). */
+  function snapshotNow(): EditorSnapshot {
+    const canvas = activeCanvas ? JSON.stringify(activeCanvas) : "";
+    return { content: activeContent, canvas };
+  }
+
+  /** Records the current state immediately (used before an undo/redo step). */
+  function flushHistoryCapture(): void {
+    clearTimeout(historyCaptureTimer);
+    if (isApplyingHistory || !isRhai || !activeKey) return;
+    if (historyFor(activeKey).push(snapshotNow())) syncHistoryButtons(activeKey);
+  }
+
+  /** Restores a snapshot by rewriting both sources; the parse pass rebuilds the graph. */
+  function applySnapshot(snapshot: EditorSnapshot): void {
+    const tab = workbench.activeTab;
+    if (!tab) return;
+    clearTimeout(historyCaptureTimer);
+    clearTimeout(historyReleaseTimer);
+    isApplyingHistory = true;
+
+    workbench.updateFileContent(tab.pluginName, tab.filename, snapshot.content);
+    monacoInstance?.setValue(snapshot.content);
+    if (snapshot.canvas) {
+      try {
+        workbench.updateCanvasContent(tab.pluginName, tab.filename, JSON.parse(snapshot.canvas));
+      } catch {
+        // A malformed snapshot is skipped rather than crashing the editor.
+      }
+    }
+
+    // Release the guard once the parse -> sidecar-write cascade has settled past
+    // the debounce window, so it cannot re-capture the state we just restored.
+    historyReleaseTimer = setTimeout(() => {
+      isApplyingHistory = false;
+    }, HISTORY_DEBOUNCE_MS + 100);
+  }
+
+  function undoCanvas(): void {
+    if (!isRhai || !activeKey) return;
+    flushHistoryCapture();
+    const snapshot = historyFor(activeKey).undo();
+    if (!snapshot) return;
+    applySnapshot(snapshot);
+    syncHistoryButtons(activeKey);
+  }
+
+  function redoCanvas(): void {
+    if (!isRhai || !activeKey) return;
+    const snapshot = historyFor(activeKey).redo();
+    if (!snapshot) return;
+    applySnapshot(snapshot);
+    syncHistoryButtons(activeKey);
+  }
+
+  async function handleCanvasSave(): Promise<void> {
+    // Before manually saving, forcefully run the Visual -> Text generation if we are in visual mode
+    if (viewMode === "visual" && pendingPlugins.isEditingEnabled !== false) {
+       const tab = workbench.activeTab;
+       if (tab && nodes.length > 0) {
+           const generatedRhai = generateRhaiFromCanvas(nodes, edges);
+           workbench.updateFileContent(tab.pluginName, tab.filename, generatedRhai);
+           if (monacoInstance) monacoInstance.setValue(generatedRhai);
+       }
+    }
+    await handleSave();
+  }
+
+  // Transient Monaco line jump decoration IDs
+  let jumpDecorationIds: string[] = [];
+
+  /**
+   * Pending destructive delete awaiting confirmation (opens
+   * {@link ConfirmDeleteModal}). Only set when the selection contains at least
+   * one non-empty group, since cascading group deletes are the sole case that
+   * warrants a warning; empty groups and leaf nodes delete immediately.
+   */
+  let pendingDelete = $state<{ ids: string[]; title: string; message: string } | null>(null);
+
+  /** True when the group has any descendant beyond itself (contents to cascade). */
+  function groupHasContents(groupId: string): boolean {
+    return collectGroupDescendants(groupId, nodes).length > 1;
+  }
+
+  /**
+   * Routes a delete request: immediate when nothing dangerous is involved, or
+   * via the confirmation modal when any targeted group has contents. `main_group`
+   * and unknown ids are filtered out (Main Logic can never be deleted).
+   *
+   * @param rawIds Node/group ids the user asked to delete.
+   */
+  function requestDelete(rawIds: string[]): void {
+    const ids = rawIds.filter((id) => id !== "main_group" && nodes.some((n) => n.id === id));
+    if (ids.length === 0) return;
+
+    const nonEmptyGroups = ids
+      .map((id) => nodes.find((n) => n.id === id))
+      .filter(
+        (n): n is NonNullable<typeof n> => !!n && n.type === "group" && groupHasContents(n.id)
+      );
+
+    if (nonEmptyGroups.length === 0) {
+      nodeActions.handleDeleteSelection(ids);
+      return;
+    }
+
+    let title: string;
+    let message: string;
+    if (ids.length === 1) {
+      const group = nonEmptyGroups[0];
+      const count = collectGroupDescendants(group.id, nodes).length - 1;
+      const label = (group.data as { label?: string }).label ?? group.id;
+      title = `Delete group "${label}"?`;
+      message =
+        `Are you sure you want to delete this group? It and all of its contents ` +
+        `(${count} contained ${count === 1 ? "item" : "items"}) will be deleted, ` +
+        `including nested groups, nodes, and their Rhai anchors.`;
+    } else {
+      const groupWord = nonEmptyGroups.length === 1 ? "group" : "groups";
+      title = `Delete ${ids.length} selected items?`;
+      message =
+        `This selection includes ${nonEmptyGroups.length} ${groupWord} with contents. ` +
+        `Every selected item, including everything inside the selected groups ` +
+        `(nested groups, nodes, and their Rhai anchors), will be deleted.`;
+    }
+    pendingDelete = { ids, title, message };
+  }
+
+  /** Deletes the current canvas selection (Delete/Backspace), minus Main Logic. */
+  function requestDeleteSelection(): void {
+    const ids = nodes.filter((n) => n.selected && n.id !== "main_group").map((n) => n.id);
+    requestDelete(ids);
+  }
+
+  // Drives a group into inline-rename mode from the context menu by bumping a
+  // transient token on its data; CustomGroupNode watches the token and focuses
+  // its title input. The token is not part of buildCanvasMetadata or nodeShape,
+  // so it neither persists to the sidecar nor retriggers the parse/commit loop.
+  function requestRenameGroup(groupId: string): void {
+    if (groupId === "main_group") return;
+    nodes = nodes.map((n) => {
+      if (n.id !== groupId || n.type !== "group") return n;
+      const data = n.data as { renameToken?: number };
+      return { ...n, data: { ...data, renameToken: (data.renameToken ?? 0) + 1 } };
+    });
+  }
+  let activeKey = $derived(
+    workbench.activeTab ? `${workbench.activeTab.pluginName}:${workbench.activeTab.filename}` : null
+  );
+
+  let activeContent = $derived(activeKey ? workbench.fileContents[activeKey] || "" : "");
+
+  let activeCanvas = $derived(activeKey ? (workbench.canvasContents[activeKey] ?? null) : null);
+
+  let canvasDisplayOnly = $derived(
+    isDisplayOnlyCanvas(activeCanvas) ||
+    (workbench.activeTab?.pluginName === "__PENDING__" && !pendingPlugins.isEditingEnabled)
+  );
+
+  let isRhai = $derived(
+    workbench.activeTab ? workbench.activeTab.filename.endsWith(".rhai") : false
+  );
+
+  let isMarkdown = $derived(
+    workbench.activeTab ? workbench.activeTab.filename.endsWith(".md") : false
+  );
+
+  let viewMode = $derived(workbench.activeTab?.viewMode || "split");
+
+  let activeManifest = $derived(
+    activeKey ? assembly.signaturesFor(activeKey) : ([] as FnSignature[])
+  );
+
+  let unboundFunctions = $derived.by(() => {
+    if (!activeKey) return [] as string[];
+    const bound = new Set(
+      nodes
+        .filter((n) => n.type !== "group")
+        .map(
+          (n) =>
+            (n.data as { fn?: string; label?: string }).fn ?? (n.data as { label?: string }).label
+        )
+    );
+    return activeManifest
+      .filter((s) => s.access === "public" && !bound.has(s.name))
+      .map((s) => s.name);
+  });
+
+  // Schema-generated native palette (SSOT): every public engine function name.
+  let nativeFunctions = $derived(engineSchema.functions.map((f) => f.name));
+
+  // Refresh the engine manifest whenever the active Rhai tab changes.
+  $effect(() => {
+    const tab = workbench.activeTab;
+    const path = workbench.projectPath;
+    const key = activeKey;
+    const rhaiTab = isRhai;
+    if (!rhaiTab || !tab || !path || !key) return;
+    untrack(() => {
+      void assembly.refresh(path, tab.pluginName, tab.filename);
+    });
+  });
+
+  // Load the engine SSOT schema once so the native palette is populated.
+  $effect(() => {
+    void engineSchema.ensureLoaded();
+  });
+
+  let showEditorPane = $derived(
+    !isRhai && !isMarkdown
+      ? true
+      : isRhai
+        ? viewMode === "split" || viewMode === "code"
+        : viewMode === "split" || viewMode === "code"
+  );
+
+  let showMarkdownPreview = $derived(
+    isMarkdown && (viewMode === "split" || viewMode === "preview")
+  );
+
+  let showSplitLayout = $derived(
+    (isRhai && viewMode === "split") || (isMarkdown && viewMode === "split")
+  );
+
+  let svelteFlowColorMode = $derived<"light" | "dark" | "system">(
+    workbench.theme === "System"
+      ? "system"
+      : workbench.theme.toLowerCase().includes("light")
+        ? "light"
+        : "dark"
+  );
+
+  // Canvas node/edge handlers, extracted to node_actions.ts. They mutate this
+  // component's reactive state through the accessor/mutator closures below so the
+  // logic can live outside the component while staying fully reactive.
+  const nodeActions = createNodeActions({
+    getNodes: () => nodes,
+    setNodes: (n) => (nodes = n),
+    getEdges: () => edges,
+    setEdges: (e) => (edges = e),
+    getActiveContent: () => activeContent,
+    getActiveManifest: () => activeManifest,
+    getMonaco: () => monacoInstance,
+    pendingNodePositions,
+    onOpenSettings: handleOpenNodeSettings,
+    getNodeSize: (id) => getNodeSize?.(id),
+  });
+
+  function confirmDelete(): void {
+    if (!pendingDelete) return;
+    nodeActions.handleDeleteSelection(pendingDelete.ids);
+    pendingDelete = null;
+  }
+
+  bindMonacoEffects({
+    getMonacoInstance: () => monacoInstance,
+    getActiveKey: () => activeKey,
+    getActiveContent: () => activeContent,
+    getIsUpdatingFromState: () => isUpdatingFromState,
+    setIsUpdatingFromState: (val) => (isUpdatingFromState = val),
+  });
+
+  // Reset nodes when activeKey changes to prevent cross-contamination
+  let previousKey = $state("");
+  $effect(() => {
+    if (activeKey !== previousKey) {
+      untrack(() => {
+        nodes = [];
+        edges = [];
+        previousKey = activeKey || "";
+        // Switch the toolbar's undo/redo state to the newly active tab's stack.
+        if (activeKey) syncHistoryButtons(activeKey);
+        else {
+          canUndo = false;
+          canRedo = false;
+        }
+      });
+    }
+  });
+
+  // Debounced undo/redo capture: snapshot {content, canvas} once a change settles
+  // so a drag or burst of typing yields a single history entry. Skipped while a
+  // restored snapshot is being applied (its cascade must not re-enter the stack).
+  $effect(() => {
+    if (!isRhai || !activeKey) return;
+    const content = activeContent;
+    const canvasObj = activeCanvas;
+    const key = activeKey;
+
+    untrack(() => {
+      if (isApplyingHistory) return;
+      // Defer the first baseline until the sidecar has materialized so we do not
+      // record a transient null-canvas state right before the parse pass writes it.
+      if (!canvasObj && !histories.get(key)?.current()) return;
+
+      clearTimeout(historyCaptureTimer);
+      const snapshot: EditorSnapshot = {
+        content,
+        canvas: canvasObj ? JSON.stringify(canvasObj) : "",
+      };
+      historyCaptureTimer = setTimeout(() => {
+        if (isApplyingHistory) return;
+        if (historyFor(key).push(snapshot)) syncHistoryButtons(key);
+      }, HISTORY_DEBOUNCE_MS);
+    });
+  });
+  let pendingAstTimer: ReturnType<typeof setTimeout> | undefined;
+
+  let lastEditSourceKey = $state("");
+  let lastEditSourceValue = $state<"code" | "canvas">("code");
+
+  function setLastEditSource(key: string, source: "code" | "canvas") {
+    lastEditSourceKey = key;
+    lastEditSourceValue = source;
+  }
+  function getLastEditSource(key: string): "code" | "canvas" {
+    return lastEditSourceKey === key ? lastEditSourceValue : "code";
+  }
+
+  interface RhaiSyntaxError {
+    message: string;
+    line: number;
+    column: number;
+  }
+
+  function checkRhaiSyntaxError(source: string): RhaiSyntaxError | null {
+    if (!source) return null;
+
+    let line = 1;
+    let column = 1;
+
+    let stringStartLine = 1;
+    let stringStartCol = 1;
+
+    const openBraces: { line: number; col: number }[] = [];
+    const openParens: { line: number; col: number }[] = [];
+
+    let inString = false;
+    let stringChar = "";
+
+    for (let i = 0; i < source.length; i++) {
+      const char = source[i];
+
+      if (char === "\n") {
+        line++;
+        column = 1;
+        continue;
+      }
+
+      if (inString) {
+        if (char === stringChar) {
+          // Count preceding backslashes to verify whether this quote is escaped
+          let backslashCount = 0;
+          for (let j = i - 1; j >= 0 && source[j] === "\\"; j--) {
+            backslashCount++;
+          }
+          if (backslashCount % 2 === 0) {
+            inString = false;
+          }
+        }
+        column++;
+        continue;
+      }
+
+      if (char === '"' || char === "'") {
+        inString = true;
+        stringChar = char;
+        stringStartLine = line;
+        stringStartCol = column;
+        column++;
+        continue;
+      }
+
+      if (char === "{") {
+        openBraces.push({ line, col: column });
+      } else if (char === "}") {
+        if (openBraces.length > 0) {
+          openBraces.pop();
+        } else {
+          return { message: "Unexpected closing brace '}'", line, column };
+        }
+      } else if (char === "(") {
+        openParens.push({ line, col: column });
+      } else if (char === ")") {
+        if (openParens.length > 0) {
+          openParens.pop();
+        } else {
+          return { message: "Unexpected closing parenthesis ')'", line, column };
+        }
+      }
+
+      column++;
+    }
+
+    if (inString) {
+      return {
+        message: "Unclosed string literal",
+        line: stringStartLine,
+        column: stringStartCol,
+      };
+    }
+
+    if (openBraces.length > 0) {
+      const last = openBraces[openBraces.length - 1];
+      return {
+        message: `Unclosed code block (${openBraces.length} missing '}')`,
+        line: last.line,
+        column: last.col,
+      };
+    }
+
+    if (openParens.length > 0) {
+      const last = openParens[openParens.length - 1];
+      return {
+        message: `Unclosed parenthesis (${openParens.length} missing ')')`,
+        line: last.line,
+        column: last.col,
+      };
+    }
+
+    return null;
+  }
+
+  let rhaiSyntaxError = $derived<RhaiSyntaxError | null>(
+    isRhai && activeContent ? checkRhaiSyntaxError(activeContent) : null
+  );
+
+  let canRegenerate = $derived(rhaiSyntaxError === null);
+
+  let regenerateTooltip = $derived(
+    rhaiSyntaxError
+      ? `Cannot regenerate: Line ${rhaiSyntaxError.line}, Col ${rhaiSyntaxError.column}: ${rhaiSyntaxError.message}`
+      : "Regenerate visual canvas from Rhai code"
+  );
+
+  // Sync syntax error diagnostics with Monaco editor markers (red squiggly underlines)
+  $effect(() => {
+    const err = rhaiSyntaxError;
+    const inst = monacoInstance;
+    const key = activeKey;
+
+    if (!inst || !key) return;
+
+    untrack(() => {
+      try {
+        const model = inst.getModel?.();
+        if (!model) return;
+
+        const globalMonaco = (window as unknown as { monaco?: any }).monaco;
+        if (!globalMonaco?.editor) return;
+
+        if (err) {
+          globalMonaco.editor.setModelMarkers(model, "rhai-syntax", [
+            {
+              startLineNumber: err.line,
+              startColumn: err.column,
+              endLineNumber: err.line,
+              endColumn: 999,
+              message: err.message,
+              severity: globalMonaco.MarkerSeverity.Error,
+            },
+          ]);
+        } else {
+          globalMonaco.editor.setModelMarkers(model, "rhai-syntax", []);
+        }
+      } catch (e) {
+        console.error("Failed to update Monaco model markers:", e);
+      }
+    });
+  });
+
+  function jumpToSyntaxError(line: number, column: number) {
+    if (monacoInstance) {
+      monacoInstance.revealLineInCenter(line);
+      monacoInstance.setPosition({ lineNumber: line, column });
+      monacoInstance.focus();
+    }
+  }
+
+  async function handleRegenerateCanvas() {
+    if (!canRegenerate || !activeKey || activeContent === undefined) return;
+    try {
+      isGeneratingCanvas = true;
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
+      const filename = workbench.activeTab?.filename || "script.rhai";
+
+      let freshCanvas: CanvasDocumentV3 | null = null;
+      try {
+        const res = await invoke<{ ast_canvas: string; rhai_source: string }>(
+          "chaoswrench_parse_rhai_ast",
+          { source: activeContent }
+        );
+        if (res.ast_canvas) {
+          freshCanvas = JSON.parse(res.ast_canvas) as CanvasDocumentV3;
+        } else {
+          throw new Error("Empty AST canvas returned");
+        }
+      } catch (err) {
+        console.warn("Failed to parse detailed Rhai AST via Rust engine, using signature graph fallback:", err);
+        const signatures = extractSignaturesFromSource(activeContent);
+        const { nodes, edges } = buildSkeletonGraph(signatures);
+        freshCanvas = buildCanvasMetadata(nodes, edges);
+      }
+
+      if (!freshCanvas) {
+        return;
+      }
+
+      // Regenerate always recomputes function-lane layout from the fresh AST —
+      // never reuse stale sidecar X/Y (that produced the flat 1D strip).
+      // Capture current positions so the parse pass can spring to new targets.
+      pendingLayoutSpring = {
+        from: captureFlowPositions(nodes),
+        fitAfter: true,
+      };
+      const laidOutCanvas = finalizeCanvasDocumentLayout(freshCanvas, { force: true });
+      workbench.updateCanvasContent(pluginName, filename, laidOutCanvas);
+      if (pluginName !== "__PENDING__") {
+        void workbench.saveCanvasSidecar(pluginName, filename);
+      }
+    } catch (e) {
+      console.error("Failed to manually regenerate visual script AST:", e);
+    } finally {
+      isGeneratingCanvas = false;
+    }
+  }
+
+  // Debounced AST generation for live-reloading visual script while editing pending plugins
+  $effect(() => {
+    const content = activeContent;
+    const key = activeKey;
+    const isPending = workbench.activeTab?.pluginName === "__PENDING__";
+    const editingEnabled = pendingPlugins.isEditingEnabled;
+    const filename = workbench.activeTab?.filename;
+
+    const isLive = (isPending && editingEnabled) || (workbench.activeTab?.viewMode === "split");
+
+    if (isLive && key && filename && content !== undefined && canRegenerate) {
+      untrack(() => {
+        clearTimeout(pendingAstTimer);
+        pendingAstTimer = setTimeout(async () => {
+          try {
+            isGeneratingCanvas = true;
+            await new Promise((resolve) => setTimeout(resolve, 10));
+
+            const existingCanvas = key ? workbench.canvasContents[key] : null;
+            const pluginName = workbench.activeTab?.pluginName || "__PENDING__";
+
+            let newCanvas: CanvasDocumentV3;
+            if (existingCanvas && existingCanvas.nodes && existingCanvas.nodes.length > 0) {
+              const parsed = parseRhaiToFlow(content, workbench.nodeRegistry, existingCanvas);
+              const merged = mergeCanvasAssemblyNodes(parsed.nodes, existingCanvas, activeManifest);
+              newCanvas = buildCanvasMetadata(merged, parsed.edges);
+            } else {
+              const signatures = extractSignaturesFromSource(content);
+              const { nodes, edges } = buildSkeletonGraph(signatures);
+              newCanvas = buildCanvasMetadata(nodes, edges);
+            }
+
+            const mergedCanvas = 
+              getLastEditSource(key) === "code" || !existingCanvas
+                ? finalizeCanvasDocumentLayout(newCanvas)
+                : mergeCanvasWithExistingLayout(newCanvas, existingCanvas);
+
+            workbench.updateCanvasContent(pluginName, filename, mergedCanvas);
+          } catch (e) {
+            console.error("Failed to live-reload visual script AST:", e);
+          } finally {
+            isGeneratingCanvas = false;
+          }
+        }, 600); // Debounce to avoid constant parsing while typing
+      });
+    }
+  });
+
+  // 1. From code to Svelte Flow: Parse whenever active Rhai content changes
+  $effect(() => {
+    const content = activeContent;
+    const key = activeKey;
+    const canvas = activeCanvas;
+    const rhaiTab = isRhai;
+
+    untrack(() => {
+      if (!rhaiTab || !key || content === undefined) return;
+      // Do not rebuild mid-spring - frame updates would fight layout targets.
+      if (layoutSpringActive) return;
+
+      const parsed = parseRhaiToFlow(content, workbench.nodeRegistry, canvas);
+      const merged = mergeCanvasAssemblyNodes(parsed.nodes, canvas, activeManifest);
+      const enriched = enrichNodesWithManifest(
+        merged,
+        activeManifest,
+        key ? assembly.isKnown(key) : false
+      );
+
+      let mappedNodes = enriched.map((n) => {
+        if (n.type === "group") {
+          return {
+            ...n,
+            data: {
+              ...n.data,
+              onGroupResize: nodeActions.handleGroupResize,
+            },
+          };
+        }
+        return {
+          ...n,
+          data: {
+            ...n.data,
+            onOpenSettings: handleOpenNodeSettings,
+            onUngroup: nodeActions.handleUngroupNode,
+            parentId: n.parentId,
+          },
+        };
+      });
+
+      if (pendingNodePositions.size > 0) {
+        mappedNodes = mappedNodes.map((n) => {
+          const label = (n.data as { label?: string }).label;
+          if (!label) return n;
+          const pending = pendingNodePositions.get(label);
+          if (!pending) return n;
+          pendingNodePositions.delete(label);
+          const { position, parentId } = nodeActions.resolveNodePlacement(pending);
+          return { ...n, position, parentId: parentId ?? n.parentId };
+        });
+      }
+
+      // Compute the final committed form up front (grow-only size + parent-first
+      // restack) so the change check compares like-for-like. This pass is
+      // idempotent, so comparing against it (instead of the raw parser output)
+      // avoids a re-commit loop now that sizing can shift positions and restack
+      // reorders nodes.
+      const finalNodesBase = restackGroups(
+        resizeGroupsBottomUp(mappedNodes, (id) => getNodeSize?.(id))
+      );
+
+      const mappedEdges = reconcileVisualEdges(parsed.edges, finalNodesBase);
+
+      const diags = assembly.diagnosticsForCanvas(
+        key,
+        finalNodesBase.map((n) => ({
+          id: n.id,
+          fn: (n.data as { fn?: string }).fn,
+          kind: (n.data as { kind?: string }).kind,
+          type: n.type,
+        })),
+        mappedEdges.map((e) => ({
+          id: e.id,
+          source: e.source,
+          target: e.target,
+          sourceHandle: e.sourceHandle ?? undefined,
+          targetHandle: e.targetHandle ?? undefined,
+          type: e.type,
+        }))
+      );
+      const finalNodes = applyGraphDiagnostics(finalNodesBase, diags);
+
+      // Include `style` (the group size) so a snug auto-fit that only changed a
+      // group's dimensions - e.g. healing a runaway-inflated sidecar on load -
+      // is actually committed, not silently dropped because positions matched.
+      const nodeShape = (n: Node) => ({
+        id: n.id,
+        x: n.position.x,
+        y: n.position.y,
+        label: (n.data as any).label,
+        parentId: n.parentId,
+        style: typeof n.style === "string" ? n.style : undefined,
+      });
+      const nodesChanged =
+        JSON.stringify(finalNodes.map(nodeShape)) !== JSON.stringify(nodes.map(nodeShape));
+      const edgesChanged =
+        JSON.stringify(
+          mappedEdges.map((e) => ({ id: e.id, source: e.source, target: e.target }))
+        ) !== JSON.stringify(edges.map((e) => ({ id: e.id, source: e.source, target: e.target })));
+
+      // Only commit when the structural form actually changed. Because the
+      // committed form is the idempotent finalNodes, re-running this parse after
+      // our own sidecar write compares equal and stops (the structural diff is
+      // the loop-breaker that replaced the old timing guard).
+      const springReq = pendingLayoutSpring;
+      const firstOpenSpring = !springReq && nodes.length === 0 && finalNodes.length > 0;
+      if (nodesChanged || edgesChanged || springReq || firstOpenSpring) {
+        edges = mappedEdges;
+
+        if (springReq || firstOpenSpring) {
+          pendingLayoutSpring = null;
+          const from = springReq?.from ?? new Map();
+          const fitAfter = springReq?.fitAfter ?? true;
+          const targets = targetsFromFlowNodes(finalNodes);
+          const started = applySpringStartPositions(finalNodes, from);
+          nodes = started;
+          runLayoutSpring(started, targets, fitAfter);
+        } else {
+          nodes = finalNodes;
+        }
+
+        if (monacoInstance) {
+          setTimeout(() => {
+            monacoInstance.trigger("fold", "editor.foldAllMarkerRegions");
+          }, 50);
+        }
+      }
+    });
+  });
+
+  // Highlight the canvas node tied to a selected trace span (error attribution).
+  $effect(() => {
+    if (!isRhai) return;
+    const label = engine.highlightedNodeLabel;
+    untrack(() => {
+      nodes = nodes.map((n) => {
+        const nodeLabel = (n.data as { label?: string }).label;
+        const traceHighlight = !!label && nodeLabel === label;
+        const current = (n.data as { traceHighlight?: boolean }).traceHighlight === true;
+        if (current === traceHighlight) return n;
+        return { ...n, data: { ...n.data, traceHighlight } };
+      });
+    });
+  });
+
+  // Keep edge styles + cyclic flags in sync; publish obstacle snapshot for routers.
+  // Skip during layout spring and mid-drag - publish resumes on settle / drop.
+  $effect(() => {
+    if (!isRhai) return;
+    const currentNodes = nodes;
+
+    untrack(() => {
+      if (layoutSpringActive || isEdgeRoutingDragActive()) return;
+      publishObstacleSnapshot(currentNodes);
+      if (edges.length > 0) {
+        edges = reconcileVisualEdges(edges, currentNodes);
+      }
+    });
+  });
+
+  // 2. From Svelte Flow to canvas sidecar (never embed metadata in Rhai source)
+  let canvasWriteTimer: ReturnType<typeof setTimeout> | undefined;
+  $effect(() => {
+    if (!isRhai) return;
+    const currentNodes = nodes;
+    const currentEdges = edges;
+    const tab = workbench.activeTab;
+    const currentViewMode = viewMode;
+
+    // Skip intermediate spring frames - persist once settle commits final coords.
+    if (layoutSpringActive) return;
+
+    // Always persist a genuine change (diff-gated). The parse pass that reacts to
+    // this write is idempotent, so it won't fight us; this guarantees every node
+    // mutation reaches the sidecar instead of depending on guard timing.
+    if (activeKey && currentNodes.length > 0 && tab) {
+      const metadata = buildCanvasMetadata(currentNodes, currentEdges);
+      const serialized = JSON.stringify(metadata);
+      const existing = workbench.canvasContents[activeKey];
+      if (serialized !== JSON.stringify(existing)) {
+        clearTimeout(canvasWriteTimer);
+        canvasWriteTimer = setTimeout(() => {
+          workbench.updateCanvasContent(tab.pluginName, tab.filename, metadata);
+          
+          // --- Visual to Text Live Sync ---
+          // If the user modifies the visual graph, we generate the Rhai code to match.
+          // For performance, only auto-generate live if BOTH views are visible ('split').
+          // Otherwise, it waits for a manual save or the safety auto-save timer.
+          if (currentViewMode === "split" && monacoInstance && pendingPlugins.isEditingEnabled !== false) {
+             const generatedRhai = generateRhaiFromCanvas(currentNodes, currentEdges);
+             const currentCode = activeContent;
+             // Only update if the logic structurally differs to avoid infinite cursor jumping
+             if (generatedRhai.trim() !== currentCode.trim()) {
+                 setLastEditSource(tab.pluginName + ":" + tab.filename, "canvas");
+                 workbench.updateFileContent(tab.pluginName, tab.filename, generatedRhai);
+                 monacoInstance.setValue(generatedRhai);
+             }
+          }
+        }, 300);
+      }
+    }
+  });
+
+  // Safety Auto-Save Timer
+  // Periodically commits the generated Vhai code if the user is in full-screen visual mode.
+  let autoSaveTimer: ReturnType<typeof setInterval> | undefined;
+  $effect(() => {
+    clearInterval(autoSaveTimer);
+    if (isRhai && viewMode === "visual" && pendingPlugins.isEditingEnabled !== false) {
+      autoSaveTimer = setInterval(() => {
+        const tab = workbench.activeTab;
+        if (!tab || nodes.length === 0) return;
+        const generatedRhai = generateRhaiFromCanvas(nodes, edges);
+        if (generatedRhai.trim() !== activeContent.trim()) {
+           setLastEditSource(tab.pluginName + ":" + tab.filename, "canvas");
+           workbench.updateFileContent(tab.pluginName, tab.filename, generatedRhai);
+           if (monacoInstance) monacoInstance.setValue(generatedRhai);
+        }
+      }, 5000);
+    }
+  });
+
+  // Re-layout Monaco when layout bounds change to fix resizing quirks
+  $effect(() => {
+    const _viewMode = viewMode;
+    const _codeWidth = codeWidth;
+    const _showSplit = showSplitLayout;
+    if (monacoInstance) {
+      requestAnimationFrame(() => {
+        if (monacoInstance) monacoInstance.layout();
+      });
+    }
+  });
+
+  const monacoHost = createMonacoHost(() => ({
+    initialContent: activeContent,
+    getFilename: () => workbench.activeTab?.filename ?? "",
+    onContentChange: (val) => {
+      if (isUpdatingFromState || !workbench.activeTab) return;
+      isUpdatingFromState = true;
+      setLastEditSource(workbench.activeTab.pluginName + ":" + workbench.activeTab.filename, "code");
+      workbench.updateFileContent(
+        workbench.activeTab.pluginName,
+        workbench.activeTab.filename,
+        val
+      );
+      isUpdatingFromState = false;
+    },
+    onInstance: (inst) => {
+      monacoInstance = inst;
+    },
+  }));
+
+  $effect(() => bindEditorActionShortcuts(() => monacoInstance));
+
+  async function handleSave() {
+    if (workbench.activeTab) {
+      await workbench.saveFile(workbench.activeTab.pluginName, workbench.activeTab.filename);
+    }
+  }
+
+  /** Switches the active tab's view mode (shared by the action bar + preview toggle). */
+  function setViewMode(mode: "split" | "code" | "visual" | "preview") {
+    if (workbench.activeTab) {
+      const oldMode = workbench.activeTab.viewMode;
+      
+      // Force instantaneous reconciliation when switching back to split view
+      if (mode === "split" && isRhai && pendingPlugins.isEditingEnabled !== false) {
+        if (oldMode === "visual" && nodes.length > 0) {
+          // Sync Visual -> Code instantly
+          const generatedRhai = generateRhaiFromCanvas(nodes, edges);
+          if (generatedRhai.trim() !== activeContent.trim()) {
+            setLastEditSource(workbench.activeTab.pluginName + ":" + workbench.activeTab.filename, "canvas");
+            workbench.updateFileContent(workbench.activeTab.pluginName, workbench.activeTab.filename, generatedRhai);
+            if (monacoInstance) monacoInstance.setValue(generatedRhai);
+          }
+          handleSave();
+        } else if (oldMode === "code") {
+          // Code -> Visual is usually parsed in the background instantly (debounced),
+          // but we trigger a manual save just to be safe.
+          handleSave();
+        }
+      }
+      
+      workbench.setTabViewMode(workbench.activeTab.pluginName, workbench.activeTab.filename, mode);
+    }
+  }
+
+  // Jumps to the target node's code block line in Monaco and applies a 1.5s highlight
+  function handleOpenNodeSettings(nodeId: string, label: string) {
+    const targetNode = nodes.find((n) => n.id === nodeId);
+    const fnName = (targetNode?.data as { fn?: string })?.fn || label;
+    const content = activeContent || "";
+    const lines = content.split("\n");
+
+    let targetLine = 1;
+
+    const anchorIdx = lines.findIndex(
+      (l) => l.includes("[NODE:") && l.includes(label)
+    );
+    if (anchorIdx !== -1) {
+      targetLine = anchorIdx + 1;
+    } else {
+      const fnIdx = lines.findIndex(
+        (l) =>
+          l.trim().startsWith(`fn ${fnName}`) ||
+          l.trim().startsWith(`fn ${label}`)
+      );
+      if (fnIdx !== -1) {
+        targetLine = fnIdx + 1;
+      } else if (label) {
+        const strIdx = lines.findIndex((l) => l.includes(label));
+        if (strIdx !== -1) targetLine = strIdx + 1;
+      }
+    }
+
+    if (viewMode === "visual") {
+      setViewMode("split");
+    }
+
+    setTimeout(() => {
+      if (monacoInstance) {
+        monacoInstance.revealLineInCenter(targetLine);
+        monacoInstance.setPosition({ lineNumber: targetLine, column: 1 });
+        monacoInstance.focus();
+
+        jumpDecorationIds = monacoInstance.deltaDecorations(jumpDecorationIds, [
+          {
+            range: {
+              startLineNumber: targetLine,
+              startColumn: 1,
+              endLineNumber: targetLine,
+              endColumn: (lines[targetLine - 1]?.length || 0) + 1,
+            },
+            options: {
+              isWholeLine: true,
+              className: "node-jump-highlight",
+            },
+          },
+        ]);
+
+        setTimeout(() => {
+          if (monacoInstance) {
+            jumpDecorationIds = monacoInstance.deltaDecorations(jumpDecorationIds, []);
+          }
+        }, 1500);
+      }
+    }, 50);
+  }
+  // Check for graph loop/cycles
+  let hasCycles = $derived(getCyclicEdges(edges).size > 0);
+
+  // Exposes graph helpers for Playwright E2E (browser-only, not serialized).
+  $effect(() => {
+    const root = (window as unknown as { _chaosforge_state?: Record<string, unknown> })
+      ._chaosforge_state;
+    if (!root) return;
+    root.editorGraph = {
+      nodeActions,
+      getNodes: () => nodes,
+      patchNode: (id: string, patch: Partial<Node>) => {
+        nodes = nodes.map((n) => (n.id === id ? { ...n, ...patch } : n));
+      },
+      /** Playwright helper: cursor-based drop target for a node (flow coords). */
+      resolveDropTargetAtPoint: (nodeId: string, cursorFlow: FlowPosition) => {
+        const node = nodes.find((n) => n.id === nodeId);
+        if (!node) return null;
+        return resolveDropTargetAtPoint(node, nodes, cursorFlow, (id) => getNodeSize?.(id));
+      },
+      // Undo/redo/save surface for E2E (mirrors the canvas keyboard shortcuts).
+      undo: undoCanvas,
+      redo: redoCanvas,
+      save: handleCanvasSave,
+      canUndo: () => (activeKey ? !!histories.get(activeKey)?.canUndo() : false),
+      canRedo: () => (activeKey ? !!histories.get(activeKey)?.canRedo() : false),
+      // Delete-key surface for E2E: requestDelete routes single ids/selections
+      // through the same confirm-or-immediate logic as the keyboard handler.
+      requestDelete: (ids: string[]) => requestDelete(ids),
+      deleteSelection: requestDeleteSelection,
+    };
+  });
+</script>
+
+<div class="h-full w-full flex flex-col theme-bg-main">
+  {#if workbench.activeTab}
+    <!-- Workbench Pane Layout -->
+    <div class="flex-1 w-full flex flex-col overflow-hidden relative min-h-0">
+      <!-- Stable global header: tabs + Save always full-width (never moves). -->
+      <EditorActionBar
+        openTabs={workbench.openTabs}
+        activeTab={workbench.activeTab}
+        modifiedFiles={workbench.modifiedFiles}
+        onSelectTab={(tab) => workbench.openTab(tab.pluginName, tab.filename)}
+        onCloseTab={(tab, e) => {
+          e.stopPropagation();
+          workbench.attemptCloseTab(tab.pluginName, tab.filename);
+        }}
+        onSave={handleSave}
+      />
+
+      <div
+        class="flex-1 w-full flex {showSplitLayout ? 'theme-divide-x' : ''} overflow-hidden min-h-0"
+      >
+        <!-- Left Pane: Monaco Code Editor -->
+        {#if showEditorPane}
+          <div
+            data-testid="dual-editor-code-pane"
+            style="width: {showSplitLayout ? codeWidth + '%' : '100%'}"
+            class="h-full flex flex-col overflow-hidden theme-bg-main {showSplitLayout
+              ? 'flex-none'
+              : 'flex-1'}"
+          >
+            {#if isRhai}
+              <EditorPaneHeader label="Code" {viewMode} onSetViewMode={setViewMode} />
+            {:else if isMarkdown}
+              <MarkdownToolbar {monacoInstance} {viewMode} onSetViewMode={setViewMode} />
+            {/if}
+
+            <!-- Pending Plugin Review Banner -->
+            <DualEditorPendingBanner />
+
+            <!-- Rhai Syntax Error Warning Banner -->
+            {#if isRhai && rhaiSyntaxError}
+              <button
+                type="button"
+                onclick={() => jumpToSyntaxError(rhaiSyntaxError!.line, rhaiSyntaxError!.column)}
+                class="px-3 py-1.5 bg-red-950/90 border-b border-red-800/80 text-red-200 text-xs font-mono flex items-center justify-between gap-2 hover:bg-red-900/90 transition-colors text-left cursor-pointer group shrink-0"
+                title="Click to jump to syntax error in Monaco editor"
+              >
+                <div class="flex items-center gap-2 overflow-hidden">
+                  <span class="px-1.5 py-0.5 rounded bg-red-900 border border-red-700 text-[10px] font-bold tracking-wider text-red-100 shrink-0">
+                    LINE {rhaiSyntaxError.line}, COL {rhaiSyntaxError.column}
+                  </span>
+                  <span class="truncate font-medium">{rhaiSyntaxError.message}</span>
+                </div>
+                <span class="text-[10px] opacity-75 group-hover:opacity-100 underline shrink-0">Jump to line →</span>
+              </button>
+            {/if}
+
+            <div class="relative flex-1 w-full h-full min-h-0 theme-bg-main">
+              <div use:monacoHost class="absolute inset-0"></div>
+              {#if !monacoInstance}
+                <div
+                  class="absolute inset-0 flex flex-col items-center justify-center gap-3 theme-bg-main pointer-events-none"
+                  data-testid="monaco-loading"
+                  aria-hidden="true"
+                >
+                  <div
+                    class="w-48 h-2 rounded theme-bg-sidebar overflow-hidden border theme-border"
+                    role="presentation"
+                  >
+                    <div class="h-full w-1/3 theme-bg-accent-soft animate-pulse rounded"></div>
+                  </div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider theme-text-muted"
+                    >Loading editor</span
+                  >
+                </div>
+              {/if}
+            </div>
+          </div>
+        {/if}
+
+        <!-- Center Splitter -->
+        {#if showSplitLayout}
+          <Splitter
+            min={20}
+            max={80}
+            bind:value={codeWidth}
+            type="percent"
+            testId="dual-editor-split-handle"
+          />
+        {/if}
+
+        <!-- Right Pane: Markdown Preview -->
+        {#if showMarkdownPreview}
+          <DualEditorMarkdownPane {activeContent} {viewMode} onSetViewMode={setViewMode} />
+        {/if}
+
+        <!-- Right Pane: Svelte Flow Visual Graph -->
+        {#if isRhai && (viewMode === "split" || viewMode === "visual")}
+          <DualEditorFlowPane
+            bind:nodes
+            bind:edges
+            bind:getNodeSize
+            {hasCycles}
+            {svelteFlowColorMode}
+            onConnect={nodeActions.handleConnect}
+            onNewGroup={nodeActions.handleNewGroup}
+            onPaletteAction={nodeActions.handlePaletteAction}
+            onEditNode={handleOpenNodeSettings}
+            onUngroupNode={nodeActions.handleUngroupNode}
+            onDeleteNode={nodeActions.handleDeleteNode}
+            onDeleteGroup={(id) => requestDelete([id])}
+            onDeleteSelection={requestDeleteSelection}
+            onRenameGroup={requestRenameGroup}
+            onNodeDragStop={nodeActions.handleNodeDragStop}
+            onNodesDragStop={nodeActions.handleNodesDragStop}
+            onHighlightGroup={nodeActions.setGroupHighlight}
+            onAddToGroup={nodeActions.handleAddToGroup}
+            onSave={handleCanvasSave}
+            onUndo={undoCanvas}
+            onRedo={redoCanvas}
+            {canUndo}
+            {canRedo}
+            {unboundFunctions}
+            {nativeFunctions}
+            {canvasDisplayOnly}
+            onRegenerate={handleRegenerateCanvas}
+            {canRegenerate}
+            {regenerateTooltip}
+            {isGeneratingCanvas}
+            {fitViewNonce}
+            {layoutSpringActive}
+          />
+        {/if}
+      </div>
+    </div>
+
+    <ConfirmDeleteModal
+      open={!!pendingDelete}
+      title={pendingDelete?.title ?? ""}
+      message={pendingDelete?.message ?? ""}
+      confirmLabel={(pendingDelete?.ids.length ?? 0) > 1 ? "Delete Selection" : "Delete Group"}
+      onConfirm={confirmDelete}
+      onCancel={() => (pendingDelete = null)}
+    />
+  {:else}
+    <!-- No Active Tab Operator Welcome stage -->
+    <DualEditorWelcomePane />
+  {/if}
+</div>

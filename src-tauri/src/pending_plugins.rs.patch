@@ -1,0 +1,20 @@
+--- chaosnexus-forge/src-tauri/src/pending_plugins.rs
++++ chaosnexus-forge/src-tauri/src/pending_plugins.rs
+@@ -194,6 +194,18 @@
+     Ok(())
+ }
+ 
++/// Updates the Rhai source code of a quarantined plugin in-place.
++#[tauri::command]
++pub fn update_pending_plugin(
++    project_path: &str,
++    plugin_name: &str,
++    new_source: &str,
++) -> Result<(), String> {
++    let script_path = pending_root(project_path).join(plugin_name).join(format!("{plugin_name}_tool.rhai"));
++    std::fs::write(&script_path, new_source).map_err(|e| format!("Failed to update pending plugin: {}", e))?;
++    Ok(())
++}
++
+ /// Starts watching the workspace's `.pending/` directory for filesystem
+ /// changes. Emits a `pending_plugins_changed` Tauri event whenever a plugin
