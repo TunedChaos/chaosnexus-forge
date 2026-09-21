@@ -104,3 +104,4 @@ Installers **do not** bundle GGUF weights. `bundle.resources` only ships:
 - `resources/licenses/ATTRIBUTION-IBM-GRANITE.md`
 
 Default download is **ChaosNexus Tuned v1** (`TunedChaos/ChaosNexus_Tuned_v1-GGUF` / `ChaosNexus_Tuned_v1-Q4_K_M.gguf`, ~5.0 GB) from Settings → Models after a one-time license checkbox, into `~/.chaosnexus/crucible/models/<sanitized-model-id>/`. Resume uses a `.gguf.partial` sidecar (or hf-hub cache). Optional mirror: `CHAOSNEXUS_MODEL_BASE_URL`. Optional stock IBM Guardian preset remains available. Missing weights never block the IDE opening - Crucible shows “model missing” until resolved (download, local `.gguf` picker, or mirror).
+
