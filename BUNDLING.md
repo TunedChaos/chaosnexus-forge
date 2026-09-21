@@ -1,4 +1,4 @@
-# ChaosNexus Forge — platform bundling
+# ChaosNexus Forge - platform bundling
 
 Release line **0.8.5**. Produce installers with [Tauri 2](https://v2.tauri.app/) from `chaosnexus-forge/`.
 
@@ -48,7 +48,7 @@ Artifacts (typical):
 
 | Stage | What |
 |-------|------|
-| **Ad-hoc (local)** | `codesign --force --deep -s - "ChaosNexus Forge.app"` — enough for your own machine; Gatekeeper may still warn. |
+| **Ad-hoc (local)** | `codesign --force --deep -s - "ChaosNexus Forge.app"` - enough for your own machine; Gatekeeper may still warn. |
 | **Developer ID** | Set `APPLE_SIGNING_IDENTITY` / Tauri `bundle.macOS.signingIdentity` to your `Developer ID Application: …` identity. Enable hardened runtime (already `hardenedRuntime: true` in config). |
 | **Notarization** | Apple ID + app-specific password / API key; `xcrun notarytool submit …` then `stapler staple` the `.app`/`.dmg`. Tauri can automate via `APPLE_ID`, `APPLE_PASSWORD`, `APPLE_TEAM_ID` env vars when identity is set. |
 
@@ -77,7 +77,7 @@ AppImage needs `appimagetool` (Tauri downloads helpers as needed). `.deb` needs 
 pnpm tauri build
 ```
 
-Uses all entries in `bundle.targets`: `nsis`, `app`, `dmg`, `appimage`, `deb`. Cross-compiling installers for another OS generally requires that OS (or a matching CI runner) — do not expect Linux CI to emit a working NSIS `.exe` without a Windows toolchain.
+Uses all entries in `bundle.targets`: `nsis`, `app`, `dmg`, `appimage`, `deb`. Cross-compiling installers for another OS generally requires that OS (or a matching CI runner) - do not expect Linux CI to emit a working NSIS `.exe` without a Windows toolchain.
 
 ## Config reference
 
@@ -96,12 +96,11 @@ pnpm tauri info
 
 A full `pnpm tauri build` needs the frontend build (`pnpm build`) and a complete Rust target for the host triple.
 
-## Model weights (Path 2 — separate download)
+## Model weights (Path 2 - separate download)
 
 Installers **do not** bundle GGUF weights. `bundle.resources` only ships:
 
 - `resources/licenses/LICENSE-APACHE-2.0.txt`
 - `resources/licenses/ATTRIBUTION-IBM-GRANITE.md`
 
-Default download is **ChaosNexus Tuned v1** (`TunedChaos/ChaosNexus_Tuned_v1-GGUF` / `ChaosNexus_Tuned_v1-Q4_K_M.gguf`, ~5.0 GB) from Settings → Models after a one-time license checkbox, into `~/.chaosnexus/crucible/models/<sanitized-model-id>/`. Resume uses a `.gguf.partial` sidecar (or hf-hub cache). Optional mirror: `CHAOSNEXUS_MODEL_BASE_URL`. Optional stock IBM Guardian preset remains available. Missing weights never block the IDE opening — Crucible shows “model missing” until resolved (download, local `.gguf` picker, or mirror).
-
+Default download is **ChaosNexus Tuned v1** (`TunedChaos/ChaosNexus_Tuned_v1-GGUF` / `ChaosNexus_Tuned_v1-Q4_K_M.gguf`, ~5.0 GB) from Settings → Models after a one-time license checkbox, into `~/.chaosnexus/crucible/models/<sanitized-model-id>/`. Resume uses a `.gguf.partial` sidecar (or hf-hub cache). Optional mirror: `CHAOSNEXUS_MODEL_BASE_URL`. Optional stock IBM Guardian preset remains available. Missing weights never block the IDE opening - Crucible shows “model missing” until resolved (download, local `.gguf` picker, or mirror).
