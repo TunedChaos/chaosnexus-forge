@@ -1,4 +1,4 @@
-# Model attribution — ChaosNexus Tuned + IBM Granite
+# Model attribution - ChaosNexus Tuned + IBM Granite
 
 ## Default (Path 2): ChaosNexus Tuned v1 GGUF
 
