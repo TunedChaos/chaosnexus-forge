@@ -1,0 +1,19 @@
+# Binary and media assets
+*.webm -text
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.svg -text
+*.ico -text
+
+# Tauri `generate_context!()` panics if these are Git LFS pointer files
+# (not 8-bit RGBA PNGs / not a real ICO). Keep them as regular git blobs.
+src-tauri/icons/*.png -filter -diff -merge binary
+src-tauri/icons/**/*.png -filter -diff -merge binary
+src-tauri/icons/*.ico -filter -diff -merge binary
+
+# Compiled libraries and executables
+*.dll -text
+*.so -text
+*.exe -text
+*.dylib -text

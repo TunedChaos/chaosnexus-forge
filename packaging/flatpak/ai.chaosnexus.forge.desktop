@@ -1,0 +1,10 @@
+# chaosnexus-forge/packaging/flatpak/ai.chaosnexus.forge.desktop
+[Desktop Entry]
+Name=ChaosNexus Forge
+Comment=Local-first visual scripting IDE for ChaosNexus Anvil
+Exec=chaosnexus-forge
+Icon=ai.chaosnexus.forge
+Terminal=false
+Type=Application
+Categories=Development;IDE;
+StartupWMClass=chaosnexus-forge
